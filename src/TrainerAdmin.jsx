@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "vardenis_admin_demo_v2";
+const STORAGE_KEY = "vardenis_admin_demo_v4";
 
 const timeSlots = [
   "06:30",
@@ -141,93 +141,30 @@ const initialClients = [
 ];
 
 const initialRegistrations = [
-  {
-    id: "r1",
-    clientId: "c1",
-    date: "2026-06-08",
-    time: "08:00",
-    service: "Individuali treniruotė",
-    status: "Aktyvus",
-    goal: "Viršutinė kūno dalis ir core",
-  },
-  {
-    id: "r2",
-    clientId: "c2",
-    date: "2026-06-08",
-    time: "09:30",
-    service: "Treniruočių abonementas",
-    status: "Patvirtinta",
-    goal: "Pradinis pokalbis ir grafiko suderinimas",
-  },
-  {
-    id: "r3",
-    clientId: "c6",
-    date: "2026-06-08",
-    time: "11:00",
-    service: "Individuali treniruotė",
-    status: "Priimtas",
-    goal: "Pirma treniruotė, judesių įvertinimas",
-  },
-  {
-    id: "r4",
-    clientId: "c3",
-    date: "2026-06-08",
-    time: "16:30",
-    service: "Nuotolinė priežiūra",
-    status: "Naujas",
-    goal: "Aptarti tikslą ir sporto salės įrangą",
-  },
-  {
-    id: "r5",
-    clientId: "c7",
-    date: "2026-06-08",
-    time: "18:00",
-    service: "Treniruočių abonementas",
-    status: "Aktyvus",
-    goal: "Laikysena, core, mobilumas",
-  },
-  {
-    id: "r6",
-    clientId: "c4",
-    date: "2026-06-08",
-    time: "19:30",
-    service: "Treniruočių planas",
-    status: "Užklausa",
-    goal: "Aptarti plano struktūrą",
-  },
-  {
-    id: "r7",
-    clientId: "c8",
-    date: "2026-06-09",
-    time: "08:00",
-    service: "Treniruočių planas",
-    status: "Naujas",
-    goal: "Surinkti informaciją planui",
-  },
-  {
-    id: "r8",
-    clientId: "c1",
-    date: "2026-06-09",
-    time: "18:00",
-    service: "Individuali treniruotė",
-    status: "Aktyvus",
-    goal: "Kojos ir technika",
-  },
+  { id: "r1", clientId: "c1", date: "2026-06-08", time: "08:00", service: "Individuali treniruotė", status: "Aktyvus", goal: "Viršutinė kūno dalis ir core" },
+  { id: "r2", clientId: "c2", date: "2026-06-08", time: "09:30", service: "Treniruočių abonementas", status: "Patvirtinta", goal: "Pradinis pokalbis ir grafiko suderinimas" },
+  { id: "r3", clientId: "c6", date: "2026-06-08", time: "11:00", service: "Individuali treniruotė", status: "Priimtas", goal: "Pirma treniruotė, judesių įvertinimas" },
+  { id: "r4", clientId: "c3", date: "2026-06-08", time: "16:30", service: "Nuotolinė priežiūra", status: "Naujas", goal: "Aptarti tikslą ir sporto salės įrangą" },
+  { id: "r5", clientId: "c7", date: "2026-06-08", time: "18:00", service: "Treniruočių abonementas", status: "Aktyvus", goal: "Laikysena, core, mobilumas" },
+  { id: "r6", clientId: "c4", date: "2026-06-08", time: "19:30", service: "Treniruočių planas", status: "Užklausa", goal: "Aptarti plano struktūrą" },
+
+  { id: "r7", clientId: "c8", date: "2026-06-09", time: "08:00", service: "Treniruočių planas", status: "Naujas", goal: "Surinkti informaciją planui" },
+  { id: "r8", clientId: "c1", date: "2026-06-09", time: "18:00", service: "Individuali treniruotė", status: "Aktyvus", goal: "Kojos ir technika" },
+  { id: "r9", clientId: "c2", date: "2026-06-10", time: "16:30", service: "Treniruočių abonementas", status: "Patvirtinta", goal: "Treniruotė pagal mėnesinį grafiką" },
+  { id: "r10", clientId: "c5", date: "2026-06-10", time: "19:30", service: "Mitybos konsultacija", status: "Atmestas", goal: "Konsultacijos užklausa atmesta" },
+  { id: "r11", clientId: "c7", date: "2026-06-11", time: "08:00", service: "Treniruočių abonementas", status: "Aktyvus", goal: "Mobilumas ir full body" },
+  { id: "r12", clientId: "c6", date: "2026-06-12", time: "11:00", service: "Individuali treniruotė", status: "Priimtas", goal: "Bazinių judesių technika" },
+  { id: "r13", clientId: "c1", date: "2026-06-15", time: "08:00", service: "Individuali treniruotė", status: "Aktyvus", goal: "Viršutinė kūno dalis" },
+  { id: "r14", clientId: "c2", date: "2026-06-16", time: "09:30", service: "Treniruočių abonementas", status: "Patvirtinta", goal: "Jėgos treniruotė" },
+  { id: "r15", clientId: "c7", date: "2026-06-18", time: "18:00", service: "Treniruočių abonementas", status: "Aktyvus", goal: "Core ir laikysena" },
+  { id: "r16", clientId: "c4", date: "2026-06-22", time: "16:30", service: "Treniruočių planas", status: "Užklausa", goal: "Plano korekcija" },
 ];
 
 const initialBlocked = [
-  {
-    id: "b1",
-    date: "2026-06-08",
-    time: "06:30",
-    reason: "Treneris užimtas / pasiruošimas",
-  },
-  {
-    id: "b2",
-    date: "2026-06-08",
-    time: "12:30",
-    reason: "Pertrauka / administracinis laikas",
-  },
+  { id: "b1", date: "2026-06-08", time: "06:30", reason: "Treneris užimtas / pasiruošimas" },
+  { id: "b2", date: "2026-06-08", time: "12:30", reason: "Pertrauka / administracinis laikas" },
+  { id: "b3", date: "2026-06-13", time: "12:30", reason: "Asmeninis užimtumas" },
+  { id: "b4", date: "2026-06-20", time: "16:30", reason: "Mokymai" },
 ];
 
 function getStatusClass(status) {
@@ -267,13 +204,37 @@ Pagarbiai,
 Vardenis Pavardenis`;
 }
 
+function toDateKey(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function getMonthDays(monthValue) {
+  const [year, month] = monthValue.split("-").map(Number);
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
+  const days = [];
+
+  for (let d = new Date(firstDay); d <= lastDay; d.setDate(d.getDate() + 1)) {
+    days.push(toDateKey(new Date(d)));
+  }
+
+  return days;
+}
+
+function getWeekday(dateKey) {
+  const day = new Date(`${dateKey}T12:00:00`).getDay();
+  return ["S", "P", "A", "T", "K", "P", "Š"][day];
+}
+
 export default function TrainerAdmin() {
   const [state, setState] = useState(loadInitialState);
   const [selectedDate, setSelectedDate] = useState("2026-06-08");
+  const [selectedMonth, setSelectedMonth] = useState("2026-06");
   const [statusFilter, setStatusFilter] = useState("Visos būsenos");
   const [search, setSearch] = useState("");
   const [selectedClientId, setSelectedClientId] = useState(state.clients[0]?.id || "");
   const [selectedRegistrationId, setSelectedRegistrationId] = useState(state.registrations[0]?.id || "");
+  const [viewMode, setViewMode] = useState("Diena");
   const [toast, setToast] = useState("");
 
   const selectedClient = state.clients.find((client) => client.id === selectedClientId);
@@ -283,19 +244,52 @@ export default function TrainerAdmin() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
-  const registrationsForDate = useMemo(() => {
-    const query = search.trim().toLowerCase();
+  function getClient(clientId) {
+    return state.clients.find((client) => client.id === clientId);
+  }
 
+  function matchSearch(registration) {
+    const query = search.trim().toLowerCase();
+    if (!query) return true;
+
+    const client = getClient(registration.clientId);
+    const combined = [
+      client?.name,
+      client?.phone,
+      client?.email,
+      client?.status,
+      client?.packageName,
+      client?.goal,
+      registration.service,
+      registration.goal,
+      registration.status,
+      registration.date,
+      registration.time,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return combined.includes(query);
+  }
+
+  function matchStatus(registration) {
+    if (statusFilter === "Visos būsenos") return true;
+    const client = getClient(registration.clientId);
+
+    return registration.status === statusFilter || client?.status === statusFilter;
+  }
+
+  const filteredAllRegistrations = useMemo(() => {
     return state.registrations
-      .filter((item) => item.date === selectedDate)
-      .filter((item) => statusFilter === "Visos būsenos" || item.status === statusFilter)
-      .filter((item) => {
-        const client = state.clients.find((c) => c.id === item.clientId);
-        const combined = `${client?.name || ""} ${client?.phone || ""} ${item.service} ${item.goal} ${item.status} ${client?.status || ""}`.toLowerCase();
-        return !query || combined.includes(query);
-      })
-      .sort((a, b) => a.time.localeCompare(b.time));
-  }, [state.registrations, state.clients, selectedDate, statusFilter, search]);
+      .filter((item) => matchStatus(item))
+      .filter((item) => matchSearch(item))
+      .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+  }, [state.registrations, state.clients, statusFilter, search]);
+
+  const registrationsForDate = useMemo(() => {
+    return filteredAllRegistrations.filter((item) => item.date === selectedDate);
+  }, [filteredAllRegistrations, selectedDate]);
 
   const activeClients = useMemo(
     () => state.clients.filter((client) => client.status === "Aktyvus" || client.status === "Priimtas" || client.status === "Patvirtinta"),
@@ -307,20 +301,37 @@ export default function TrainerAdmin() {
     [state.clients]
   );
 
+  const monthDays = useMemo(() => getMonthDays(selectedMonth), [selectedMonth]);
+
+  const monthSummary = useMemo(() => {
+    return monthDays.map((date) => {
+      const dayRegistrations = filteredAllRegistrations.filter((item) => item.date === date);
+      const dayBlocked = state.blocked.filter((item) => item.date === date);
+      const occupied = dayRegistrations.length + dayBlocked.length;
+      const total = timeSlots.length;
+      const free = Math.max(total - occupied, 0);
+
+      return {
+        date,
+        dayRegistrations,
+        dayBlocked,
+        occupied,
+        free,
+        total,
+      };
+    });
+  }, [monthDays, filteredAllRegistrations, state.blocked]);
+
   const stats = [
-    ["Registracijos", registrationsForDate.length],
-    ["Naujos", state.registrations.filter((item) => item.status === "Naujas").length],
-    ["Priimti / patvirtinti", activeClients.length],
-    ["Atmestos / užklausos", requestClients.length],
+    ["Dienos įrašai", registrationsForDate.length],
+    ["Mėnesio įrašai", monthSummary.reduce((sum, day) => sum + day.dayRegistrations.length, 0)],
+    ["Patvirtintos", state.registrations.filter((item) => item.status === "Patvirtinta").length],
+    ["Užklausos / nauji", state.registrations.filter((item) => item.status === "Užklausa" || item.status === "Naujas").length],
   ];
 
   function showToast(message) {
     setToast(message);
     window.setTimeout(() => setToast(""), 2600);
-  }
-
-  function getClient(clientId) {
-    return state.clients.find((client) => client.id === clientId);
   }
 
   function updateClient(clientId, patch) {
@@ -416,6 +427,7 @@ export default function TrainerAdmin() {
   }
 
   function resetDemoData() {
+    localStorage.removeItem(STORAGE_KEY);
     setState({
       clients: initialClients,
       registrations: initialRegistrations,
@@ -423,12 +435,14 @@ export default function TrainerAdmin() {
     });
     setSelectedClientId(initialClients[0].id);
     setSelectedRegistrationId(initialRegistrations[0].id);
+    setStatusFilter("Visos būsenos");
+    setSearch("");
     showToast("Demo duomenys atstatyti.");
   }
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_10%_0%,rgba(199,244,90,.18),transparent_34%),linear-gradient(180deg,#FBFAF6,#F4F1EA)] px-5 py-8 text-ink">
-      <div className="mx-auto w-[min(1500px,100%)]">
+      <div className="mx-auto w-[min(1520px,100%)]">
         <header className="mb-6 flex flex-col gap-4 rounded-[2rem] border border-ink/10 bg-white/90 p-6 shadow-soft lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Admin panelė</p>
@@ -436,7 +450,7 @@ export default function TrainerAdmin() {
               Trenerio valdymas
             </h1>
             <p className="mt-3 max-w-3xl text-ink/58">
-              Daugiau demo klientų, aktyvūs vardai, registracijų priėmimas / atmetimas ir kliento plano valdymas.
+              Dienos ir mėnesio užimtumas, veikianti filtracija, aktyvūs klientai ir registracijų valdymas.
             </p>
           </div>
 
@@ -466,43 +480,150 @@ export default function TrainerAdmin() {
           ))}
         </section>
 
-        <section className="mb-6 grid gap-3 rounded-[1.8rem] border border-ink/10 bg-white/90 p-4 shadow-soft lg:grid-cols-[190px_230px_1fr]">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(event) => setSelectedDate(event.target.value)}
-            className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
-          />
+        <section className="mb-6 rounded-[1.8rem] border border-ink/10 bg-white/90 p-4 shadow-soft">
+          <div className="grid gap-3 lg:grid-cols-[170px_170px_230px_1fr]">
+            <div className="flex rounded-2xl border border-ink/10 bg-white p-1">
+              {["Diena", "Mėnuo"].map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setViewMode(mode)}
+                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-black transition ${
+                    viewMode === mode ? "bg-forest text-white" : "text-ink/55 hover:bg-ink/5"
+                  }`}
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
 
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-            className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
-          >
-            <option>Visos būsenos</option>
-            {statuses.map((status) => (
-              <option key={status}>{status}</option>
-            ))}
-          </select>
+            {viewMode === "Diena" ? (
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(event) => {
+                  setSelectedDate(event.target.value);
+                  setSelectedMonth(event.target.value.slice(0, 7));
+                }}
+                className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
+              />
+            ) : (
+              <input
+                type="month"
+                value={selectedMonth}
+                onChange={(event) => setSelectedMonth(event.target.value)}
+                className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
+              />
+            )}
 
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Ieškoti pagal klientą, telefoną, paslaugą arba tikslą..."
-            className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
-          />
+            <select
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+              className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
+            >
+              <option>Visos būsenos</option>
+              {statuses.map((status) => (
+                <option key={status}>{status}</option>
+              ))}
+            </select>
+
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Ieškoti pagal klientą, telefoną, paslaugą, tikslą arba būseną..."
+              className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
+            />
+          </div>
+
+          <div className="mt-3 rounded-[1.2rem] bg-lime/10 px-4 py-3 text-sm font-bold text-forest">
+            Filtracija veikia automatiškai. Pasirinkus būseną arba įvedus tekstą, keičiasi dienos grafikas, mėnesio užimtumas ir registracijų sąrašai.
+          </div>
         </section>
 
-        <div className="mb-6 rounded-[1.4rem] border border-ink/10 bg-white/70 px-5 py-3 text-sm font-bold text-ink/55">
-          Filtrai veikia automatiškai: pasirinkus būseną arba įvedus paiešką, sąrašas ir dienos grafikas atsinaujina iš karto.
-          Paieškoje galima ieškoti pagal vardą, telefoną, paslaugą, tikslą arba būseną, pvz. „Patvirtinta“.
-        </div>
+        {viewMode === "Mėnuo" && (
+          <section className="mb-6 rounded-[2rem] border border-ink/10 bg-white/92 p-5 shadow-soft">
+            <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h2 className="font-display text-3xl font-extrabold tracking-[-.06em]">Mėnesio užimtumas</h2>
+                <p className="text-sm text-ink/55">{selectedMonth}</p>
+              </div>
+              <div className="text-sm font-bold text-ink/55">
+                Spauskite dieną, kad atidarytumėte jos grafiką.
+              </div>
+            </div>
+
+            <div className="grid grid-cols-7 overflow-hidden rounded-[1.4rem] border border-ink/10">
+              {["P", "A", "T", "K", "P", "Š", "S"].map((day) => (
+                <div key={day} className="bg-bone p-3 text-center text-xs font-black uppercase tracking-[.16em] text-ink/55">
+                  {day}
+                </div>
+              ))}
+
+              {monthSummary.map((day) => {
+                const dateNumber = Number(day.date.slice(-2));
+                const hasItems = day.occupied > 0;
+                const percent = Math.round((day.occupied / day.total) * 100);
+
+                return (
+                  <button
+                    key={day.date}
+                    type="button"
+                    onClick={() => {
+                      setSelectedDate(day.date);
+                      setSelectedMonth(day.date.slice(0, 7));
+                      setViewMode("Diena");
+                    }}
+                    className={`min-h-[150px] border-t border-ink/10 p-3 text-left transition hover:bg-lime/10 ${
+                      hasItems ? "bg-white" : "bg-paper/70"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="text-xs font-black text-ink/35">{getWeekday(day.date)}</div>
+                        <div className="font-display text-3xl font-extrabold tracking-[-.06em]">{dateNumber}</div>
+                      </div>
+                      <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${hasItems ? "bg-forest text-white" : "bg-ink/5 text-ink/45"}`}>
+                        {day.occupied}/{day.total}
+                      </span>
+                    </div>
+
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-ink/5">
+                      <div className="h-full rounded-full bg-lime" style={{ width: `${percent}%` }} />
+                    </div>
+
+                    <div className="mt-3 space-y-1">
+                      {day.dayRegistrations.slice(0, 3).map((item) => {
+                        const client = getClient(item.clientId);
+
+                        return (
+                          <div key={item.id} className="truncate rounded-lg bg-lime/20 px-2 py-1 text-xs font-black text-forest">
+                            {item.time} · {client?.name || "Klientas"}
+                          </div>
+                        );
+                      })}
+                      {day.dayBlocked.length > 0 && (
+                        <div className="rounded-lg bg-stone-100 px-2 py-1 text-xs font-black text-stone-600">
+                          {day.dayBlocked.length} blokuota
+                        </div>
+                      )}
+                      {day.dayRegistrations.length > 3 && (
+                        <div className="text-xs font-black text-ink/35">+{day.dayRegistrations.length - 3} daugiau</div>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         <section className="grid gap-6 2xl:grid-cols-[1.12fr_.88fr]">
           <div className="overflow-hidden rounded-[2rem] border border-ink/10 bg-white/92 shadow-soft">
             <div className="border-b border-ink/10 bg-paper px-5 py-4">
               <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">Dienos grafikas</h2>
-              <p className="text-sm text-ink/55">{selectedDate}</p>
+              <p className="text-sm text-ink/55">
+                {selectedDate} · rodoma pagal pasirinktus filtrus
+              </p>
             </div>
 
             <div className="grid min-w-[680px] grid-cols-[95px_1fr] overflow-x-auto">
@@ -516,6 +637,11 @@ export default function TrainerAdmin() {
               {timeSlots.map((time) => {
                 const { registration, block } = getSlot(time);
                 const client = registration ? getClient(registration.clientId) : null;
+                const shouldShowRegistration =
+                  registration &&
+                  client &&
+                  matchStatus(registration) &&
+                  matchSearch(registration);
 
                 return (
                   <div key={time} className="contents">
@@ -524,7 +650,7 @@ export default function TrainerAdmin() {
                     </div>
 
                     <div className="min-h-32 border-b border-ink/10 bg-white p-3">
-                      {registration && client ? (
+                      {registration && client && shouldShowRegistration ? (
                         <div className="rounded-2xl border border-lime/50 bg-lime/20 p-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
@@ -571,6 +697,22 @@ export default function TrainerAdmin() {
                             </button>
                           </div>
                         </div>
+                      ) : registration && client ? (
+                        <div className="flex h-full items-center justify-between gap-3 rounded-2xl bg-ink/[.03] p-4">
+                          <span className="text-sm font-bold text-ink/35">
+                            Yra įrašas, bet jis neatitinka pasirinktų filtrų.
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setStatusFilter("Visos būsenos");
+                              setSearch("");
+                            }}
+                            className="rounded-full bg-white px-4 py-2 text-xs font-black text-ink shadow-soft"
+                          >
+                            Rodyti visus
+                          </button>
+                        </div>
                       ) : block ? (
                         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-stone-100 p-4">
                           <div>
@@ -607,7 +749,7 @@ export default function TrainerAdmin() {
           <aside className="grid gap-6">
             <section className="rounded-[2rem] border border-ink/10 bg-white/92 p-5 shadow-soft">
               <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">Registracijos ir užklausos</h2>
-              <p className="mt-1 text-sm text-ink/55">Klientų vardai aktyvūs. Paspaudus atidaromas valdymas.</p>
+              <p className="mt-1 text-sm text-ink/55">Rodoma pagal pasirinktą datą, būseną ir paiešką.</p>
 
               <div className="mt-5 grid gap-3">
                 {registrationsForDate.length ? (
@@ -674,7 +816,7 @@ export default function TrainerAdmin() {
                   })
                 ) : (
                   <div className="rounded-2xl border border-ink/10 bg-white p-8 text-center text-sm font-bold text-ink/45">
-                    Pagal pasirinktus filtrus registracijų nėra.
+                    Pagal pasirinktus filtrus registracijų nėra. Pabandykite pasirinkti „Visos būsenos“ arba kitą datą.
                   </div>
                 )}
               </div>
@@ -682,31 +824,39 @@ export default function TrainerAdmin() {
 
             <section className="rounded-[2rem] border border-ink/10 bg-white/92 p-5 shadow-soft">
               <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">Klientai</h2>
-              <p className="mt-1 text-sm text-ink/55">Aktyvūs, priimti, nauji ir atmesti klientai.</p>
+              <p className="mt-1 text-sm text-ink/55">Klientų sąrašas taip pat filtruojamas pagal paiešką ir būseną.</p>
 
               <div className="mt-5 grid gap-2">
-                {state.clients.map((client) => (
-                  <button
-                    key={client.id}
-                    type="button"
-                    onClick={() => openClient(client.id)}
-                    className={`rounded-[1.25rem] border p-4 text-left transition ${
-                      selectedClientId === client.id
-                        ? "border-lime bg-lime/20"
-                        : "border-ink/10 bg-white hover:border-lime"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <strong className="text-base">{client.name}</strong>
-                        <div className="mt-1 text-xs font-bold text-ink/50">{client.packageName}</div>
+                {state.clients
+                  .filter((client) => statusFilter === "Visos būsenos" || client.status === statusFilter)
+                  .filter((client) => {
+                    const query = search.trim().toLowerCase();
+                    if (!query) return true;
+
+                    return `${client.name} ${client.phone} ${client.email} ${client.status} ${client.packageName} ${client.goal}`.toLowerCase().includes(query);
+                  })
+                  .map((client) => (
+                    <button
+                      key={client.id}
+                      type="button"
+                      onClick={() => openClient(client.id)}
+                      className={`rounded-[1.25rem] border p-4 text-left transition ${
+                        selectedClientId === client.id
+                          ? "border-lime bg-lime/20"
+                          : "border-ink/10 bg-white hover:border-lime"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <strong className="text-base">{client.name}</strong>
+                          <div className="mt-1 text-xs font-bold text-ink/50">{client.packageName}</div>
+                        </div>
+                        <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusClass(client.status)}`}>
+                          {client.status}
+                        </span>
                       </div>
-                      <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusClass(client.status)}`}>
-                        {client.status}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))}
               </div>
             </section>
           </aside>
