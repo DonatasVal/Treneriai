@@ -6,16 +6,16 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "framer-motion": "latest",
+    "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-router-dom": "^6.30.1",
-    "framer-motion": "latest",
-    "lucide-react": "latest"
+    "react-router-dom": "^6.30.4",
+    "vite": "latest"
   },
   "devDependencies": {
-    "tailwindcss": "3.4.17",
+    "autoprefixer": "latest",
     "postcss": "latest",
-    "autoprefixer": "latest"
+    "tailwindcss": "3.4.17"
   }
 }
