@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Instrument+Sans:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background: #F4F1EA;
+  color: #151917;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: "Instrument Sans", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 14% 4%, rgba(199,244,90,.22), transparent 30%),
+    radial-gradient(circle at 95% 5%, rgba(181,139,106,.16), transparent 35%),
+    linear-gradient(180deg, #FBFAF6 0%, #F4F1EA 55%, #FBFAF6 100%);
+  color: #151917;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: #C7F45A; color: #151917; }
+
+.kinetic-grid {
+  background-image:
+    linear-gradient(rgba(21,25,23,.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21,25,23,.08) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(0,-10px,0) scale(1.02); }
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: .55; }
+  50% { transform: scale(1.55); opacity: 1; }
+}
+
+.animate-breathe { animation: breathe 7s ease-in-out infinite; }
+.animate-pulse-dot { animation: pulseDot 2.2s ease-in-out infinite; }
+
+.glass {
+  background: rgba(251,250,246,.62);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,.56);
+}
+
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::after {
+  content: "";
+  position: absolute;
+  top: -35%;
+  left: -70%;
+  width: 36%;
+  height: 170%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.52), transparent);
+  transform: rotate(18deg);
+  transition: transform .85s cubic-bezier(.2,.8,.2,1);
+}
+
+.card-shine:hover::after {
+  transform: translateX(430%) rotate(18deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
