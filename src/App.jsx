@@ -1,22 +1,18 @@
 import { lazy } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { BookingProvider } from "./context/BookingContext.jsx";
 
 const LandingPage = lazy(() => import("./pages/LandingPage.jsx"));
 const AdminPage = lazy(() => import("./pages/AdminPage.jsx"));
 
-function getCurrentRoute() {
-  const hashRoute = window.location.hash.replace("#", "");
-  const pathRoute = window.location.pathname;
-
-  return hashRoute || pathRoute || "/";
-}
-
 export default function App() {
-  const route = getCurrentRoute();
-
   return (
     <BookingProvider>
-      {route === "/admin" ? <AdminPage /> : <LandingPage />}
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </BookingProvider>
   );
 }
