@@ -13,11 +13,12 @@ const timeSlots = [
   "19:30",
 ];
 
-const statuses = ["Naujas", "Priimtas", "Aktyvus", "Atmestas", "Užklausa", "Atšaukta"];
+const statuses = ["Naujas", "Priimtas", "Patvirtinta", "Aktyvus", "Atmestas", "Užklausa", "Atšaukta"];
 
 const statusStyles = {
   Naujas: "bg-blue-100 text-blue-700",
   Priimtas: "bg-lime-100 text-green-800",
+  Patvirtinta: "bg-cyan-100 text-cyan-800",
   Aktyvus: "bg-emerald-100 text-emerald-800",
   Atmestas: "bg-rose-100 text-rose-700",
   Užklausa: "bg-amber-100 text-amber-800",
@@ -51,7 +52,7 @@ const initialClients = [
     name: "Aistė Petrauskaitė",
     phone: "+370 611 22334",
     email: "aiste@email.lt",
-    status: "Priimtas",
+    status: "Patvirtinta",
     packageName: "Treniruočių abonementas",
     goal: "Svorio mažinimas ir aiškus planas namuose",
     frequency: "2 kartus per savaitę",
@@ -155,7 +156,7 @@ const initialRegistrations = [
     date: "2026-06-08",
     time: "09:30",
     service: "Treniruočių abonementas",
-    status: "Priimtas",
+    status: "Patvirtinta",
     goal: "Pradinis pokalbis ir grafiko suderinimas",
   },
   {
@@ -290,14 +291,14 @@ export default function TrainerAdmin() {
       .filter((item) => statusFilter === "Visos būsenos" || item.status === statusFilter)
       .filter((item) => {
         const client = state.clients.find((c) => c.id === item.clientId);
-        const combined = `${client?.name || ""} ${client?.phone || ""} ${item.service} ${item.goal}`.toLowerCase();
+        const combined = `${client?.name || ""} ${client?.phone || ""} ${item.service} ${item.goal} ${item.status} ${client?.status || ""}`.toLowerCase();
         return !query || combined.includes(query);
       })
       .sort((a, b) => a.time.localeCompare(b.time));
   }, [state.registrations, state.clients, selectedDate, statusFilter, search]);
 
   const activeClients = useMemo(
-    () => state.clients.filter((client) => client.status === "Aktyvus" || client.status === "Priimtas"),
+    () => state.clients.filter((client) => client.status === "Aktyvus" || client.status === "Priimtas" || client.status === "Patvirtinta"),
     [state.clients]
   );
 
@@ -309,7 +310,7 @@ export default function TrainerAdmin() {
   const stats = [
     ["Registracijos", registrationsForDate.length],
     ["Naujos", state.registrations.filter((item) => item.status === "Naujas").length],
-    ["Priimti / aktyvūs", activeClients.length],
+    ["Priimti / patvirtinti", activeClients.length],
     ["Atmestos / užklausos", requestClients.length],
   ];
 
@@ -394,8 +395,8 @@ export default function TrainerAdmin() {
   }
 
   function acceptRegistration(registration) {
-    syncClientAndRegistrationStatus(registration.clientId, registration.id, "Priimtas");
-    showToast("Klientas pažymėtas kaip priimtas.");
+    syncClientAndRegistrationStatus(registration.clientId, registration.id, "Patvirtinta");
+    showToast("Registracija patvirtinta.");
   }
 
   function rejectRegistration(registration) {
@@ -492,6 +493,11 @@ export default function TrainerAdmin() {
           />
         </section>
 
+        <div className="mb-6 rounded-[1.4rem] border border-ink/10 bg-white/70 px-5 py-3 text-sm font-bold text-ink/55">
+          Filtrai veikia automatiškai: pasirinkus būseną arba įvedus paiešką, sąrašas ir dienos grafikas atsinaujina iš karto.
+          Paieškoje galima ieškoti pagal vardą, telefoną, paslaugą, tikslą arba būseną, pvz. „Patvirtinta“.
+        </div>
+
         <section className="grid gap-6 2xl:grid-cols-[1.12fr_.88fr]">
           <div className="overflow-hidden rounded-[2rem] border border-ink/10 bg-white/92 shadow-soft">
             <div className="border-b border-ink/10 bg-paper px-5 py-4">
@@ -547,7 +553,7 @@ export default function TrainerAdmin() {
                               onClick={() => acceptRegistration(registration)}
                               className="rounded-full bg-forest px-4 py-2 text-xs font-black text-white"
                             >
-                              Priimti
+                              Patvirtinti
                             </button>
                             <button
                               type="button"
@@ -722,10 +728,10 @@ export default function TrainerAdmin() {
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => updateClient(selectedClient.id, { status: "Priimtas" })}
+                  onClick={() => updateClient(selectedClient.id, { status: "Patvirtinta" })}
                   className="rounded-full bg-forest px-4 py-2 text-xs font-black text-white"
                 >
-                  Pažymėti priimtu
+                  Pažymėti patvirtintu
                 </button>
                 <button
                   type="button"
