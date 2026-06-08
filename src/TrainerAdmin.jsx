@@ -1,359 +1,820 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-const css = `
-*{box-sizing:border-box}body{margin:0;background:#f7f8f5;font-family:Inter,Arial,sans-serif;color:#111827}.wrap{width:min(1320px,calc(100% - 40px));margin:auto}.head{background:rgba(251,252,248,.86);backdrop-filter:blur(18px);border-bottom:1px solid rgba(17,24,39,.1);padding:26px 20px;position:sticky;top:0;z-index:10}.row{display:flex;justify-content:space-between;gap:20px;align-items:center}h1,h2,h3,p{margin:0}h1{font-size:34px;letter-spacing:-.055em}.muted{color:#667085}.content{padding:30px 0}.filters{display:grid;grid-template-columns:190px 210px 1fr;gap:12px;margin-bottom:18px}.input,.select,.textarea{width:100%;border:1px solid rgba(17,24,39,.1);border-radius:16px;padding:13px 14px;background:white;outline:none}.textarea{min-height:118px;resize:vertical}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}.stat{background:white;border:1px solid rgba(17,24,39,.1);border-radius:24px;padding:18px;box-shadow:0 20px 60px rgba(16,24,40,.05)}.stat b{font-size:34px;letter-spacing:-.055em}.stat span{display:block;margin-top:5px;color:#667085;font-size:13px;font-weight:800}.layout{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}.panel{background:white;border:1px solid rgba(17,24,39,.1);border-radius:28px;overflow:hidden;box-shadow:0 24px 80px rgba(16,24,40,.06)}.panel-title{padding:18px 20px;border-bottom:1px solid rgba(17,24,39,.1);background:#fbfcf8}.grid{display:grid;grid-template-columns:92px 1fr}.time{background:#f3f5ef;font-weight:900;padding:16px 13px;border-bottom:1px solid rgba(17,24,39,.1);text-align:center;font-size:14px;color:#667085}.slot{min-height:88px;padding:10px;border-bottom:1px solid rgba(17,24,39,.1);background:white;display:flex;align-items:center}.session{width:100%;border-radius:16px;padding:13px 14px;background:#ecffd1;border:1px solid #b7f34a;display:flex;align-items:center;justify-content:space-between;gap:12px}.blocked{width:100%;border-radius:16px;padding:13px 14px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-weight:800}.empty-slot{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;color:#98a2b3;font-size:13px}.btn{border:0;border-radius:999px;background:#102015;color:white;padding:10px 14px;font-size:12px;font-weight:900;cursor:pointer}.btn.light{background:#f3f5ef;color:#111827}.btn.lime{background:#c8ff55;color:#102015}.btn.red{background:#fee2e2;color:#991b1b}.link-btn{border:0;background:transparent;padding:0;cursor:pointer;text-align:left;color:#111827;font-weight:900}.link-btn:hover{text-decoration:underline}.badge{border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900;display:inline-flex;align-items:center;gap:5px}.badge.new{background:#dbeafe;color:#1d4ed8}.badge.wait{background:#fef3c7;color:#92400e}.badge.ok{background:#dcfce7;color:#166534}.badge.cancel{background:#fee2e2;color:#991b1b}.badge.inquiry{background:#eef2ff;color:#4338ca}.side{display:grid;gap:18px}.visit{border:1px solid rgba(17,24,39,.1);border-radius:20px;padding:15px;background:white;margin-bottom:12px}.health-alert{background:#fef2f2;border:1px solid #fee2e2;padding:10px;border-radius:12px;color:#991b1b;font-size:13px;margin-top:8px;font-weight:bold}.client-list{display:grid;gap:10px;padding:15px}.client-card{width:100%;border:1px solid rgba(17,24,39,.1);background:white;border-radius:18px;padding:14px;text-align:left;cursor:pointer}.client-card.active{border-color:#b7f34a;background:#f4ffd8}.client-card:hover{border-color:#b7f34a}.manager{padding:18px}.manager-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.timeline{display:grid;gap:8px;margin-top:14px}.mini-session{border:1px solid rgba(17,24,39,.1);border-radius:16px;padding:12px;background:#fbfcf8}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}@media(max-width:980px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr}.manager-grid{grid-template-columns:1fr}}
-`;
+const timeSlots = [
+  "06:30",
+  "08:00",
+  "09:30",
+  "11:00",
+  "12:30",
+  "16:30",
+  "18:00",
+  "19:30",
+];
+
+const statuses = [
+  "Visos būsenos",
+  "Nauja",
+  "Laukia patvirtinimo",
+  "Patvirtinta",
+  "Aktyvus klientas",
+  "Užklausa",
+  "Atšaukta",
+];
+
+const statusStyles = {
+  Nauja: "bg-blue-100 text-blue-700",
+  "Laukia patvirtinimo": "bg-amber-100 text-amber-700",
+  Patvirtinta: "bg-lime-100 text-green-800",
+  "Aktyvus klientas": "bg-emerald-100 text-emerald-800",
+  Užklausa: "bg-stone-100 text-stone-700",
+  Atšaukta: "bg-rose-100 text-rose-700",
+};
+
+const initialClients = [
+  {
+    id: "c1",
+    name: "Mantas Kazlauskas",
+    phone: "+370 600 11223",
+    email: "mantas@email.lt",
+    packageName: "Individualios treniruotės",
+    status: "Aktyvus klientas",
+    goal: "Jėga, laikysena, geresnė technika",
+    frequency: "3 kartus per savaitę",
+    health: "Nugaros įtampa po ilgo sėdėjimo. Vengti staigių apkrovų pradžioje.",
+    notes:
+      "Pradėti nuo bazinės technikos. Pirmas 2 savaites stebėti pritūpimo ir traukos judesį.",
+    plan:
+      "Pirmadienis – viršutinė kūno dalis. Trečiadienis – kojos ir core. Penktadienis – viso kūno treniruotė.",
+  },
+  {
+    id: "c2",
+    name: "Aistė Petrauskaitė",
+    phone: "+370 611 44556",
+    email: "aiste@email.lt",
+    packageName: "Treniruočių abonementas",
+    status: "Aktyvus klientas",
+    goal: "Svorio mažinimas ir energija",
+    frequency: "2 kartus per savaitę",
+    health: "Traumų nenurodyta.",
+    notes: "Labai svarbus aiškus grafikas ir palaikymas tarp treniruočių.",
+    plan: "Antradienis – jėga. Ketvirtadienis – kondicija ir mobilumas.",
+  },
+  {
+    id: "c3",
+    name: "Rokas Valaitis",
+    phone: "+370 622 77889",
+    email: "rokas@email.lt",
+    packageName: "Nuotolinė priežiūra",
+    status: "Užklausa",
+    goal: "Raumenų masė, sporto salė 4 kartus per savaitę",
+    frequency: "4+ kartus per savaitę",
+    health: "Kelio diskomfortas po bėgimo.",
+    notes: "Reikia patikslinti salės įrangą ir treniruočių patirtį.",
+    plan: "Laukiama pirmo pokalbio.",
+  },
+  {
+    id: "c4",
+    name: "Greta Jankauskė",
+    phone: "+370 633 90123",
+    email: "greta@email.lt",
+    packageName: "Treniruočių planas",
+    status: "Laukia patvirtinimo",
+    goal: "Grįžimas į sportą po pertraukos",
+    frequency: "3 kartus per savaitę",
+    health: "Pečių įtampa, reikia daugiau mobilumo.",
+    notes: "Pirmiausia paruošti 4 savaičių planą namams ir salei.",
+    plan: "Ruošiamas planas.",
+  },
+  {
+    id: "c5",
+    name: "Tomas Žilinskas",
+    phone: "+370 644 55112",
+    email: "tomas@email.lt",
+    packageName: "Mitybos konsultacija",
+    status: "Užklausa",
+    goal: "Susidėlioti paprastą mitybos ritmą",
+    frequency: "Dar nežinau",
+    health: "Nenurodyta.",
+    notes: "Susisiekti telefonu po 18:00.",
+    plan: "Laukiama konsultacijos laiko suderinimo.",
+  },
+];
 
 const initialSessions = [
   {
     id: 1,
+    clientId: "c1",
     client: "Mantas Kazlauskas",
     phone: "+370 600 11223",
-    email: "mantas@example.lt",
-    service: "Individuali treniruotė (60 min.)",
     date: "2026-06-08",
     time: "07:00",
-    activity: "Žemas",
-    health: "Išvarža juosmens srityje, vengti sunkių mirties traukų.",
-    goal: "Sustiprinti nugarą ir pagerinti laikyseną.",
+    service: "Individuali treniruotė",
     status: "Nauja",
-    plan: "2–3 treniruotės per savaitę. Pirmas etapas: technika, core stabilumas, tempimo rutina.",
+    goal: "Technika, jėga, laikysena",
   },
   {
     id: 2,
-    client: "Aistė Petrauskė",
+    clientId: "c2",
+    client: "Aistė Petrauskaitė",
     phone: "+370 611 44556",
-    email: "aiste@example.lt",
-    service: "Treniruočių abonementas",
     date: "2026-06-08",
-    time: "09:00",
-    activity: "Vidutinis",
-    health: "Kelio diskomfortas po ilgesnio bėgimo.",
-    goal: "Svorio mažinimas ir reguliarus sportavimo ritmas.",
+    time: "16:30",
+    service: "Treniruočių abonementas",
     status: "Laukia patvirtinimo",
-    plan: "Siūlomas grafikas: I / III / V po darbo. Prioritetas – jėga, žingsniai, mitybos ritmas.",
+    goal: "Svorio mažinimas ir reguliarus sportas",
   },
   {
     id: 3,
-    client: "Rokas Jankauskas",
+    clientId: "c3",
+    client: "Rokas Valaitis",
     phone: "+370 622 77889",
-    email: "rokas@example.lt",
-    service: "Treniruočių planas",
-    date: "2026-06-08",
-    time: "11:00",
-    activity: "Aukštas",
-    health: "Apribojimų nenurodė.",
-    goal: "Jėgos programa sporto salei 4 kartus per savaitę.",
+    date: "2026-06-09",
+    time: "18:00",
+    service: "Nuotolinė priežiūra",
     status: "Užklausa",
-    plan: "Parengti 4 savaičių jėgos ciklą. Pritaikyti pagal turimą salės įrangą.",
+    goal: "Raumenų masė, 4 treniruotės per savaitę",
   },
   {
     id: 4,
-    client: "Greta Milašiūtė",
-    phone: "+370 633 99887",
-    email: "greta@example.lt",
-    service: "Nuotolinė priežiūra",
-    date: "2026-06-08",
-    time: "14:00",
-    activity: "Žemas",
-    health: "Po nėštumo, reikia švelnaus krūvio didinimo.",
-    goal: "Grįžimas į sportą ir energijos gerinimas.",
-    status: "Patvirtinta",
-    plan: "Pradžia nuo 2 lengvų treniruočių per savaitę. Savaitinis check-in sekmadieniais.",
+    clientId: "c4",
+    client: "Greta Jankauskė",
+    phone: "+370 633 90123",
+    date: "2026-06-10",
+    time: "08:00",
+    service: "Treniruočių planas",
+    status: "Laukia patvirtinimo",
+    goal: "Grįžimas į sportą po pertraukos",
   },
   {
     id: 5,
-    client: "Tomas Valaitis",
-    phone: "+370 644 10101",
-    email: "tomas@example.lt",
+    clientId: "c5",
+    client: "Tomas Žilinskas",
+    phone: "+370 644 55112",
+    date: "2026-06-10",
+    time: "19:30",
     service: "Mitybos konsultacija",
-    date: "2026-06-08",
-    time: "18:00",
-    activity: "Vidutinis",
-    health: "Alergijų nenurodė.",
-    goal: "Susidėlioti paprastą mitybos ritmą be griežtos dietos.",
-    status: "Nauja",
-    plan: "Pirmas žingsnis – 7 dienų mitybos dienoraštis ir baltymų / vandens įpročių peržiūra.",
+    status: "Užklausa",
+    goal: "Paprasta mitybos struktūra be kraštutinumų",
   },
   {
     id: 6,
-    client: "Karolina Šimkutė",
-    phone: "+370 655 20202",
-    email: "karolina@example.lt",
-    service: "Individuali treniruotė (60 min.)",
-    date: "2026-06-09",
-    time: "08:00",
-    activity: "Vidutinis",
-    health: "Peties įtampa spaudimo judesiuose.",
-    goal: "Išmokti taisyklingos technikos ir saugiai sportuoti.",
-    status: "Laukia patvirtinimo",
-    plan: "Įvertinti peties judesį, pradėti nuo traukos / stabilizacijos pratimų.",
-  },
-  {
-    id: 7,
-    client: "Darius Petrauskas",
-    phone: "+370 666 30303",
-    email: "darius@example.lt",
-    service: "Treniruočių abonementas",
-    date: "2026-06-09",
-    time: "17:00",
-    activity: "Žemas",
-    health: "Sėdimas darbas, nugaros įtampa vakare.",
-    goal: "Sustiprėti ir sumažinti nugaros įtampą.",
+    clientId: "c1",
+    client: "Mantas Kazlauskas",
+    phone: "+370 600 11223",
+    date: "2026-06-12",
+    time: "07:00",
+    service: "Individuali treniruotė",
     status: "Patvirtinta",
-    plan: "2 treniruotės per savaitę. Prioritetas – mobilumas, kojos, core, lėtas krūvio didinimas.",
+    goal: "Viršutinė kūno dalis ir core",
   },
 ];
 
-const blockedDefaults = [
-  { id: "b1", date: "2026-06-08", time: "12:00", reason: "Pietų pertrauka" },
-  { id: "b2", date: "2026-06-08", time: "16:00", reason: "Treneris užimtas" },
+const initialBlocked = [
+  {
+    id: 101,
+    date: "2026-06-08",
+    time: "12:30",
+    reason: "Treneris užimtas / pertrauka",
+  },
 ];
 
-const times = ["06:30", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
-const statuses = ["Nauja", "Laukia patvirtinimo", "Patvirtinta", "Užklausa", "Atšaukta"];
+function todayFallback() {
+  return "2026-06-08";
+}
 
-function badgeClass(status) {
-  if (status === "Nauja") return "badge new";
-  if (status === "Laukia patvirtinimo") return "badge wait";
-  if (status === "Patvirtinta") return "badge ok";
-  if (status === "Užklausa") return "badge inquiry";
-  if (status === "Atšaukta") return "badge cancel";
-  return "badge";
+function getStatusClass(status) {
+  return statusStyles[status] || "bg-stone-100 text-stone-700";
+}
+
+function buildClientShareText(client) {
+  if (!client) return "";
+
+  return `Sveiki, ${client.name},
+
+Jūsų treniruočių informacija:
+
+Paslauga: ${client.packageName}
+Statusas: ${client.status}
+Tikslas: ${client.goal}
+Dažnumas: ${client.frequency}
+
+Trenerio pastabos:
+${client.notes}
+
+Planas / grafikas:
+${client.plan}
+
+Pagarbiai,
+Vardenis Pavardenis`;
 }
 
 export default function TrainerAdmin() {
-  const [sessions, setSessions] = useState(initialSessions);
-  const [blocked, setBlocked] = useState(blockedDefaults);
-  const [date, setDate] = useState("2026-06-08");
-  const [search, setSearch] = useState("");
+  const [selectedDate, setSelectedDate] = useState(todayFallback());
   const [statusFilter, setStatusFilter] = useState("Visos būsenos");
-  const [selectedClientId, setSelectedClientId] = useState(initialSessions[0].id);
+  const [search, setSearch] = useState("");
+  const [sessions, setSessions] = useState(initialSessions);
+  const [clients, setClients] = useState(initialClients);
+  const [blocked, setBlocked] = useState(initialBlocked);
+  const [selectedClientId, setSelectedClientId] = useState(initialClients[0]?.id || "");
+  const [toast, setToast] = useState("");
+
+  const selectedClient = clients.find((client) => client.id === selectedClientId);
 
   const filteredSessions = useMemo(() => {
     const q = search.trim().toLowerCase();
 
     return sessions
+      .filter((session) => session.date === selectedDate)
       .filter((session) => statusFilter === "Visos būsenos" || session.status === statusFilter)
       .filter((session) => {
         if (!q) return true;
-        return [session.client, session.phone, session.email, session.service, session.goal]
-          .join(" ")
-          .toLowerCase()
-          .includes(q);
-      });
-  }, [sessions, search, statusFilter]);
 
-  const selectedClient = sessions.find((session) => session.id === selectedClientId) || sessions[0];
-  const daySessions = filteredSessions.filter((session) => session.date === date);
+        return (
+          session.client.toLowerCase().includes(q) ||
+          session.phone.includes(q) ||
+          session.service.toLowerCase().includes(q) ||
+          session.goal.toLowerCase().includes(q)
+        );
+      })
+      .sort((a, b) => a.time.localeCompare(b.time));
+  }, [sessions, selectedDate, statusFilter, search]);
+
+  const activeClients = useMemo(() => {
+    return clients.filter((client) => client.status === "Aktyvus klientas");
+  }, [clients]);
+
+  const inquiryClients = useMemo(() => {
+    return clients.filter((client) => client.status !== "Aktyvus klientas");
+  }, [clients]);
 
   const stats = [
-    [daySessions.length, "Treniruotės / užklausos pagal filtrą"],
-    [sessions.filter((session) => session.status === "Nauja").length, "Naujos užklausos"],
-    [sessions.filter((session) => session.status === "Laukia patvirtinimo").length, "Laukia patvirtinimo"],
-    [sessions.filter((session) => session.status === "Patvirtinta").length, "Aktyvūs klientai"],
+    {
+      value: filteredSessions.length,
+      label: "Treniruotės pagal filtrą",
+    },
+    {
+      value: sessions.filter((session) => session.status === "Nauja").length,
+      label: "Naujos registracijos",
+    },
+    {
+      value: activeClients.length,
+      label: "Aktyvūs klientai",
+    },
+    {
+      value: inquiryClients.length,
+      label: "Užklausos",
+    },
   ];
 
-  function updateClient(id, field, value) {
-    setSessions((current) =>
-      current.map((session) => (session.id === id ? { ...session, [field]: value } : session))
-    );
+  function showToast(message) {
+    setToast(message);
+    window.setTimeout(() => setToast(""), 2600);
   }
 
-  function moveClient(id, newDate, newTime) {
+  function getSlot(time) {
+    return {
+      session: sessions.find(
+        (session) =>
+          session.date === selectedDate &&
+          session.time === time &&
+          session.status !== "Atšaukta"
+      ),
+      block: blocked.find((item) => item.date === selectedDate && item.time === time),
+    };
+  }
+
+  function updateSession(id, field, value) {
     setSessions((current) =>
       current.map((session) =>
-        session.id === id ? { ...session, date: newDate ?? session.date, time: newTime ?? session.time } : session
+        session.id === id ? { ...session, [field]: value } : session
       )
     );
   }
 
+  function updateClient(field, value) {
+    if (!selectedClient) return;
+
+    setClients((current) =>
+      current.map((client) =>
+        client.id === selectedClient.id ? { ...client, [field]: value } : client
+      )
+    );
+
+    if (field === "name" || field === "phone") {
+      setSessions((current) =>
+        current.map((session) =>
+          session.clientId === selectedClient.id
+            ? {
+                ...session,
+                client: field === "name" ? value : session.client,
+                phone: field === "phone" ? value : session.phone,
+              }
+            : session
+        )
+      );
+    }
+  }
+
+  function openClient(clientId) {
+    setSelectedClientId(clientId);
+    document.getElementById("client-management")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
   function blockTime(time) {
-    const exists = blocked.some((block) => block.date === date && block.time === time);
-    if (exists) return;
+    const reason = "Treneris užimtas / pertrauka";
 
     setBlocked((current) => [
       ...current,
-      { id: `b-${Date.now()}`, date, time, reason: "Treneris užimtas" },
+      {
+        id: Date.now(),
+        date: selectedDate,
+        time,
+        reason,
+      },
     ]);
+
+    showToast(`Laikas ${time} užblokuotas.`);
   }
 
   function unblockTime(id) {
-    setBlocked((current) => current.filter((block) => block.id !== id));
+    setBlocked((current) => current.filter((item) => item.id !== id));
+    showToast("Laikas atlaisvintas.");
+  }
+
+  async function copyClientPlan() {
+    if (!selectedClient) return;
+
+    const text = buildClientShareText(selectedClient);
+
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Kliento planas nukopijuotas.");
+    } catch {
+      showToast("Nepavyko nukopijuoti automatiškai.");
+    }
   }
 
   return (
-    <main>
-      <style>{css}</style>
-      <header className="head">
-        <div className="wrap row">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_10%_0%,rgba(199,244,90,.18),transparent_34%),linear-gradient(180deg,#FBFAF6,#F4F1EA)] px-5 py-8 text-ink">
+      <div className="mx-auto w-[min(1380px,100%)]">
+        <header className="mb-8 flex flex-col gap-4 rounded-[2rem] border border-ink/10 bg-white/88 p-6 shadow-soft md:flex-row md:items-end md:justify-between">
           <div>
-            <h1>Trenerio valdymo skydas</h1>
-            <p className="muted">Registracijos, užklausos, aktyvūs klientai ir dienos užimtumas.</p>
+            <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">
+              Admin panelė
+            </p>
+            <h1 className="mt-2 font-display text-[clamp(2.2rem,4.8vw,4.8rem)] font-extrabold leading-none tracking-[-.075em]">
+              Trenerio valdymas
+            </h1>
+            <p className="mt-3 max-w-2xl text-ink/58">
+              Registracijos, užklausos, aktyvūs klientai, dienos grafikas ir kliento plano valdymas vienoje vietoje.
+            </p>
           </div>
-          <button className="btn light" type="button" onClick={() => window.location.assign("/")}>Grįžti į svetainę</button>
-        </div>
-      </header>
 
-      <section className="wrap content">
-        <div className="filters">
-          <input className="input" type="date" value={date} onChange={(event) => setDate(event.target.value)} />
-          <select className="select" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-            <option>Visos būsenos</option>
-            {statuses.map((status) => <option key={status}>{status}</option>)}
-          </select>
-          <input className="input" placeholder="Ieškoti kliento, telefono, paslaugos arba tikslo..." value={search} onChange={(event) => setSearch(event.target.value)} />
-        </div>
+          <a
+            href="/"
+            className="inline-flex items-center justify-center rounded-full bg-forest px-5 py-3 text-sm font-black text-white shadow-soft transition hover:-translate-y-0.5"
+          >
+            Grįžti į svetainę
+          </a>
+        </header>
 
-        <div className="stats">
-          {stats.map(([value, label]) => (
-            <div className="stat" key={label}>
-              <b>{value}</b>
-              <span>{label}</span>
+        <section className="mb-6 grid gap-4 md:grid-cols-4">
+          {stats.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-[1.6rem] border border-ink/10 bg-white/88 p-5 shadow-soft"
+            >
+              <div className="font-display text-5xl font-extrabold tracking-[-.07em]">
+                {item.value}
+              </div>
+              <div className="mt-2 text-sm font-bold text-ink/55">{item.label}</div>
             </div>
           ))}
-        </div>
+        </section>
 
-        <div className="layout">
-          <div className="panel">
-            <div className="panel-title">
-              <h3>Dienos grafikas</h3>
-              <p className="muted" style={{ marginTop: 4 }}>{date}</p>
+        <section className="mb-6 grid gap-3 rounded-[1.8rem] border border-ink/10 bg-white/88 p-4 shadow-soft lg:grid-cols-[190px_230px_1fr]">
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(event) => setSelectedDate(event.target.value)}
+            className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
+          />
+
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
+          >
+            {statuses.map((status) => (
+              <option key={status}>{status}</option>
+            ))}
+          </select>
+
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Ieškoti pagal klientą, telefoną, paslaugą arba tikslą..."
+            className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-lime/20"
+          />
+        </section>
+
+        <section className="grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
+          <div className="overflow-hidden rounded-[2rem] border border-ink/10 bg-white/92 shadow-soft">
+            <div className="border-b border-ink/10 bg-paper px-5 py-4">
+              <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">
+                Dienos grafikas
+              </h2>
+              <p className="text-sm text-ink/55">{selectedDate}</p>
             </div>
 
-            <div className="grid">
-              <div className="time" style={{ textTransform: "uppercase", letterSpacing: ".15em" }}>Laikas</div>
-              <div className="time" style={{ textTransform: "uppercase", letterSpacing: ".15em", textAlign: "left" }}>Užimtumas</div>
+            <div className="grid min-w-[620px] grid-cols-[95px_1fr] overflow-x-auto">
+              <div className="border-b border-r border-ink/10 bg-bone p-3 text-xs font-black uppercase tracking-[.14em] text-ink/55">
+                Laikas
+              </div>
+              <div className="border-b border-ink/10 bg-bone p-3 text-xs font-black uppercase tracking-[.14em] text-ink/55">
+                Užimtumas
+              </div>
 
-              {times.map((time) => {
-                const session = daySessions.find((item) => item.time === time && item.status !== "Atšaukta");
-                const block = blocked.find((item) => item.date === date && item.time === time);
+              {timeSlots.map((time) => {
+                const { session, block } = getSlot(time);
 
                 return (
-                  <React.Fragment key={time}>
-                    <div className="time">{time}</div>
-                    <div className="slot">
+                  <div key={time} className="contents">
+                    <div className="min-h-28 border-b border-r border-ink/10 bg-paper p-3 text-sm font-black text-ink/50">
+                      {time}
+                    </div>
+
+                    <div className="min-h-28 border-b border-ink/10 bg-white p-3">
                       {session ? (
-                        <div className="session">
-                          <div>
-                            <button className="link-btn" type="button" onClick={() => setSelectedClientId(session.id)}>
-                              {session.client}
+                        <div className="rounded-2xl border border-lime/50 bg-lime/20 p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <button
+                                type="button"
+                                onClick={() => openClient(session.clientId)}
+                                className="text-left text-lg font-black text-ink underline decoration-lime decoration-4 underline-offset-4 transition hover:text-forest"
+                              >
+                                {session.client}
+                              </button>
+                              <div className="mt-1 text-sm font-bold text-ink/55">
+                                {session.service}
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => openClient(session.clientId)}
+                              className="rounded-full bg-forest px-4 py-2 text-xs font-black text-white"
+                            >
+                              Valdyti
                             </button>
-                            <div style={{ fontSize: 13, color: "#667085", marginTop: 3 }}>{session.service}</div>
-                            <span className={badgeClass(session.status)} style={{ marginTop: 8 }}>{session.status}</span>
                           </div>
-                          <button className="btn light" type="button" onClick={() => setSelectedClientId(session.id)}>Valdyti</button>
+
+                          <p className="mt-3 text-sm leading-6 text-ink/62">{session.goal}</p>
+
+                          <span
+                            className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs font-black ${getStatusClass(session.status)}`}
+                          >
+                            {session.status}
+                          </span>
                         </div>
                       ) : block ? (
-                        <div className="blocked">
-                          {block.reason}
-                          <button className="btn light" type="button" style={{ marginLeft: 10 }} onClick={() => unblockTime(block.id)}>Atlaisvinti</button>
+                        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-stone-100 p-4">
+                          <div>
+                            <strong>Užblokuota</strong>
+                            <div className="mt-1 text-sm text-ink/55">{block.reason}</div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => unblockTime(block.id)}
+                            className="rounded-full bg-white px-4 py-2 text-xs font-black text-ink"
+                          >
+                            Atlaisvinti
+                          </button>
                         </div>
                       ) : (
-                        <div className="empty-slot">
-                          <span>Laisva valanda</span>
-                          <button className="btn light" type="button" onClick={() => blockTime(time)}>Blokuoti</button>
+                        <div className="flex h-full items-center justify-between gap-3">
+                          <span className="text-sm font-bold text-ink/35">Laisva</span>
+
+                          <button
+                            type="button"
+                            onClick={() => blockTime(time)}
+                            className="rounded-full bg-ink/5 px-4 py-2 text-xs font-black text-ink transition hover:bg-ink hover:text-white"
+                          >
+                            Blokuoti
+                          </button>
                         </div>
                       )}
                     </div>
-                  </React.Fragment>
+                  </div>
                 );
               })}
             </div>
           </div>
 
-          <div className="side">
-            <div className="panel">
-              <div className="panel-title">
-                <h3>Aktyvūs klientai</h3>
-                <p className="muted" style={{ marginTop: 4 }}>Paspausk klientą, kad galėtum valdyti jo registraciją ir planą.</p>
-              </div>
+          <aside className="grid gap-6">
+            <section className="rounded-[2rem] border border-ink/10 bg-white/92 p-5 shadow-soft">
+              <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">
+                Aktyvūs klientai
+              </h2>
+              <p className="mt-1 text-sm text-ink/55">
+                Paspauskite vardą, kad atidarytumėte kliento valdymą.
+              </p>
 
-              <div className="client-list">
-                {filteredSessions.map((session) => (
+              <div className="mt-5 grid gap-3">
+                {activeClients.map((client) => (
                   <button
-                    key={session.id}
+                    key={client.id}
                     type="button"
-                    className={`client-card ${selectedClient?.id === session.id ? "active" : ""}`}
-                    onClick={() => setSelectedClientId(session.id)}
+                    onClick={() => openClient(client.id)}
+                    className={`rounded-[1.4rem] border p-4 text-left transition ${
+                      selectedClientId === client.id
+                        ? "border-lime bg-lime/20"
+                        : "border-ink/10 bg-white hover:border-lime"
+                    }`}
                   >
-                    <div className="row" style={{ alignItems: "flex-start" }}>
+                    <div className="flex items-start justify-between gap-3">
                       <div>
-                        <strong>{session.client}</strong>
-                        <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>{session.service}</div>
-                        <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>{session.date} · {session.time}</div>
+                        <strong className="text-lg">{client.name}</strong>
+                        <div className="mt-1 text-sm text-ink/55">{client.packageName}</div>
                       </div>
-                      <span className={badgeClass(session.status)}>{session.status}</span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusClass(client.status)}`}>
+                        {client.status}
+                      </span>
+                    </div>
+                    <div className="mt-3 text-sm leading-6 text-ink/62">{client.goal}</div>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-[2rem] border border-ink/10 bg-white/92 p-5 shadow-soft">
+              <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">
+                Užklausos
+              </h2>
+              <p className="mt-1 text-sm text-ink/55">
+                Nauji klientai, kuriems dar reikia suderinti paslaugą arba grafiką.
+              </p>
+
+              <div className="mt-5 grid gap-3">
+                {inquiryClients.map((client) => (
+                  <button
+                    key={client.id}
+                    type="button"
+                    onClick={() => openClient(client.id)}
+                    className={`rounded-[1.4rem] border p-4 text-left transition ${
+                      selectedClientId === client.id
+                        ? "border-lime bg-lime/20"
+                        : "border-ink/10 bg-white hover:border-lime"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <strong className="text-lg">{client.name}</strong>
+                        <div className="mt-1 text-sm text-ink/55">{client.packageName}</div>
+                      </div>
+                      <span className={`rounded-full px-3 py-1 text-xs font-black ${getStatusClass(client.status)}`}>
+                        {client.status}
+                      </span>
                     </div>
                   </button>
                 ))}
               </div>
+            </section>
+          </aside>
+        </section>
+
+        <section
+          id="client-management"
+          className="mt-6 rounded-[2rem] border border-ink/10 bg-white/92 p-5 shadow-soft"
+        >
+          <div className="flex flex-col gap-4 border-b border-ink/10 pb-5 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">
+                Kliento valdymas
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-extrabold tracking-[-.06em]">
+                {selectedClient?.name || "Klientas nepasirinktas"}
+              </h2>
+              <p className="mt-1 text-sm text-ink/55">
+                Kontaktai, statusas, tikslai, saugumo informacija ir trenerio planas.
+              </p>
             </div>
 
-            {selectedClient && (
-              <div className="panel">
-                <div className="panel-title">
-                  <h3>Kliento valdymas</h3>
-                  <p className="muted" style={{ marginTop: 4 }}>{selectedClient.client}</p>
-                </div>
+            <button
+              type="button"
+              onClick={copyClientPlan}
+              className="rounded-full bg-forest px-5 py-3 text-sm font-black text-white shadow-soft"
+            >
+              Kopijuoti planą klientui
+            </button>
+          </div>
 
-                <div className="manager">
-                  <div className="manager-grid">
-                    <input className="input" value={selectedClient.client} onChange={(event) => updateClient(selectedClient.id, "client", event.target.value)} />
-                    <input className="input" value={selectedClient.phone} onChange={(event) => updateClient(selectedClient.id, "phone", event.target.value)} />
-                    <input className="input" value={selectedClient.email} onChange={(event) => updateClient(selectedClient.id, "email", event.target.value)} />
-                    <select className="select" value={selectedClient.status} onChange={(event) => updateClient(selectedClient.id, "status", event.target.value)}>
-                      {statuses.map((status) => <option key={status}>{status}</option>)}
+          {selectedClient ? (
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <div className="grid gap-3">
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Vardas ir pavardė
+                  <input
+                    value={selectedClient.name}
+                    onChange={(event) => updateClient("name", event.target.value)}
+                    className="rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Telefonas
+                  <input
+                    value={selectedClient.phone}
+                    onChange={(event) => updateClient("phone", event.target.value)}
+                    className="rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  El. paštas
+                  <input
+                    value={selectedClient.email}
+                    onChange={(event) => updateClient("email", event.target.value)}
+                    className="rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Statusas
+                  <select
+                    value={selectedClient.status}
+                    onChange={(event) => updateClient("status", event.target.value)}
+                    className="rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  >
+                    {statuses
+                      .filter((status) => status !== "Visos būsenos")
+                      .map((status) => (
+                        <option key={status}>{status}</option>
+                      ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Paslauga / paketas
+                  <input
+                    value={selectedClient.packageName}
+                    onChange={(event) => updateClient("packageName", event.target.value)}
+                    className="rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Dažnumas
+                  <input
+                    value={selectedClient.frequency}
+                    onChange={(event) => updateClient("frequency", event.target.value)}
+                    className="rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+              </div>
+
+              <div className="grid gap-3">
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Tikslas
+                  <textarea
+                    value={selectedClient.goal}
+                    onChange={(event) => updateClient("goal", event.target.value)}
+                    className="min-h-24 rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Saugumo informacija / traumos / apribojimai
+                  <textarea
+                    value={selectedClient.health}
+                    onChange={(event) => updateClient("health", event.target.value)}
+                    className="min-h-24 rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Trenerio pastabos
+                  <textarea
+                    value={selectedClient.notes}
+                    onChange={(event) => updateClient("notes", event.target.value)}
+                    className="min-h-28 rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+
+                <label className="grid gap-1 text-sm font-black text-ink/62">
+                  Planas / grafikas klientui
+                  <textarea
+                    value={selectedClient.plan}
+                    onChange={(event) => updateClient("plan", event.target.value)}
+                    className="min-h-32 rounded-2xl border border-ink/10 bg-white px-4 py-3 font-bold text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                  />
+                </label>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-5 rounded-2xl border border-ink/10 bg-white p-5 text-sm font-bold text-ink/55">
+              Pasirinkite klientą iš sąrašo.
+            </div>
+          )}
+        </section>
+
+        <section className="mt-6 rounded-[2rem] border border-ink/10 bg-white/92 p-5 shadow-soft">
+          <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">
+            Registracijų sąrašas
+          </h2>
+          <p className="mt-1 text-sm text-ink/55">
+            Čia matomos pasirinktos dienos registracijos ir užklausos pagal filtrus.
+          </p>
+
+          <div className="mt-5 grid gap-3">
+            {filteredSessions.length ? (
+              filteredSessions.map((session) => (
+                <article
+                  key={session.id}
+                  className="rounded-[1.5rem] border border-ink/10 bg-white p-4"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => openClient(session.clientId)}
+                        className="text-left text-lg font-black underline decoration-lime decoration-4 underline-offset-4 transition hover:text-forest"
+                      >
+                        {session.client}
+                      </button>
+
+                      <div className="mt-1 text-sm text-ink/55">
+                        {session.date} · {session.time} · {session.phone}
+                      </div>
+                    </div>
+
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-black ${getStatusClass(session.status)}`}
+                    >
+                      {session.status}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 font-bold">{session.service}</div>
+                  <p className="mt-2 text-sm leading-6 text-ink/55">{session.goal}</p>
+
+                  <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                    <select
+                      value={session.status}
+                      onChange={(event) =>
+                        updateSession(session.id, "status", event.target.value)
+                      }
+                      className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold"
+                    >
+                      {statuses
+                        .filter((status) => status !== "Visos būsenos")
+                        .map((status) => (
+                          <option key={status}>{status}</option>
+                        ))}
                     </select>
-                    <input className="input" type="date" value={selectedClient.date} onChange={(event) => moveClient(selectedClient.id, event.target.value, null)} />
-                    <select className="select" value={selectedClient.time} onChange={(event) => moveClient(selectedClient.id, null, event.target.value)}>
-                      {times.map((time) => <option key={time}>{time}</option>)}
+
+                    <input
+                      type="date"
+                      value={session.date}
+                      onChange={(event) =>
+                        updateSession(session.id, "date", event.target.value)
+                      }
+                      className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold"
+                    />
+
+                    <select
+                      value={session.time}
+                      onChange={(event) =>
+                        updateSession(session.id, "time", event.target.value)
+                      }
+                      className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold"
+                    >
+                      {timeSlots.map((time) => (
+                        <option key={time}>{time}</option>
+                      ))}
                     </select>
                   </div>
-
-                  <div style={{ marginTop: 14 }}>
-                    <label style={{ fontSize: 12, fontWeight: 900, color: "#667085", textTransform: "uppercase", letterSpacing: ".12em" }}>Tikslas</label>
-                    <textarea className="textarea" value={selectedClient.goal} onChange={(event) => updateClient(selectedClient.id, "goal", event.target.value)} />
-                  </div>
-
-                  <div className="health-alert">
-                    ⚠️ Traumų / apribojimų informacija: {selectedClient.health}
-                  </div>
-
-                  <div style={{ marginTop: 14 }}>
-                    <label style={{ fontSize: 12, fontWeight: 900, color: "#667085", textTransform: "uppercase", letterSpacing: ".12em" }}>Treniruočių planas / trenerio pastabos</label>
-                    <textarea className="textarea" value={selectedClient.plan} onChange={(event) => updateClient(selectedClient.id, "plan", event.target.value)} />
-                  </div>
-
-                  <div className="actions">
-                    <button className="btn lime" type="button" onClick={() => updateClient(selectedClient.id, "status", "Patvirtinta")}>Patvirtinti</button>
-                    <button className="btn light" type="button" onClick={() => updateClient(selectedClient.id, "status", "Laukia patvirtinimo")}>Laukia patvirtinimo</button>
-                    <button className="btn red" type="button" onClick={() => updateClient(selectedClient.id, "status", "Atšaukta")}>Atšaukti</button>
-                  </div>
-                </div>
+                </article>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-ink/10 bg-white p-8 text-center text-sm font-bold text-ink/45">
+                Pagal pasirinktus filtrus registracijų nėra.
               </div>
             )}
-
-            <div className="panel">
-              <div className="panel-title"><h3>Saugumo anketos</h3></div>
-              <div style={{ padding: 15 }}>
-                {filteredSessions.map((session) => (
-                  <div className="visit" key={session.id}>
-                    <div className="row" style={{ alignItems: "flex-start" }}>
-                      <button className="link-btn" type="button" onClick={() => setSelectedClientId(session.id)}>{session.client}</button>
-                      <span className={badgeClass(session.status)}>{session.status}</span>
-                    </div>
-                    <div style={{ fontSize: 13, color: "#667085", margin: "5px 0" }}>{session.service} · {session.date} {session.time}</div>
-                    <div style={{ fontSize: 13, margin: "8px 0" }}>🏃‍♂️ <b>Aktyvumas:</b> {session.activity}</div>
-                    <div className="health-alert">⚠️ TRAUMOS / APRIBOJIMAI: {session.health}</div>
-                    <div style={{ fontSize: 13, marginTop: 8, color: "#344054" }}>🎯 <b>Tikslas:</b> {session.goal}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
+        </section>
+      </div>
+
+      {toast && (
+        <div className="fixed bottom-5 right-5 z-50 rounded-2xl bg-forest px-5 py-4 text-sm font-black text-white shadow-lift">
+          {toast}
         </div>
-      </section>
+      )}
     </main>
   );
 }
