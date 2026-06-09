@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "vardenis_admin_demo_v7";
+const STORAGE_KEY = "vardenis_admin_demo_v8_professional_program_builder";
 
 const timeSlots = [
   "06:30",
@@ -171,63 +171,296 @@ function getStatusClass(status) {
   return statusStyles[status] || "bg-stone-100 text-stone-700";
 }
 
-function createDefaultWorkoutPlan(client = {}) {
+const programTemplates = [
+  {
+    id: "balanced-hypertrophy",
+    label: "Hipertrofija · Upper / Lower",
+    description: "4 dienos per savaitę, baziniai judesiai, aiški progresija.",
+  },
+  {
+    id: "beginner-recomposition",
+    label: "Pradedantysis · Full body",
+    description: "3 dienos per savaitę, technika, saugus krūvis, kūno kompozicija.",
+  },
+  {
+    id: "strength-base",
+    label: "Jėgos bazė · 3 dienos",
+    description: "Pagrindiniai kėlimai, ilgesnis poilsis, kontroliuojamas RPE.",
+  },
+];
+
+const defaultExercise = {
+  id: "A1",
+  movement: "Stūmimas",
+  muscleGroup: "Krūtinė / pečiai",
+  name: "Naujas pratimas",
+  meta: "Technikos pastabos ir saugumo akcentai.",
+  sets: "3",
+  reps: "8–10",
+  setsReps: "3 x 8–10",
+  load: "",
+  rpe: "RPE 8 / 2 RIR",
+  rest: "2 min.",
+  tempo: "3-0-1-0",
+  progression: "Kai visose serijose pasiekiamas viršutinis pakartojimų intervalas, didinti svorį 2,5–5 %.",
+  alternatives: "Alternatyvus pratimas, jei įranga užimta arba jaučiamas diskomfortas.",
+  contraindications: "",
+  videoUrl: "",
+  result: "",
+};
+
+function createExercise(overrides = {}) {
+  const merged = { ...defaultExercise, ...overrides };
   return {
+    ...merged,
+    setsReps: merged.setsReps || `${merged.sets} x ${merged.reps}`,
+  };
+}
+
+function createWorkoutDay(overrides = {}) {
+  return {
+    title: "NAUJA TRENIRUOTĖ",
+    focus: "Bendras pasirengimas",
+    priority: "Technika ir kontroliuojamas krūvis",
+    warmup: "5–8 min. lengvo kardio + mobilumas pagal treniruotės kryptį.",
+    cooldown: "3–5 min. lengvas atsipalaidavimas, kvėpavimas, tempimo pratimai pagal poreikį.",
+    notes: "Stebėti techniką, skausmo skalę ir nuovargį. Skausmui didėjant pratimą keisti.",
+    exercises: [createExercise()],
+    ...overrides,
+  };
+}
+
+function createDefaultWorkoutPlan(client = {}, templateId = "balanced-hypertrophy") {
+  const common = {
     title: "SPORTO PROGRAMA",
-    subtitle: "Progresuojanti hipertrofijos ir bendro pasirengimo sistema",
+    subtitle: "Individuali, progresuojanti treniruočių sistema",
     coach: "Vardenis Pavardenis",
     clientName: client.name || "Klientas",
     weight: "",
     height: "",
     duration: "4–6 savaitės",
+    goal: client.goal || "Jėga, laikysena ir saugus progresas",
+    level: "Vidutinis",
+    location: "Sporto salė",
+    equipment: "Štanga, hanteliai, treniruokliai, lynai",
+    sessionsPerWeek: "4",
     system: "Upper / Lower · 4 d. per savaitę",
+    phase: "1 etapas · technika + bazinis progresas",
+    progressionModel: "Dviguba progresija: pirma didinami pakartojimai, tada svoris.",
+    deload: "Jei 2 treniruotes iš eilės krenta rezultatai arba jaučiamas didelis nuovargis — sumažinti apimtį 30–40 % vienai savaitei.",
+    assessment: "Įvertinti bazinius judesius, mobilumą, skausmo / diskomforto zonas ir treniruočių patirtį.",
+    warmup: "Bendra apšilimo dalis: 5–8 min. lengvas kardio, dinaminis mobilumas, 2–4 įvadinės serijos pagrindiniam pratimui.",
+    cooldown: "Po treniruotės: 3–5 min. atsistatymas, kvėpavimas, lengvas tempimas pagal poreikį.",
+    nutrition: "Baltymai kiekviename pagrindiniame valgyme, pakankamas vandens kiekis, stabilus miego režimas.",
+    reviewDate: "Po 2 savaičių",
+    coachNotes: "Programa koreguojama pagal techniką, savijautą ir realius rezultatus.",
+    clientInstructions: "Visus darbinius svorius žymėti rezultatų laukelyje. Pratimą stabdyti, jei atsiranda aštrus skausmas.",
     alerts: client.health || "Nėra nurodytų apribojimų.",
+  };
+
+  if (templateId === "beginner-recomposition") {
+    return {
+      ...common,
+      subtitle: "Pradedančiojo kūno kompozicijos ir technikos sistema",
+      duration: "4 savaitės",
+      system: "Full body · 3 d. per savaitę",
+      sessionsPerWeek: "3",
+      level: "Pradedantysis",
+      phase: "1 etapas · judesių mokymasis",
+      goal: client.goal || "Saugus startas, technika ir bendras fizinis pasirengimas",
+      days: [
+        createWorkoutDay({
+          title: "DIENA A: FULL BODY · TECHNIKA",
+          focus: "Bazinių judesių mokymasis",
+          priority: "Judesių kokybė, kvėpavimas, stabilumas",
+          exercises: [
+            createExercise({ id: "A1", movement: "Keliai", muscleGroup: "Kojos", name: "Goblet pritūpimas", meta: "Laikyti neutralų liemenį, keliai juda pėdos kryptimi.", sets: "3", reps: "8–10", rpe: "RPE 7 / 3 RIR", rest: "90 sek.", alternatives: "Leg press arba box squat" }),
+            createExercise({ id: "A2", movement: "Stūmimas", muscleGroup: "Krūtinė", name: "Atsispaudimai nuo pakylos", meta: "Kūnas viena linija, pečiai stabilūs.", sets: "3", reps: "8–12", rpe: "RPE 7", rest: "90 sek.", alternatives: "Chest press treniruoklis" }),
+            createExercise({ id: "B1", movement: "Trauka", muscleGroup: "Nugara", name: "Sėdima lyno trauka", meta: "Mentės juda kontroliuojamai, netraukti kaklu.", sets: "3", reps: "10–12", rpe: "RPE 7–8", rest: "90 sek." }),
+            createExercise({ id: "C1", movement: "Core", muscleGroup: "Pilvo presas", name: "Dead bug", meta: "Juosmuo stabilus, judesys lėtas.", sets: "3", reps: "8 / pusė", rpe: "Kontrolė", rest: "60 sek." }),
+          ],
+        }),
+        createWorkoutDay({
+          title: "DIENA B: FULL BODY · JĖGOS BAZĖ",
+          focus: "Stūmimas, traukimas, klubų darbas",
+          exercises: [
+            createExercise({ id: "A1", movement: "Klubai", muscleGroup: "Sėdmenys / šlaunies galas", name: "Rumuniška trauka su hanteliais", meta: "Judesys per klubus, nugara neutrali.", sets: "3", reps: "8–10", rpe: "RPE 7–8", rest: "2 min.", alternatives: "Hip hinge su lazda / cable pull-through" }),
+            createExercise({ id: "A2", movement: "Stūmimas", muscleGroup: "Pečiai", name: "Hantelių spaudimas sėdint", meta: "Nelaikyti per didelio juosmens išlinkimo.", sets: "3", reps: "8–10", rpe: "RPE 7–8", rest: "90 sek." }),
+            createExercise({ id: "B1", movement: "Trauka", muscleGroup: "Nugara", name: "Vertikali bloko trauka", meta: "Traukti alkūnes žemyn, nekelti pečių.", sets: "3", reps: "10–12", rpe: "RPE 8", rest: "90 sek." }),
+            createExercise({ id: "C1", movement: "Nešimas", muscleGroup: "Core / grip", name: "Farmer carry", meta: "Stabili laikysena, trumpi žingsniai.", sets: "3", reps: "30–40 m", rpe: "RPE 7", rest: "90 sek." }),
+          ],
+        }),
+        createWorkoutDay({
+          title: "DIENA C: FULL BODY · KONDICIJA IR MOBILUMAS",
+          focus: "Kondicija, mobilumas, raumenų tonusas",
+          exercises: [
+            createExercise({ id: "A1", movement: "Kondicija", muscleGroup: "Visas kūnas", name: "Dviratis / elipsinis", meta: "Vidutinis tempas, galima kalbėti trumpais sakiniais.", sets: "1", reps: "12–18 min.", rpe: "RPE 6–7", rest: "—", tempo: "Pastovus" }),
+            createExercise({ id: "B1", movement: "Vienos kojos", muscleGroup: "Kojos", name: "Atbuliniai įtūpstai", meta: "Trumpa amplitudė, jei jautrūs keliai.", sets: "3", reps: "8 / pusė", rpe: "RPE 7", rest: "90 sek.", contraindications: "Kelio skausmui didėjant keisti į step-up." }),
+            createExercise({ id: "B2", movement: "Trauka", muscleGroup: "Nugara", name: "Face pull", meta: "Alkūnės aukštai, mentės kontroliuojamos.", sets: "3", reps: "12–15", rpe: "RPE 8", rest: "60–75 sek." }),
+            createExercise({ id: "C1", movement: "Mobilumas", muscleGroup: "Klubai / pečiai", name: "Mobilumo grandinė", meta: "Klubai, čiurnos, krūtinės ląstos rotacija.", sets: "2", reps: "6–8 min.", rpe: "Lengva", rest: "—" }),
+          ],
+        }),
+      ],
+    };
+  }
+
+  if (templateId === "strength-base") {
+    return {
+      ...common,
+      subtitle: "Bazinės jėgos ir technikos vystymo sistema",
+      system: "Full body jėga · 3 d. per savaitę",
+      sessionsPerWeek: "3",
+      level: "Vidutinis",
+      phase: "Jėgos bazė · kontroliuojamas intensyvumas",
+      progressionModel: "Linijinė progresija mažais žingsniais, jei technika stabili ir RPE neviršija plano.",
+      days: [
+        createWorkoutDay({
+          title: "DIENA A: JĖGA · PRITŪPIMAS IR SPAUDIMAS",
+          focus: "Bazinis pritūpimas, horizontalus stūmimas",
+          exercises: [
+            createExercise({ id: "A1", movement: "Keliai", muscleGroup: "Kojos", name: "Pritūpimas su štanga", meta: "Stabili pėda, neutralus liemuo, kontroliuojama amplitudė.", sets: "4", reps: "4–6", rpe: "RPE 7.5–8", rest: "3–4 min.", tempo: "3-1-1-0", contraindications: "Kelio / nugaros skausmui didėjant mažinti amplitudę arba keisti pratimą." }),
+            createExercise({ id: "A2", movement: "Stūmimas", muscleGroup: "Krūtinė", name: "Štangos spaudimas gulint", meta: "Mentės stabilios, pėdos remiasi į grindis.", sets: "4", reps: "4–6", rpe: "RPE 8", rest: "3 min." }),
+            createExercise({ id: "B1", movement: "Trauka", muscleGroup: "Nugara", name: "Sėdima lyno trauka", meta: "Kontrolė, pilna amplitudė.", sets: "3", reps: "8–10", rpe: "RPE 8", rest: "2 min." }),
+          ],
+        }),
+        createWorkoutDay({
+          title: "DIENA B: JĖGA · TRAUKA IR PEČIAI",
+          focus: "Klubų judesys, vertikalus stūmimas",
+          exercises: [
+            createExercise({ id: "A1", movement: "Klubai", muscleGroup: "Užpakalinė grandinė", name: "Mirties trauka nuo paaukštinimo", meta: "Pradėti nuo saugios amplitudės, nugara neutrali.", sets: "3", reps: "3–5", rpe: "RPE 7–8", rest: "3–4 min.", contraindications: "Jei yra juosmens jautrumas — keisti į rumunišką trauką." }),
+            createExercise({ id: "A2", movement: "Stūmimas", muscleGroup: "Pečiai", name: "Spaudimas virš galvos", meta: "Sėdmenys ir pilvas aktyvūs, nekoreguoti judesio per juosmenį.", sets: "4", reps: "5–6", rpe: "RPE 8", rest: "2.5–3 min." }),
+            createExercise({ id: "B1", movement: "Core", muscleGroup: "Pilvo presas", name: "Pallof press", meta: "Atsispirti rotacijai, laikyti dubenį neutraliai.", sets: "3", reps: "10 / pusė", rpe: "Kontrolė", rest: "60 sek." }),
+          ],
+        }),
+        createWorkoutDay({
+          title: "DIENA C: JĖGA · APIMTIS IR TECHNIKA",
+          focus: "Papildoma apimtis, silpnų grandžių stiprinimas",
+          exercises: [
+            createExercise({ id: "A1", movement: "Keliai", muscleGroup: "Kojos", name: "Leg press", meta: "Kontroliuojama amplitudė, neatsiplėšti dubeniui.", sets: "3", reps: "8–10", rpe: "RPE 8", rest: "2.5 min." }),
+            createExercise({ id: "A2", movement: "Trauka", muscleGroup: "Nugara", name: "Prisitraukimai / bloko trauka", meta: "Pilna amplitudė, pečiai žemyn.", sets: "4", reps: "6–8", rpe: "RPE 8", rest: "2.5 min." }),
+            createExercise({ id: "B1", movement: "Izoliacija", muscleGroup: "Užpakalinė šlaunis", name: "Kojų lenkimas treniruoklyje", meta: "Kontroliuoti ekscentrinę fazę.", sets: "3", reps: "10–12", rpe: "RPE 8–9", rest: "90 sek." }),
+          ],
+        }),
+      ],
+    };
+  }
+
+  return {
+    ...common,
     days: [
-      {
-        title: "DIENA A: VIRŠUTINĖ KŪNO DALIS",
+      createWorkoutDay({
+        title: "DIENA A: VIRŠUTINĖ KŪNO DALIS · HORIZONTALUS AKCENTAS",
+        focus: "Krūtinė, nugara, pečiai, rankos",
+        priority: "Horizontalus stūmimas / traukimas, mentės kontrolė",
         exercises: [
-          { id: "A1", name: "Štangos spaudimas kampu", meta: "Kontroliuojamas nuleidimas, stabilūs pečiai.", setsReps: "3 x 6–8", rpe: "RPE 8 / 2 RIR", rest: "3 min.", tempo: "3-0-1-0", result: "" },
-          { id: "A2", name: "Štangos trauka pasilenkus", meta: "Horizontalus traukimas, pilnas nugaros ištempimas apačioje.", setsReps: "3 x 8–10", rpe: "RPE 8 / 2 RIR", rest: "2.5 min.", tempo: "2-1-1-0", result: "" },
-          { id: "B1", name: "Hantelių spaudimas sėdint", meta: "Nenaudoti per didelio nugaros išlinkimo.", setsReps: "3 x 10–12", rpe: "RPE 8.5 / 1–2 RIR", rest: "2 min.", tempo: "3-0-1-0", result: "" },
+          createExercise({ id: "A1", movement: "Stūmimas", muscleGroup: "Krūtinė", name: "Štangos spaudimas kampu", meta: "Fokusas į krūtinės viršų, kontroliuojamas nuleidimas.", sets: "3", reps: "6–8", rpe: "RPE 8 / 2 RIR", rest: "3 min.", tempo: "3-0-1-0" }),
+          createExercise({ id: "A2", movement: "Trauka", muscleGroup: "Nugara", name: "Štangos trauka pasilenkus", meta: "Horizontalus traukimas, pilnas nugaros ištempimas apačioje.", sets: "3", reps: "8–10", rpe: "RPE 8 / 2 RIR", rest: "2.5 min.", tempo: "2-1-1-0" }),
+          createExercise({ id: "B1", movement: "Stūmimas", muscleGroup: "Pečiai", name: "Hantelių spaudimas sėdint", meta: "Nenaudoti per didelio nugaros išlinkimo.", sets: "3", reps: "10–12", rpe: "RPE 8.5 / 1–2 RIR", rest: "2 min.", tempo: "3-0-1-0" }),
+          createExercise({ id: "B2", movement: "Trauka", muscleGroup: "Nugara", name: "Vertikali bloko trauka", meta: "Plačiajai nugaros daliai, mentės žemyn.", sets: "3", reps: "10–12", rpe: "RPE 9 / 1 RIR", rest: "2 min.", tempo: "3-0-1-1" }),
         ],
-      },
-      {
-        title: "DIENA B: APATINĖ KŪNO DALIS",
+      }),
+      createWorkoutDay({
+        title: "DIENA B: APATINĖ KŪNO DALIS · KETURŠLAIČIO AKCENTAS",
+        focus: "Kojos, sėdmenys, core",
+        priority: "Pritūpimo modelis ir stabilumas",
         exercises: [
-          { id: "A1", name: "Pritūpimai su štanga", meta: "Pilna saugi amplitudė, stabili pėda, kontrolė apačioje.", setsReps: "4 x 6", rpe: "RPE 8 / 2 RIR", rest: "3.5 min.", tempo: "3-1-1-0", result: "" },
-          { id: "B1", name: "Rumuniška mirties trauka", meta: "Judesys per klubus, akcentas į sėdmenis ir šlaunies galą.", setsReps: "3 x 8–10", rpe: "RPE 8 / 2 RIR", rest: "2.5 min.", tempo: "3-0-1-0", result: "" },
-          { id: "C1", name: "Kojų lenkimas treniruoklyje", meta: "Izoliuotas darbas šlaunies užpakalinei daliai.", setsReps: "3 x 12–15", rpe: "RPE 9 / 1 RIR", rest: "90 sek.", tempo: "2-0-1-1", result: "" },
+          createExercise({ id: "A1", movement: "Keliai", muscleGroup: "Keturšlaitis", name: "Klasikiniai pritūpimai su štanga", meta: "Pilna saugi amplitudė, išlaikant stabilią pėdą.", sets: "4", reps: "6", rpe: "RPE 8 / 2 RIR", rest: "3.5 min.", tempo: "3-1-1-0" }),
+          createExercise({ id: "B1", movement: "Klubai", muscleGroup: "Sėdmenys / šlaunies galas", name: "Rumuniška mirties trauka su hanteliais", meta: "Judesys per klubus, nugara neutrali.", sets: "3", reps: "8–10", rpe: "RPE 8 / 2 RIR", rest: "2.5 min.", tempo: "3-0-1-0" }),
+          createExercise({ id: "C1", movement: "Izoliacija", muscleGroup: "Šlaunies galas", name: "Kojų lenkimas sėdint treniruoklyje", meta: "Izoliuotas darbas šlaunies užpakalinei daliai.", sets: "3", reps: "12–15", rpe: "RPE 9 / 1 RIR", rest: "90 sek.", tempo: "2-0-1-1" }),
         ],
-      },
+      }),
+      createWorkoutDay({
+        title: "DIENA C: VIRŠUTINĖ KŪNO DALIS · VERTIKALUS AKCENTAS",
+        focus: "Nugara, pečiai, rankos",
+        exercises: [
+          createExercise({ id: "A1", movement: "Trauka", muscleGroup: "Nugara", name: "Prisitraukimai / vertikali bloko trauka", meta: "Pečiai žemyn, pilna amplitudė.", sets: "4", reps: "6–10", rpe: "RPE 8", rest: "2.5 min." }),
+          createExercise({ id: "A2", movement: "Stūmimas", muscleGroup: "Pečiai", name: "Spaudimas virš galvos", meta: "Stabilus liemuo, nekilnoti pečių.", sets: "3", reps: "6–8", rpe: "RPE 8", rest: "2.5 min." }),
+          createExercise({ id: "B1", movement: "Izoliacija", muscleGroup: "Šoninis petys", name: "Šoninis kėlimas su hanteliais", meta: "Kontroliuoti viršutinę amplitudę, nekelti trapecija.", sets: "3", reps: "12–15", rpe: "RPE 9", rest: "75 sek." }),
+        ],
+      }),
+      createWorkoutDay({
+        title: "DIENA D: APATINĖ KŪNO DALIS · UŽPAKALINĖ GRANDINĖ",
+        focus: "Sėdmenys, šlaunies galas, core",
+        exercises: [
+          createExercise({ id: "A1", movement: "Klubai", muscleGroup: "Sėdmenys", name: "Hip thrust", meta: "Pauzė viršuje, stabilus dubuo.", sets: "4", reps: "8–10", rpe: "RPE 8", rest: "2.5 min.", tempo: "2-1-1-1" }),
+          createExercise({ id: "B1", movement: "Vienos kojos", muscleGroup: "Kojos", name: "Bulgarian split squat", meta: "Kontroliuoti kelių kryptį ir dubens padėtį.", sets: "3", reps: "8–10 / pusė", rpe: "RPE 8", rest: "2 min.", contraindications: "Kelio jautrumui didėjant mažinti amplitudę." }),
+          createExercise({ id: "C1", movement: "Core", muscleGroup: "Pilvo presas", name: "Cable crunch", meta: "Judėti per pilvo presą, ne per klubus.", sets: "3", reps: "10–12", rpe: "RPE 8", rest: "75 sek." }),
+        ],
+      }),
     ],
   };
 }
 
-function normalizeWorkoutPlan(client) {
-  const plan = client.workoutPlan || createDefaultWorkoutPlan(client);
+function normalizeExercise(exercise = {}, exerciseIndex = 0) {
+  const setsReps = exercise.setsReps || `${exercise.sets || "3"} x ${exercise.reps || "10"}`;
+  const [setsPart, repsPart] = setsReps.includes(" x ") ? setsReps.split(" x ") : [exercise.sets || "3", exercise.reps || "10"];
 
   return {
+    ...defaultExercise,
+    ...exercise,
+    id: exercise.id || `A${exerciseIndex + 1}`,
+    sets: exercise.sets || setsPart || "3",
+    reps: exercise.reps || repsPart || "10",
+    setsReps,
+    movement: exercise.movement || "Bendras",
+    muscleGroup: exercise.muscleGroup || "Tikslinė raumenų grupė",
+    load: exercise.load || "",
+    progression: exercise.progression || defaultExercise.progression,
+    alternatives: exercise.alternatives || "",
+    contraindications: exercise.contraindications || "",
+    videoUrl: exercise.videoUrl || "",
+    result: exercise.result || "",
+  };
+}
+
+function normalizeWorkoutPlan(client) {
+  const plan = client?.workoutPlan || createDefaultWorkoutPlan(client);
+
+  return {
+    ...createDefaultWorkoutPlan(client),
     ...plan,
     title: plan.title || "SPORTO PROGRAMA",
     subtitle: plan.subtitle || "Individuali treniruočių sistema",
     coach: plan.coach || "Vardenis Pavardenis",
     clientName: plan.clientName || client.name || "Klientas",
+    goal: plan.goal || client.goal || "",
     alerts: plan.alerts || client.health || "Nėra nurodytų apribojimų.",
-    days: Array.isArray(plan.days) && plan.days.length ? plan.days.map((day, index) => ({
-      title: day.title || `DIENA ${index + 1}`,
-      exercises: Array.isArray(day.exercises) ? day.exercises.map((exercise, exerciseIndex) => ({
-        id: exercise.id || `A${exerciseIndex + 1}`,
-        name: exercise.name || "Pratimas",
-        meta: exercise.meta || "Technikos pastabos",
-        setsReps: exercise.setsReps || "3 x 10",
-        rpe: exercise.rpe || "RPE 8 / 2 RIR",
-        rest: exercise.rest || "2 min.",
-        tempo: exercise.tempo || "3-0-1-0",
-        result: exercise.result || "",
-      })) : [],
-    })) : createDefaultWorkoutPlan(client).days,
+    days: Array.isArray(plan.days) && plan.days.length
+      ? plan.days.map((day, index) => ({
+          ...createWorkoutDay(),
+          ...day,
+          title: day.title || `DIENA ${index + 1}`,
+          focus: day.focus || "Treniruotės fokusas",
+          priority: day.priority || "Pagrindinis prioritetas",
+          warmup: day.warmup || "5–8 min. apšilimas + įvadinės serijos.",
+          cooldown: day.cooldown || "Lengvas atsistatymas ir mobilumas.",
+          notes: day.notes || "",
+          exercises: Array.isArray(day.exercises) && day.exercises.length
+            ? day.exercises.map((exercise, exerciseIndex) => normalizeExercise(exercise, exerciseIndex))
+            : [createExercise()],
+        }))
+      : createDefaultWorkoutPlan(client).days,
   };
 }
+
+function getTemplatePlan(templateId, client) {
+  return createDefaultWorkoutPlan(client, templateId);
+}
+
+function formatSetsReps(exercise) {
+  if (exercise.sets && exercise.reps) return `${exercise.sets} x ${exercise.reps}`;
+  return exercise.setsReps || "3 x 10";
+}
+
+function calculateWorkoutVolume(plan) {
+  const exerciseCount = plan.days.reduce((sum, day) => sum + day.exercises.length, 0);
+  return {
+    days: plan.days.length,
+    exercises: exerciseCount,
+    sessionsPerWeek: plan.sessionsPerWeek || plan.days.length,
+  };
+}
+
 
 function normalizeState(data) {
   return {
@@ -251,29 +484,64 @@ function escapeHtml(value) {
 
 function buildWorkoutPlanHtml(client, plan) {
   const safePlan = normalizeWorkoutPlan({ ...client, workoutPlan: plan });
+  const volume = calculateWorkoutVolume(safePlan);
+
+  const phaseHtml = `
+    <section class="method-grid">
+      <div><strong>Tikslas</strong><span>${escapeHtml(safePlan.goal || client.goal || "—")}</span></div>
+      <div><strong>Lygis</strong><span>${escapeHtml(safePlan.level || "—")}</span></div>
+      <div><strong>Vieta / įranga</strong><span>${escapeHtml(safePlan.location || "—")} · ${escapeHtml(safePlan.equipment || "—")}</span></div>
+      <div><strong>Dažnumas</strong><span>${escapeHtml(safePlan.sessionsPerWeek || volume.sessionsPerWeek)} k. / savaitę</span></div>
+      <div><strong>Progresija</strong><span>${escapeHtml(safePlan.progressionModel || "—")}</span></div>
+      <div><strong>Peržiūra</strong><span>${escapeHtml(safePlan.reviewDate || "—")}</span></div>
+    </section>
+  `;
+
   const daysHtml = safePlan.days.map((day) => `
     <section class="day">
-      <h2>${escapeHtml(day.title)}</h2>
+      <div class="day-head">
+        <h2>${escapeHtml(day.title)}</h2>
+        <p><strong>Fokusas:</strong> ${escapeHtml(day.focus)} · <strong>Prioritetas:</strong> ${escapeHtml(day.priority)}</p>
+      </div>
+      <div class="day-notes">
+        <div><strong>Apšilimas:</strong> ${escapeHtml(day.warmup)}</div>
+        <div><strong>Pabaiga:</strong> ${escapeHtml(day.cooldown)}</div>
+        ${day.notes ? `<div><strong>Pastabos:</strong> ${escapeHtml(day.notes)}</div>` : ""}
+      </div>
       <table>
         <thead>
           <tr>
             <th>#</th>
-            <th>Pratimas</th>
-            <th>Serijos x pakart.</th>
-            <th>Intensyvumas</th>
+            <th>Pratimas ir technika</th>
+            <th>Jud.</th>
+            <th>Raumenys</th>
+            <th>Serijos x pak.</th>
+            <th>Krūvis</th>
+            <th>RPE / RIR</th>
             <th>Poilsis / tempas</th>
-            <th>Rezultatas</th>
+            <th>Progresija / rezultatas</th>
           </tr>
         </thead>
         <tbody>
           ${day.exercises.map((exercise) => `
             <tr>
               <td><strong>${escapeHtml(exercise.id)}</strong></td>
-              <td><strong>${escapeHtml(exercise.name)}</strong><small>${escapeHtml(exercise.meta)}</small></td>
-              <td>${escapeHtml(exercise.setsReps)}</td>
+              <td>
+                <strong>${escapeHtml(exercise.name)}</strong>
+                <small>${escapeHtml(exercise.meta)}</small>
+                ${exercise.alternatives ? `<small><b>Alternatyva:</b> ${escapeHtml(exercise.alternatives)}</small>` : ""}
+                ${exercise.contraindications ? `<small class="danger"><b>Saugumas:</b> ${escapeHtml(exercise.contraindications)}</small>` : ""}
+              </td>
+              <td>${escapeHtml(exercise.movement)}</td>
+              <td>${escapeHtml(exercise.muscleGroup)}</td>
+              <td>${escapeHtml(formatSetsReps(exercise))}</td>
+              <td>${escapeHtml(exercise.load || "Pagal RPE")}</td>
               <td>${escapeHtml(exercise.rpe)}</td>
               <td>${escapeHtml(exercise.rest)}<small>Tempas: ${escapeHtml(exercise.tempo)}</small></td>
-              <td>${escapeHtml(exercise.result || "kg x pak.")}</td>
+              <td>
+                <small>${escapeHtml(exercise.progression || safePlan.progressionModel || "—")}</small>
+                <strong>${escapeHtml(exercise.result || "kg x pak.")}</strong>
+              </td>
             </tr>
           `).join("")}
         </tbody>
@@ -287,24 +555,32 @@ function buildWorkoutPlanHtml(client, plan) {
 <meta charset="utf-8" />
 <title>${escapeHtml(safePlan.title)} - ${escapeHtml(safePlan.clientName)}</title>
 <style>
-  @page { size: A4; margin: 12mm; }
+  @page { size: A4; margin: 10mm; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: Inter, Arial, sans-serif; color: #111827; background: white; }
-  .sheet { max-width: 1000px; margin: 0 auto; padding: 28px; }
-  header { display: flex; justify-content: space-between; gap: 24px; border-bottom: 2px solid #111827; padding-bottom: 18px; margin-bottom: 24px; }
+  .sheet { max-width: 1120px; margin: 0 auto; padding: 24px; }
+  header { display: flex; justify-content: space-between; gap: 24px; border-bottom: 3px solid #111827; padding-bottom: 18px; margin-bottom: 20px; }
   h1 { margin: 0; font-size: 30px; letter-spacing: -.04em; }
   .subtitle { color: #475467; margin-top: 4px; font-size: 14px; }
-  .coach { text-align: right; font-size: 13px; line-height: 1.6; }
-  .meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: #f8fafc; border: 1px solid #e5e7eb; padding: 16px; border-radius: 14px; margin-bottom: 18px; font-size: 13px; }
-  .alert { background: #fff1f2; border: 1px solid #fda4af; color: #9f1239; padding: 12px; border-radius: 12px; margin-bottom: 18px; font-size: 13px; }
-  .day { break-inside: avoid; margin-top: 22px; }
-  .day h2 { background: #111827; color: white; padding: 10px 12px; border-radius: 10px; font-size: 15px; margin: 0 0 10px; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { text-align: left; background: #f3f4f6; color: #475467; padding: 9px; border-bottom: 2px solid #e5e7eb; }
-  td { padding: 10px 9px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  .coach { text-align: right; font-size: 12px; line-height: 1.65; }
+  .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #f8fafc; border: 1px solid #e5e7eb; padding: 14px; border-radius: 14px; margin-bottom: 14px; font-size: 12px; }
+  .meta div, .method-grid div { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; }
+  .meta strong, .method-grid strong { display: block; color: #475467; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #f8fafc; border: 1px solid #e5e7eb; padding: 14px; border-radius: 14px; margin-bottom: 14px; font-size: 12px; }
+  .alert { background: #fff1f2; border: 1px solid #fda4af; color: #9f1239; padding: 11px 12px; border-radius: 12px; margin-bottom: 12px; font-size: 12px; }
+  .instructions { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; padding: 11px 12px; border-radius: 12px; margin-bottom: 14px; font-size: 12px; line-height: 1.45; }
+  .day { break-inside: avoid; margin-top: 18px; }
+  .day-head { background: #111827; color: white; padding: 12px 14px; border-radius: 12px 12px 0 0; }
+  .day-head h2 { font-size: 15px; margin: 0; }
+  .day-head p { margin: 5px 0 0; font-size: 11px; color: rgba(255,255,255,.72); }
+  .day-notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #f8fafc; border: 1px solid #e5e7eb; border-top: 0; padding: 10px; font-size: 11px; color: #334155; }
+  table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  th { text-align: left; background: #f3f4f6; color: #475467; padding: 8px; border-bottom: 2px solid #e5e7eb; }
+  td { padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
   small { display: block; color: #64748b; margin-top: 4px; line-height: 1.35; }
-  .guide { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; border-radius: 14px; padding: 16px; margin-top: 24px; font-size: 12px; color: #334155; }
-  @media print { .sheet { padding: 0; } }
+  .danger { color: #be123c; }
+  .guide { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; background: #f8fafc; border-radius: 14px; padding: 14px; margin-top: 20px; font-size: 11px; color: #334155; }
+  @media print { .sheet { padding: 0; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
 <body>
@@ -314,25 +590,27 @@ function buildWorkoutPlanHtml(client, plan) {
         <h1>${escapeHtml(safePlan.title)}</h1>
         <div class="subtitle">${escapeHtml(safePlan.subtitle)}</div>
       </div>
-      <div class="coach"><strong>Treneris:</strong> ${escapeHtml(safePlan.coach)}<br /><strong>Data:</strong> ${new Date().toLocaleDateString("lt-LT")}</div>
+      <div class="coach"><strong>Treneris:</strong> ${escapeHtml(safePlan.coach)}<br /><strong>Data:</strong> ${new Date().toLocaleDateString("lt-LT")}<br /><strong>Klientas:</strong> ${escapeHtml(safePlan.clientName)}</div>
     </header>
     <section class="meta">
-      <div><strong>Klientas:</strong> ${escapeHtml(safePlan.clientName)}</div>
-      <div><strong>Sistemos tipas:</strong> ${escapeHtml(safePlan.system)}</div>
-      <div><strong>Ūgis / svoris:</strong> ${escapeHtml(safePlan.height || "—")} cm / ${escapeHtml(safePlan.weight || "—")} kg</div>
-      <div><strong>Trukmė:</strong> ${escapeHtml(safePlan.duration)}</div>
+      <div><strong>Klientas</strong>${escapeHtml(safePlan.clientName)}</div>
+      <div><strong>Sistemos tipas</strong>${escapeHtml(safePlan.system)}</div>
+      <div><strong>Ūgis / svoris</strong>${escapeHtml(safePlan.height || "—")} cm / ${escapeHtml(safePlan.weight || "—")} kg</div>
+      <div><strong>Trukmė</strong>${escapeHtml(safePlan.duration)}</div>
     </section>
+    ${phaseHtml}
     <section class="alert"><strong>Sveikatos apribojimai:</strong> ${escapeHtml(safePlan.alerts)}</section>
+    <section class="instructions"><strong>Klientui:</strong> ${escapeHtml(safePlan.clientInstructions)}<br /><strong>Apšilimas:</strong> ${escapeHtml(safePlan.warmup)}<br /><strong>Deload:</strong> ${escapeHtml(safePlan.deload)}</section>
     ${daysHtml}
     <section class="guide">
-      <div><strong>RPE ir RIR:</strong><br />RIR reiškia, kiek pakartojimų lieka atsargoje iki techninio nebegalėjimo. 2 RIR = galėtumėte padaryti dar 2 kokybiškus pakartojimus.</div>
-      <div><strong>Tempo pavyzdys 3-0-1-0:</strong><br />3 sek. nuleidimas, 0 sek. pauzė apačioje, 1 sek. kėlimas, 0 sek. pauzė viršuje.</div>
+      <div><strong>RPE ir RIR:</strong><br />RIR reiškia, kiek pakartojimų lieka atsargoje iki techninio nebegalėjimo. 2 RIR = dar 2 kokybiški pakartojimai.</div>
+      <div><strong>Tempo 3-0-1-0:</strong><br />3 sek. nuleidimas, 0 sek. pauzė apačioje, 1 sek. kėlimas, 0 sek. pauzė viršuje.</div>
+      <div><strong>Progresija:</strong><br />Svorį didinti tik jei technika išlieka stabili, skausmas nedidėja, o RPE atitinka planą.</div>
     </section>
   </main>
 </body>
 </html>`;
 }
-
 function loadInitialState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -398,6 +676,7 @@ export default function TrainerAdmin() {
   const [selectedRegistrationId, setSelectedRegistrationId] = useState(state.registrations[0]?.id || "");
   const [viewMode, setViewMode] = useState("Diena");
   const [toast, setToast] = useState("");
+  const [programPreset, setProgramPreset] = useState("balanced-hypertrophy");
 
   const selectedClient = state.clients.find((client) => client.id === selectedClientId);
   const selectedWorkoutPlan = selectedClient?.workoutPlan || createDefaultWorkoutPlan(selectedClient);
@@ -513,9 +792,16 @@ export default function TrainerAdmin() {
         if (client.id !== selectedClientId) return client;
         const currentPlan = normalizeWorkoutPlan(client);
         const nextPlan = typeof updater === "function" ? updater(currentPlan) : { ...currentPlan, ...updater };
-        return { ...client, workoutPlan: nextPlan };
+        return { ...client, workoutPlan: normalizeWorkoutPlan({ ...client, workoutPlan: nextPlan }) };
       }),
     }));
+  }
+
+  function applyProgramTemplate(templateId) {
+    if (!selectedClient) return;
+    setProgramPreset(templateId);
+    updateSelectedWorkoutPlan(() => getTemplatePlan(templateId, selectedClient));
+    showToast("Pritaikytas profesionalus programos šablonas.");
   }
 
   function updateWorkoutDay(dayIndex, patch) {
@@ -530,14 +816,44 @@ export default function TrainerAdmin() {
       ...plan,
       days: [
         ...plan.days,
-        {
+        createWorkoutDay({
           title: `DIENA ${plan.days.length + 1}: NAUJA TRENIRUOTĖ`,
+          focus: "Naujos treniruotės fokusas",
           exercises: [
-            { id: "A1", name: "Naujas pratimas", meta: "Technikos pastabos", setsReps: "3 x 10", rpe: "RPE 8 / 2 RIR", rest: "2 min.", tempo: "3-0-1-0", result: "" },
+            createExercise({ id: "A1", name: "Naujas pratimas" }),
           ],
-        },
+        }),
       ],
     }));
+  }
+
+  function duplicateWorkoutDay(dayIndex) {
+    updateSelectedWorkoutPlan((plan) => {
+      const dayToCopy = plan.days[dayIndex];
+      if (!dayToCopy) return plan;
+      const clonedDay = {
+        ...dayToCopy,
+        title: `${dayToCopy.title} · kopija`,
+        exercises: dayToCopy.exercises.map((exercise) => ({ ...exercise })),
+      };
+
+      const days = [...plan.days];
+      days.splice(dayIndex + 1, 0, clonedDay);
+      return { ...plan, days };
+    });
+  }
+
+  function moveWorkoutDay(dayIndex, direction) {
+    updateSelectedWorkoutPlan((plan) => {
+      const nextIndex = dayIndex + direction;
+      if (nextIndex < 0 || nextIndex >= plan.days.length) return plan;
+
+      const days = [...plan.days];
+      const [day] = days.splice(dayIndex, 1);
+      days.splice(nextIndex, 0, day);
+
+      return { ...plan, days };
+    });
   }
 
   function removeWorkoutDay(dayIndex) {
@@ -555,7 +871,9 @@ export default function TrainerAdmin() {
         return {
           ...day,
           exercises: day.exercises.map((exercise, itemIndex) =>
-            itemIndex === exerciseIndex ? { ...exercise, ...patch } : exercise
+            itemIndex === exerciseIndex
+              ? normalizeExercise({ ...exercise, ...patch }, itemIndex)
+              : exercise
           ),
         };
       }),
@@ -572,9 +890,43 @@ export default function TrainerAdmin() {
           ...day,
           exercises: [
             ...day.exercises,
-            { id: `A${nextNumber}`, name: "Naujas pratimas", meta: "Technikos pastabos", setsReps: "3 x 10", rpe: "RPE 8 / 2 RIR", rest: "2 min.", tempo: "3-0-1-0", result: "" },
+            createExercise({ id: `A${nextNumber}`, name: "Naujas pratimas" }),
           ],
         };
+      }),
+    }));
+  }
+
+  function duplicateWorkoutExercise(dayIndex, exerciseIndex) {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: plan.days.map((day, index) => {
+        if (index !== dayIndex) return day;
+        const exercise = day.exercises[exerciseIndex];
+        if (!exercise) return day;
+
+        const exercises = [...day.exercises];
+        exercises.splice(exerciseIndex + 1, 0, { ...exercise, id: `${exercise.id} kopija` });
+
+        return { ...day, exercises };
+      }),
+    }));
+  }
+
+  function moveWorkoutExercise(dayIndex, exerciseIndex, direction) {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: plan.days.map((day, index) => {
+        if (index !== dayIndex) return day;
+
+        const nextIndex = exerciseIndex + direction;
+        if (nextIndex < 0 || nextIndex >= day.exercises.length) return day;
+
+        const exercises = [...day.exercises];
+        const [exercise] = exercises.splice(exerciseIndex, 1);
+        exercises.splice(nextIndex, 0, exercise);
+
+        return { ...day, exercises };
       }),
     }));
   }
@@ -590,6 +942,12 @@ export default function TrainerAdmin() {
         };
       }),
     }));
+  }
+
+  function resetWorkoutPlanForClient() {
+    if (!selectedClient) return;
+    updateSelectedWorkoutPlan(() => createDefaultWorkoutPlan(selectedClient, programPreset));
+    showToast("Kliento sporto programa atstatyta pagal pasirinktą šabloną.");
   }
 
   function exportWorkoutPlanToPdf() {
@@ -1288,19 +1646,40 @@ export default function TrainerAdmin() {
             <div className="mt-6 rounded-[1.6rem] border border-ink/10 bg-bone/70 p-4 sm:p-5">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
+                  <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Profesionali programa</p>
                   <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">Sporto programos sudarymas</h3>
-                  <p className="mt-1 text-sm text-ink/55">
-                    Kiekvienam klientui programa saugoma atskirai. Galima redaguoti dienas, pratimus ir eksportuoti į PDF.
+                  <p className="mt-1 max-w-3xl text-sm leading-6 text-ink/55">
+                    Programa kuriama kiekvienam klientui atskirai: tikslas, lygis, įranga, fazė, progresija,
+                    deload taisyklės, apšilimas, treniruotės dienos, pratimai, alternatyvos ir saugumo apribojimai.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button type="button" onClick={addWorkoutDay} className="rounded-full bg-white px-4 py-2 text-xs font-black text-ink shadow-soft">
-                    + Pridėti dieną
+                    + Dieną
+                  </button>
+                  <button type="button" onClick={resetWorkoutPlanForClient} className="rounded-full bg-rose-50 px-4 py-2 text-xs font-black text-rose-700 shadow-soft">
+                    Atstatyti programą
                   </button>
                   <button type="button" onClick={exportWorkoutPlanToPdf} className="rounded-full bg-forest px-4 py-2 text-xs font-black text-white shadow-soft">
                     Eksportuoti į PDF
                   </button>
                 </div>
+              </div>
+
+              <div className="mt-5 grid gap-3 lg:grid-cols-3">
+                {programTemplates.map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => applyProgramTemplate(template.id)}
+                    className={`rounded-[1.35rem] border p-4 text-left transition hover:-translate-y-0.5 ${
+                      programPreset === template.id ? "border-lime bg-lime/20" : "border-ink/10 bg-white"
+                    }`}
+                  >
+                    <div className="text-sm font-black text-ink">{template.label}</div>
+                    <div className="mt-1 text-xs font-bold leading-5 text-ink/50">{template.description}</div>
+                  </button>
+                ))}
               </div>
 
               <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -1309,7 +1688,7 @@ export default function TrainerAdmin() {
                   <input value={selectedWorkoutPlan.title} onChange={(event) => updateSelectedWorkoutPlan({ title: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
                 </label>
                 <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
-                  Sistema
+                  Sistemos tipas
                   <input value={selectedWorkoutPlan.system} onChange={(event) => updateSelectedWorkoutPlan({ system: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
                 </label>
                 <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
@@ -1322,71 +1701,180 @@ export default function TrainerAdmin() {
                 </label>
               </div>
 
-              <div className="mt-3 grid gap-3 md:grid-cols-3">
+              <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                 <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
-                  Kliento ūgis, cm
+                  Tikslas
+                  <input value={selectedWorkoutPlan.goal} onChange={(event) => updateSelectedWorkoutPlan({ goal: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Lygis
+                  <select value={selectedWorkoutPlan.level} onChange={(event) => updateSelectedWorkoutPlan({ level: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20">
+                    <option>Pradedantysis</option>
+                    <option>Vidutinis</option>
+                    <option>Pažengęs</option>
+                    <option>Po pertraukos</option>
+                    <option>Reabilitacinis / atsargus</option>
+                  </select>
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Vieta
+                  <select value={selectedWorkoutPlan.location} onChange={(event) => updateSelectedWorkoutPlan({ location: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20">
+                    <option>Sporto salė</option>
+                    <option>Namai</option>
+                    <option>Laukas</option>
+                    <option>Mišriai</option>
+                  </select>
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Dažnumas / sav.
+                  <input value={selectedWorkoutPlan.sessionsPerWeek} onChange={(event) => updateSelectedWorkoutPlan({ sessionsPerWeek: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+              </div>
+
+              <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Ūgis, cm
                   <input value={selectedWorkoutPlan.height} onChange={(event) => updateSelectedWorkoutPlan({ height: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
                 </label>
                 <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
-                  Kliento svoris, kg
+                  Svoris, kg
                   <input value={selectedWorkoutPlan.weight} onChange={(event) => updateSelectedWorkoutPlan({ weight: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
                 </label>
-                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45 md:col-span-1">
-                  Paantraštė
-                  <input value={selectedWorkoutPlan.subtitle} onChange={(event) => updateSelectedWorkoutPlan({ subtitle: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Įranga
+                  <input value={selectedWorkoutPlan.equipment} onChange={(event) => updateSelectedWorkoutPlan({ equipment: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Peržiūra
+                  <input value={selectedWorkoutPlan.reviewDate} onChange={(event) => updateSelectedWorkoutPlan({ reviewDate: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+              </div>
+
+              <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Progresijos modelis
+                  <textarea value={selectedWorkoutPlan.progressionModel} onChange={(event) => updateSelectedWorkoutPlan({ progressionModel: event.target.value })} className="min-h-24 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Deload / krūvio mažinimo taisyklė
+                  <textarea value={selectedWorkoutPlan.deload} onChange={(event) => updateSelectedWorkoutPlan({ deload: event.target.value })} className="min-h-24 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Bendras apšilimas
+                  <textarea value={selectedWorkoutPlan.warmup} onChange={(event) => updateSelectedWorkoutPlan({ warmup: event.target.value })} className="min-h-24 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Kliento instrukcijos
+                  <textarea value={selectedWorkoutPlan.clientInstructions} onChange={(event) => updateSelectedWorkoutPlan({ clientInstructions: event.target.value })} className="min-h-24 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
                 </label>
               </div>
 
               <label className="mt-3 grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
-                Sveikatos apribojimai / trenerio saugumo pastabos
+                Sveikatos apribojimai / saugumo pastabos
                 <textarea value={selectedWorkoutPlan.alerts} onChange={(event) => updateSelectedWorkoutPlan({ alerts: event.target.value })} className="min-h-20 rounded-2xl border border-rose-200 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-rose-100" />
               </label>
 
               <div className="mt-5 grid gap-4">
                 {selectedWorkoutPlan.days.map((day, dayIndex) => (
                   <article key={`${day.title}-${dayIndex}`} className="overflow-hidden rounded-[1.4rem] border border-ink/10 bg-white">
-                    <div className="flex flex-col gap-3 border-b border-ink/10 bg-paper p-4 md:flex-row md:items-center md:justify-between">
-                      <input
-                        value={day.title}
-                        onChange={(event) => updateWorkoutDay(dayIndex, { title: event.target.value })}
-                        className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-black text-ink outline-none focus:ring-4 focus:ring-lime/20"
-                      />
-                      <div className="flex flex-wrap gap-2">
-                        <button type="button" onClick={() => addWorkoutExercise(dayIndex)} className="rounded-full bg-lime/40 px-4 py-2 text-xs font-black text-forest">
-                          + Pratimas
-                        </button>
-                        <button type="button" onClick={() => removeWorkoutDay(dayIndex)} className="rounded-full bg-rose-100 px-4 py-2 text-xs font-black text-rose-700">
-                          Šalinti dieną
-                        </button>
+                    <div className="border-b border-ink/10 bg-paper p-4">
+                      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                        <div className="grid flex-1 gap-3 md:grid-cols-[1.4fr_.8fr_.8fr]">
+                          <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                            Dienos pavadinimas
+                            <input value={day.title} onChange={(event) => updateWorkoutDay(dayIndex, { title: event.target.value })} className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-black normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                          </label>
+                          <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                            Fokusas
+                            <input value={day.focus} onChange={(event) => updateWorkoutDay(dayIndex, { focus: event.target.value })} className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                          </label>
+                          <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                            Prioritetas
+                            <input value={day.priority} onChange={(event) => updateWorkoutDay(dayIndex, { priority: event.target.value })} className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                          </label>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          <button type="button" onClick={() => moveWorkoutDay(dayIndex, -1)} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↑</button>
+                          <button type="button" onClick={() => moveWorkoutDay(dayIndex, 1)} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↓</button>
+                          <button type="button" onClick={() => duplicateWorkoutDay(dayIndex)} className="rounded-full bg-white px-4 py-2 text-xs font-black text-ink shadow-soft">Kopijuoti</button>
+                          <button type="button" onClick={() => addWorkoutExercise(dayIndex)} className="rounded-full bg-lime/40 px-4 py-2 text-xs font-black text-forest">+ Pratimas</button>
+                          <button type="button" onClick={() => removeWorkoutDay(dayIndex)} className="rounded-full bg-rose-100 px-4 py-2 text-xs font-black text-rose-700">Šalinti</button>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 grid gap-3 lg:grid-cols-3">
+                        <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                          Dienos apšilimas
+                          <textarea value={day.warmup} onChange={(event) => updateWorkoutDay(dayIndex, { warmup: event.target.value })} className="min-h-20 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                        </label>
+                        <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                          Pabaiga / cooldown
+                          <textarea value={day.cooldown} onChange={(event) => updateWorkoutDay(dayIndex, { cooldown: event.target.value })} className="min-h-20 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                        </label>
+                        <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                          Dienos pastabos
+                          <textarea value={day.notes} onChange={(event) => updateWorkoutDay(dayIndex, { notes: event.target.value })} className="min-h-20 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                        </label>
                       </div>
                     </div>
 
                     <div className="overflow-x-auto">
-                      <div className="min-w-[980px]">
-                        <div className="grid grid-cols-[70px_1.55fr_150px_150px_130px_120px_86px] gap-2 border-b border-ink/10 bg-bone px-3 py-3 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                      <div className="min-w-[1380px]">
+                        <div className="grid grid-cols-[62px_150px_150px_1.3fr_120px_120px_130px_130px_130px_1fr_100px] gap-2 border-b border-ink/10 bg-bone px-3 py-3 text-xs font-black uppercase tracking-[.12em] text-ink/45">
                           <div>#</div>
-                          <div>Pratimas</div>
-                          <div>Serijos x pak.</div>
-                          <div>Intensyvumas</div>
-                          <div>Poilsis</div>
-                          <div>Tempas</div>
+                          <div>Jud. modelis</div>
+                          <div>Raumenys</div>
+                          <div>Pratimas / technika</div>
+                          <div>Serijos</div>
+                          <div>Pakart.</div>
+                          <div>Krūvis</div>
+                          <div>RPE/RIR</div>
+                          <div>Poilsis / tempas</div>
+                          <div>Progresija / alternatyvos</div>
                           <div></div>
                         </div>
 
                         {day.exercises.map((exercise, exerciseIndex) => (
-                          <div key={`${exercise.id}-${exerciseIndex}`} className="grid grid-cols-[70px_1.55fr_150px_150px_130px_120px_86px] gap-2 border-b border-ink/10 px-3 py-3">
+                          <div key={`${exercise.id}-${exerciseIndex}`} className="grid grid-cols-[62px_150px_150px_1.3fr_120px_120px_130px_130px_130px_1fr_100px] gap-2 border-b border-ink/10 px-3 py-3">
                             <input value={exercise.id} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { id: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <select value={exercise.movement} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { movement: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold">
+                              <option>Stūmimas</option>
+                              <option>Trauka</option>
+                              <option>Keliai</option>
+                              <option>Klubai</option>
+                              <option>Vienos kojos</option>
+                              <option>Core</option>
+                              <option>Nešimas</option>
+                              <option>Izoliacija</option>
+                              <option>Mobilumas</option>
+                              <option>Kondicija</option>
+                            </select>
+                            <input value={exercise.muscleGroup} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { muscleGroup: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
                             <div className="grid gap-2">
                               <input value={exercise.name} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { name: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                              <input value={exercise.meta} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { meta: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                              <textarea value={exercise.meta} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { meta: event.target.value })} className="min-h-16 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                              <input value={exercise.videoUrl} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { videoUrl: event.target.value })} placeholder="Video nuoroda / demonstracija" className="rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
                             </div>
-                            <input value={exercise.setsReps} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { setsReps: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <input value={exercise.sets} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { sets: event.target.value, setsReps: `${event.target.value} x ${exercise.reps}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <input value={exercise.reps} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { reps: event.target.value, setsReps: `${exercise.sets} x ${event.target.value}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <input value={exercise.load} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { load: event.target.value })} placeholder="kg / % / savijauta" className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
                             <input value={exercise.rpe} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rpe: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <input value={exercise.rest} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rest: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <input value={exercise.tempo} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { tempo: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <button type="button" onClick={() => removeWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-700">
-                              Šalinti
-                            </button>
+                            <div className="grid gap-2">
+                              <input value={exercise.rest} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rest: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                              <input value={exercise.tempo} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { tempo: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            </div>
+                            <div className="grid gap-2">
+                              <textarea value={exercise.progression} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { progression: event.target.value })} className="min-h-16 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                              <textarea value={exercise.alternatives} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { alternatives: event.target.value })} placeholder="Alternatyvos" className="min-h-14 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                              <textarea value={exercise.contraindications} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { contraindications: event.target.value })} placeholder="Saugumo apribojimai" className="min-h-14 rounded-xl border border-rose-100 px-3 py-2 text-xs font-bold text-rose-700" />
+                            </div>
+                            <div className="grid gap-2">
+                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, -1)} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↑</button>
+                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, 1)} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↓</button>
+                              <button type="button" onClick={() => duplicateWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-xl bg-lime/30 px-3 py-2 text-xs font-black text-forest">Copy</button>
+                              <button type="button" onClick={() => removeWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-700">Šalinti</button>
+                            </div>
                           </div>
                         ))}
                       </div>
