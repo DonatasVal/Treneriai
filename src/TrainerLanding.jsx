@@ -1157,34 +1157,6 @@ export default function TrainerLanding() {
         </div>
       </section>
 
-
-      <section id="sistema" className="container section">
-        <div className="section-head">
-          <h2>Ne tik svetainė — trenerio darbo sistema.</h2>
-          <p className="section-lead">
-            Demo parodo, kaip treneris gali valdyti registracijas, klientus, grafiką ir individualias sporto programas.
-          </p>
-        </div>
-
-        <div className="cards">
-          <article className="card">
-            <h3>Registracijos</h3>
-            <p>Kliento tikslas, patirtis, kontaktai ir saugumo informacija surenkami vienoje vietoje.</p>
-            <span className="price">Mažiau chaoso žinutėse</span>
-          </article>
-          <article className="card">
-            <h3>Admin panelė</h3>
-            <p>Treneris mato dienos / mėnesio užimtumą, užklausas, aktyvius klientus ir būsenas.</p>
-            <span className="price">Grafikas ir klientai</span>
-          </article>
-          <article className="card">
-            <h3>Programos PDF</h3>
-            <p>Individualios programos su pratimais, progresija, RPE, saugumo pastabomis ir eksportu į PDF.</p>
-            <span className="price">Profesionalus planas klientui</span>
-          </article>
-        </div>
-      </section>
-
       <section id="pasitikejimas" className="container section">
         <div className="section-head">
           <h2>Pasitikėjimo pagrindas: patirtis, metodika ir aiškūs rezultatai.</h2>
