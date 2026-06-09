@@ -181,9 +181,10 @@ const css = `
 
   .hero h1 {
     margin: 22px 0 0;
-    font-size: clamp(3rem, 8vw, 7.2rem);
-    line-height: .86;
-    letter-spacing: -.085em;
+    max-width: 820px;
+    font-size: clamp(2.7rem, 5.8vw, 5.7rem);
+    line-height: .92;
+    letter-spacing: -.065em;
     font-weight: 950;
   }
 
@@ -583,8 +584,12 @@ const css = `
     .brand-mark { width: 40px; height: 40px; border-radius: 14px; }
     .btn { width: 100%; padding: 15px 18px; }
     .nav .btn { width: auto; padding: 12px 16px; font-size: 13px; }
-    .hero { padding-top: 34px; }
-    .hero h1 { font-size: clamp(3rem, 18vw, 4.5rem); }
+    .hero { padding-top: 30px; }
+    .hero h1 {
+      font-size: clamp(2.35rem, 11.8vw, 3.7rem);
+      line-height: .94;
+      letter-spacing: -.06em;
+    }
     .hero p { font-size: 16px; line-height: 1.65; }
     .hero-actions { flex-direction: column; }
     .hero-points { grid-template-columns: 1fr; }
