@@ -376,6 +376,30 @@ const css = `
   .safety-item h3 { margin: 0; font-size: 21px; letter-spacing: -.055em; }
   .safety-item p { margin: 10px 0 0; color: rgba(255,255,255,.66); line-height: 1.6; font-size: 14px; }
 
+  .trust-board {
+    display: grid;
+    grid-template-columns: .95fr 1.05fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+  .trust-dark {
+    border-radius: 36px;
+    background: var(--forest);
+    color: white;
+    padding: 34px;
+  }
+  .trust-dark h2 { color: white; margin-top: 18px; }
+  .trust-dark p { color: rgba(255,255,255,.68); line-height: 1.7; }
+  .trust-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+  .trust-metric { border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.07); border-radius: 22px; padding: 18px; }
+  .trust-metric strong { display: block; font-size: 30px; letter-spacing: -.06em; }
+  .trust-metric span { display: block; margin-top: 4px; color: rgba(255,255,255,.6); font-size: 12px; font-weight: 900; }
+  .story-grid { display: grid; gap: 12px; }
+  .story-card { border: 1px solid var(--line); border-radius: 28px; background: white; padding: 22px; }
+  .story-card small { display: inline-flex; border-radius: 999px; background: var(--lime-soft); color: var(--forest); padding: 6px 10px; font-weight: 950; }
+  .story-card h3 { margin: 14px 0 0; font-size: 22px; letter-spacing: -.055em; }
+  .story-card p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
+
   .about-grid { display: grid; grid-template-columns: .92fr 1.08fr; gap: 18px; align-items: stretch; }
   .about-photo {
     min-height: 480px;
@@ -540,7 +564,7 @@ const css = `
     .hero-points { grid-template-columns: repeat(3, 1fr); }
     .section-head { align-items: start; flex-direction: column; }
     .cards, .reviews, .fit-grid { grid-template-columns: 1fr 1fr; }
-    .method-panel { grid-template-columns: 1fr; }
+    .method-panel, .trust-board { grid-template-columns: 1fr; }
     .safety-grid { grid-template-columns: 1fr; }
     .steps { grid-template-columns: 1fr 1fr; }
     .results { grid-template-columns: 1fr 1fr; }
@@ -570,7 +594,8 @@ const css = `
     .section { padding: 44px 0; }
     .cards, .reviews, .steps, .results, .fit-grid, .safety-grid { grid-template-columns: 1fr; }
     .card, .review, .step, .result, .fit-card, .safety-item { border-radius: 24px; padding: 22px; }
-    .method-intro, .safety-card { border-radius: 28px; padding: 24px; }
+    .method-intro, .safety-card, .trust-dark { border-radius: 28px; padding: 24px; }
+    .trust-metrics { grid-template-columns: 1fr; }
     .about-photo { min-height: 360px; border-radius: 28px; }
     .about-text { min-height: auto; border-radius: 28px; padding: 24px; }
     .about-list { grid-template-columns: 1fr; }
@@ -1160,11 +1185,68 @@ export default function TrainerLanding() {
         </div>
       </section>
 
+      <section id="pasitikejimas" className="container section">
+        <div className="section-head">
+          <h2>Pasitikėjimo pagrindas: patirtis, metodika ir aiškūs rezultatai.</h2>
+          <p className="section-lead">
+            Premium klientui svarbu ne vien gražus puslapis. Jis turi matyti, kad treniravimas paremtas aiškiu procesu, saugumu ir realiomis istorijomis.
+          </p>
+        </div>
+
+        <div className="trust-board">
+          <div className="trust-dark">
+            <span className="eyebrow">Pasitikėjimas</span>
+            <h2>Ne „atsitiktinė treniruotė“, o valdoma sistema.</h2>
+            <p>
+              Kiekvienas klientas pradedamas nuo tikslo, patirties, sveikatos informacijos ir realaus savaitės ritmo.
+              Tai leidžia sudaryti aiškią programą, valdyti krūvį ir klientui parodyti profesionalų planą.
+            </p>
+
+            <div className="trust-metrics">
+              <div className="trust-metric">
+                <strong>200+</strong>
+                <span>demo treniruočių patirtis</span>
+              </div>
+              <div className="trust-metric">
+                <strong>4–8 sav.</strong>
+                <span>aiškus progreso etapas</span>
+              </div>
+              <div className="trust-metric">
+                <strong>1:1</strong>
+                <span>individuali kryptis</span>
+              </div>
+              <div className="trust-metric">
+                <strong>PDF</strong>
+                <span>programa klientui</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="story-grid">
+            <article className="story-card">
+              <small>Kliento istorija</small>
+              <h3>Pradedantysis be aiškaus plano</h3>
+              <p>Problema: neaišku, ką daryti sporto salėje. Sprendimas: baziniai judesiai, technika, krūvio kontrolė ir 4 savaičių starto planas.</p>
+            </article>
+            <article className="story-card">
+              <small>Rezultatas</small>
+              <h3>Grįžimas po pertraukos</h3>
+              <p>Krūvis didinamas palaipsniui, vengiant per greito starto. Programa koreguojama pagal savijautą, miegą ir judesių kokybę.</p>
+            </article>
+            <article className="story-card">
+              <small>Metodika</small>
+              <h3>Progresija, ne spėlionės</h3>
+              <p>Kiekvienas pratimas turi serijas, pakartojimus, RPE / RIR, poilsį, tempą, alternatyvas ir saugumo pastabas.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="atsiliepimai" className="container section">
         <div className="section-head">
           <h2>Ką sako klientai.</h2>
           <p className="section-lead">
-            Šie tekstai yra demonstraciniai — realioje svetainėje būtų įkelti tikri kliento atsiliepimai.
+            Demo istorijos parodo, kokią žinutę verta komunikuoti realioje svetainėje: aiškumas, saugumas, progresas ir pasitikėjimas.
           </p>
         </div>
 
