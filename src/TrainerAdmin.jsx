@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "vardenis_admin_demo_v8_professional_program_builder";
+const STORAGE_KEY = "vardenis_admin_demo_v9_compact_program_builder";
 
 const timeSlots = [
   "06:30",
@@ -1819,66 +1819,121 @@ export default function TrainerAdmin() {
                       </div>
                     </div>
 
-                    <div className="overflow-x-auto">
-                      <div className="min-w-[1380px]">
-                        <div className="grid grid-cols-[62px_150px_150px_1.3fr_120px_120px_130px_130px_130px_1fr_100px] gap-2 border-b border-ink/10 bg-bone px-3 py-3 text-xs font-black uppercase tracking-[.12em] text-ink/45">
-                          <div>#</div>
-                          <div>Jud. modelis</div>
-                          <div>Raumenys</div>
-                          <div>Pratimas / technika</div>
-                          <div>Serijos</div>
-                          <div>Pakart.</div>
-                          <div>Krūvis</div>
-                          <div>RPE/RIR</div>
-                          <div>Poilsis / tempas</div>
-                          <div>Progresija / alternatyvos</div>
-                          <div></div>
-                        </div>
+                    <div className="grid gap-3 p-3">
+                      {day.exercises.map((exercise, exerciseIndex) => (
+                        <article key={`${exercise.id}-${exerciseIndex}`} className="rounded-[1.35rem] border border-ink/10 bg-white p-3 shadow-soft">
+                          <div className="mb-3 flex flex-col gap-3 border-b border-ink/10 pb-3 xl:flex-row xl:items-center xl:justify-between">
+                            <div className="grid flex-1 gap-2 md:grid-cols-[78px_170px_170px_1fr]">
+                              <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                #
+                                <input value={exercise.id} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { id: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
+                              </label>
 
-                        {day.exercises.map((exercise, exerciseIndex) => (
-                          <div key={`${exercise.id}-${exerciseIndex}`} className="grid grid-cols-[62px_150px_150px_1.3fr_120px_120px_130px_130px_130px_1fr_100px] gap-2 border-b border-ink/10 px-3 py-3">
-                            <input value={exercise.id} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { id: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <select value={exercise.movement} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { movement: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold">
-                              <option>Stūmimas</option>
-                              <option>Trauka</option>
-                              <option>Keliai</option>
-                              <option>Klubai</option>
-                              <option>Vienos kojos</option>
-                              <option>Core</option>
-                              <option>Nešimas</option>
-                              <option>Izoliacija</option>
-                              <option>Mobilumas</option>
-                              <option>Kondicija</option>
-                            </select>
-                            <input value={exercise.muscleGroup} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { muscleGroup: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <div className="grid gap-2">
-                              <input value={exercise.name} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { name: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                              <textarea value={exercise.meta} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { meta: event.target.value })} className="min-h-16 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
-                              <input value={exercise.videoUrl} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { videoUrl: event.target.value })} placeholder="Video nuoroda / demonstracija" className="rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                              <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                Judesys
+                                <select value={exercise.movement} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { movement: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink">
+                                  <option>Stūmimas</option>
+                                  <option>Trauka</option>
+                                  <option>Keliai</option>
+                                  <option>Klubai</option>
+                                  <option>Vienos kojos</option>
+                                  <option>Core</option>
+                                  <option>Nešimas</option>
+                                  <option>Izoliacija</option>
+                                  <option>Mobilumas</option>
+                                  <option>Kondicija</option>
+                                </select>
+                              </label>
+
+                              <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                Raumenys
+                                <input value={exercise.muscleGroup} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { muscleGroup: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                              </label>
+
+                              <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                Pratimas
+                                <input value={exercise.name} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { name: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
+                              </label>
                             </div>
-                            <input value={exercise.sets} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { sets: event.target.value, setsReps: `${event.target.value} x ${exercise.reps}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <input value={exercise.reps} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { reps: event.target.value, setsReps: `${exercise.sets} x ${event.target.value}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <input value={exercise.load} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { load: event.target.value })} placeholder="kg / % / savijauta" className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <input value={exercise.rpe} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rpe: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            <div className="grid gap-2">
-                              <input value={exercise.rest} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rest: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                              <input value={exercise.tempo} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { tempo: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
-                            </div>
-                            <div className="grid gap-2">
-                              <textarea value={exercise.progression} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { progression: event.target.value })} className="min-h-16 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
-                              <textarea value={exercise.alternatives} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { alternatives: event.target.value })} placeholder="Alternatyvos" className="min-h-14 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
-                              <textarea value={exercise.contraindications} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { contraindications: event.target.value })} placeholder="Saugumo apribojimai" className="min-h-14 rounded-xl border border-rose-100 px-3 py-2 text-xs font-bold text-rose-700" />
-                            </div>
-                            <div className="grid gap-2">
-                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, -1)} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↑</button>
-                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, 1)} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↓</button>
-                              <button type="button" onClick={() => duplicateWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-xl bg-lime/30 px-3 py-2 text-xs font-black text-forest">Copy</button>
-                              <button type="button" onClick={() => removeWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-700">Šalinti</button>
+
+                            <div className="flex flex-wrap gap-2 xl:flex-nowrap">
+                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, -1)} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↑</button>
+                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, 1)} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↓</button>
+                              <button type="button" onClick={() => duplicateWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-full bg-lime/30 px-4 py-2 text-xs font-black text-forest">Kopijuoti</button>
+                              <button type="button" onClick={() => removeWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-full bg-rose-50 px-4 py-2 text-xs font-black text-rose-700">Šalinti</button>
                             </div>
                           </div>
-                        ))}
-                      </div>
+
+                          <div className="grid gap-3 xl:grid-cols-[1.1fr_.9fr]">
+                            <div className="grid gap-3">
+                              <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                Technikos pastabos
+                                <textarea value={exercise.meta} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { meta: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold leading-5 text-ink/70" />
+                              </label>
+
+                              <div className="grid gap-3 md:grid-cols-2">
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Progresija
+                                  <textarea value={exercise.progression} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { progression: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold leading-5 text-ink/70" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Alternatyvos
+                                  <textarea value={exercise.alternatives} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { alternatives: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold leading-5 text-ink/70" />
+                                </label>
+                              </div>
+                            </div>
+
+                            <div className="grid gap-3">
+                              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Serijos
+                                  <input value={exercise.sets} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { sets: event.target.value, setsReps: `${event.target.value} x ${exercise.reps}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Pakart.
+                                  <input value={exercise.reps} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { reps: event.target.value, setsReps: `${exercise.sets} x ${event.target.value}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Krūvis
+                                  <input value={exercise.load} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { load: event.target.value })} placeholder="kg / %" className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  RPE/RIR
+                                  <input value={exercise.rpe} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rpe: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Poilsis
+                                  <input value={exercise.rest} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rest: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Tempas
+                                  <input value={exercise.tempo} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { tempo: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
+                              </div>
+
+                              <div className="grid gap-3 md:grid-cols-2">
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Video / demonstracija
+                                  <input value={exercise.videoUrl} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { videoUrl: event.target.value })} placeholder="Nuoroda arba trumpa pastaba" className="rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-rose-500">
+                                  Saugumo apribojimai
+                                  <textarea value={exercise.contraindications} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { contraindications: event.target.value })} className="min-h-16 rounded-xl border border-rose-100 px-3 py-2 text-xs font-bold leading-5 text-rose-700" />
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
                     </div>
+
                   </article>
                 ))}
               </div>
