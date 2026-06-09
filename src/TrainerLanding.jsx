@@ -434,6 +434,23 @@ const css = `
   .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; color: rgba(15, 23, 42, .62); font-size: 12px; line-height: 1.5; font-weight: 750; }
   .checkbox-row input { width: 18px; height: 18px; margin-top: 1px; flex: 0 0 auto; }
 
+  .wizard-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 22px 0; }
+  .wizard-tab { border: 1px solid var(--line); background: white; color: var(--muted); border-radius: 16px; padding: 12px; text-align: left; font-size: 12px; font-weight: 950; cursor: pointer; }
+  .wizard-tab.active { background: var(--forest); color: white; border-color: var(--forest); }
+  .wizard-tab.done { background: var(--lime-soft); color: var(--forest); border-color: rgba(183,243,74,.7); }
+  .wizard-layout { display: grid; grid-template-columns: 1fr .82fr; gap: 24px; align-items: start; }
+  .wizard-panel { border: 1px solid var(--line); background: white; border-radius: 26px; padding: 22px; }
+  .wizard-summary { position: sticky; top: 16px; background: var(--forest); color: white; border-radius: 26px; padding: 22px; }
+  .wizard-summary h3 { margin: 16px 0 0; font-size: 26px; letter-spacing: -.055em; }
+  .wizard-summary p { color: rgba(255,255,255,.66); line-height: 1.6; font-size: 13px; margin: 12px 0 0; }
+  .summary-line { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.12); padding: 10px 0; font-size: 13px; }
+  .summary-line span { color: rgba(255,255,255,.58); }
+  .wizard-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
+  .wizard-actions .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+  .service-list.wizard-services { display: grid; grid-template-columns: 1fr 1fr; }
+  .micro-note { margin-top: 12px; border-radius: 18px; background: var(--lime-soft); color: var(--forest); padding: 12px 14px; font-size: 12px; line-height: 1.55; font-weight: 850; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
   @media (max-width: 980px) {
     .container { width: min(100% - 28px, 1180px); }
     .nav { min-height: 68px; }
@@ -449,6 +466,8 @@ const css = `
     .contact-card { grid-template-columns: 1fr; padding: 30px; border-radius: 32px; }
     .modal { padding: 28px; }
     .reg-grid { grid-template-columns: 1fr; gap: 28px; }
+    .wizard-layout { grid-template-columns: 1fr; }
+    .wizard-summary { position: static; }
     .time-grid { grid-template-columns: repeat(4, 1fr); }
   }
 
@@ -487,30 +506,38 @@ const css = `
     .time-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .time-btn { padding: 15px 0; border-radius: 16px; }
     .form-row { grid-template-columns: 1fr; gap: 10px; }
+    .wizard-tabs { grid-template-columns: 1fr 1fr; }
+    .service-list.wizard-services, .form-grid { grid-template-columns: 1fr; }
+    .wizard-actions { flex-direction: column; }
     .input-field { font-size: 16px; padding: 15px 16px; }
     .submit-btn { padding: 17px; font-size: 15px; }
   }
 `;
 
 function BookingModal({ onClose }) {
+  const [step, setStep] = useState(0);
   const [selectedService, setSelectedService] = useState(services[0]);
   const [selectedDate, setSelectedDate] = useState("2026-06-08");
   const [selectedTime, setSelectedTime] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [contactMethod, setContactMethod] = useState("Telefonu");
-  const [email, setEmail] = useState("");
-  const [activityLevel, setActivityLevel] = useState("");
-  const [experience, setExperience] = useState("");
-  const [trainingPlace, setTrainingPlace] = useState("");
-  const [preferredDays, setPreferredDays] = useState("");
-  const [healthIssues, setHealthIssues] = useState("");
-  const [goal, setGoal] = useState("");
-  const [message, setMessage] = useState("");
-  const [consent, setConsent] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    contactMethod: "Telefonu",
+    goal: "",
+    experience: "",
+    activityLevel: "",
+    trainingPlace: "",
+    preferredDays: "",
+    preferredTime: "",
+    healthIssues: "",
+    notes: "",
+    consent: false,
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const requiresSchedule = selectedService.requiresSchedule;
+  const wizardSteps = ["Paslauga", "Tikslas", requiresSchedule ? "Laikas" : "Ritmas", "Kontaktai"];
 
   const availableSlots = useMemo(() => {
     return slots.map((slot) => {
@@ -530,41 +557,21 @@ function BookingModal({ onClose }) {
   }, [selectedService]);
 
   const activeSlotsCount = availableSlots.filter((slot) => slot.available).length;
-  const hasRequiredSchedule = !requiresSchedule || (selectedDate && selectedTime);
-  const isFormReady = name && phone && healthIssues && activityLevel && goal && hasRequiredSchedule && consent;
+
+  const canContinue = useMemo(() => {
+    if (step === 0) return Boolean(selectedService);
+    if (step === 1) return form.goal.trim() && form.activityLevel && form.healthIssues.trim();
+    if (step === 2) return requiresSchedule ? selectedDate && selectedTime : form.preferredDays.trim() && form.preferredTime.trim();
+    return form.name.trim() && form.phone.trim() && form.consent;
+  }, [step, selectedService, form, requiresSchedule, selectedDate, selectedTime]);
+
+  function updateForm(key, value) {
+    setForm((current) => ({ ...current, [key]: value }));
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (!isFormReady) return;
-
-    const lead = {
-      id: `lead-${Date.now()}`,
-      service: selectedService.title,
-      serviceType: selectedService.bookingType,
-      selectedDate: requiresSchedule ? selectedDate : "Derinama po pokalbio",
-      selectedTime: requiresSchedule ? selectedTime : "Derinama po pokalbio",
-      name,
-      phone,
-      contactMethod,
-      email,
-      activityLevel,
-      experience,
-      trainingPlace,
-      preferredDays,
-      healthIssues,
-      goal,
-      message,
-      createdAt: new Date().toISOString(),
-      status: "Naujas",
-    };
-
-    try {
-      const saved = JSON.parse(localStorage.getItem("trainer_public_leads_v1") || "[]");
-      localStorage.setItem("trainer_public_leads_v1", JSON.stringify([lead, ...saved].slice(0, 40)));
-    } catch {
-      // Demo režime forma vis tiek parodo sėkmę net jei localStorage nepasiekiamas.
-    }
-
+    if (!canContinue) return;
     setIsSubmitted(true);
   }
 
@@ -574,166 +581,166 @@ function BookingModal({ onClose }) {
         <div className="reg-header">
           <div>
             <h1 className="reg-title">Registracija treniruotei</h1>
-            <p className="reg-sub">Pasirink paslaugą ir užpildyk informaciją, kad treneris galėtų pasiūlyti tinkamą planą.</p>
+            <p className="reg-sub">Žingsninė anketa surenka paslaugą, tikslą, saugumo informaciją, ritmą ir kontaktus.</p>
           </div>
           <button className="close-btn" type="button" onClick={onClose} aria-label="Uždaryti">×</button>
         </div>
 
         {!isSubmitted ? (
-          <form onSubmit={handleSubmit} className="reg-grid">
-            <div>
-              <h2 className="section-title">1. Paslauga</h2>
-              <div className="service-list">
-                {services.map((service) => (
-                  <button
-                    type="button"
-                    key={service.id}
-                    className={`service-card ${selectedService.id === service.id ? "active" : ""}`}
-                    onClick={() => {
-                      setSelectedService(service);
-                      setSelectedTime("");
-                    }}
-                  >
-                    <h3 className="service-name">{service.title}</h3>
-                    <div className="service-meta">{service.price} · {service.meta}</div>
-                    <p className="small-note">{service.nextStepNote}</p>
-                  </button>
-                ))}
-              </div>
+          <form onSubmit={handleSubmit}>
+            <div className="wizard-tabs">
+              {wizardSteps.map((item, index) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={`wizard-tab ${index === step ? "active" : ""} ${index < step ? "done" : ""}`}
+                  onClick={() => setStep(index)}
+                >
+                  {index + 1}. {item}
+                </button>
+              ))}
             </div>
 
-            <div>
-              {requiresSchedule ? (
-                <>
-                  <div className="slots-header">
-                    <h2 className="section-title" style={{ margin: 0 }}>2. Data ir pageidaujamas laikas</h2>
-                    <span className="slots-badge">{activeSlotsCount} laikai laisvi</span>
-                  </div>
-
-                  <div className="form-row">
-                    <input className="input-field" type="date" value={selectedDate} onChange={(event) => setSelectedDate(event.target.value)} />
-                    <select className="input-field" value={selectedTime} onChange={(event) => setSelectedTime(event.target.value)} required>
-                      <option value="">Pasirinkite laiką *</option>
-                      {availableSlots.map((slot) => (
-                        <option key={slot.time} value={slot.time} disabled={!slot.available}>
-                          {slot.available ? slot.time : `${slot.time} — užimta`}
-                        </option>
+            <div className="wizard-layout">
+              <section className="wizard-panel">
+                {step === 0 && (
+                  <>
+                    <h2 className="section-title">1. Paslauga</h2>
+                    <div className="service-list wizard-services">
+                      {services.map((service) => (
+                        <button
+                          type="button"
+                          key={service.id}
+                          className={`service-card ${selectedService.id === service.id ? "active" : ""}`}
+                          onClick={() => {
+                            setSelectedService(service);
+                            setSelectedTime("");
+                          }}
+                        >
+                          <h3 className="service-name">{service.title}</h3>
+                          <div className="service-meta">{service.price} · {service.meta}</div>
+                          <div className="service-meta" style={{ marginTop: 8 }}>{service.description}</div>
+                        </button>
                       ))}
-                    </select>
-                  </div>
+                    </div>
+                    <div className="micro-note">{selectedService.nextStepNote}</div>
+                  </>
+                )}
 
-                  <div className="time-grid">
-                    {availableSlots.map((slot) => (
-                      <button
-                        key={slot.time}
-                        type="button"
-                        disabled={!slot.available}
-                        className={`time-btn ${selectedTime === slot.time ? "active" : ""}`}
-                        onClick={() => setSelectedTime(slot.time)}
-                      >
-                        {slot.time}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="schedule-card">
-                  <strong>Datos rinktis nereikia</strong>
-                  <p>{selectedService.nextStepNote}</p>
+                {step === 1 && (
+                  <>
+                    <h2 className="section-title">2. Tikslas, patirtis ir saugumas</h2>
+                    <div className="form-grid">
+                      <select className="input-field" value={form.activityLevel} onChange={(event) => updateForm("activityLevel", event.target.value)} required>
+                        <option value="">Fizinio aktyvumo lygis *</option>
+                        <option>Žemas — sėdimas darbas, nesportuoju</option>
+                        <option>Vidutinis — pajudu 1–2 k. per savaitę</option>
+                        <option>Aukštas — reguliariai sportuoju</option>
+                      </select>
+                      <select className="input-field" value={form.experience} onChange={(event) => updateForm("experience", event.target.value)}>
+                        <option value="">Treniruočių patirtis</option>
+                        <option>Pradedantysis</option>
+                        <option>Sportavau anksčiau, grįžtu po pertraukos</option>
+                        <option>Sportuoju reguliariai</option>
+                        <option>Pažengęs</option>
+                      </select>
+                    </div>
+                    <textarea className="input-field" style={{ marginTop: 12 }} rows="3" placeholder="Pagrindinis tikslas: jėga, svorio mažinimas, laikysena, energija ar kita... *" value={form.goal} onChange={(event) => updateForm("goal", event.target.value)} required />
+                    <textarea className="input-field danger-border" style={{ marginTop: 12 }} rows="3" placeholder="SVARBU: traumos, skausmai, sveikatos apribojimai. Jei nėra, įrašykite „Nėra“ *" value={form.healthIssues} onChange={(event) => updateForm("healthIssues", event.target.value)} required />
+                    <textarea className="input-field" style={{ marginTop: 12 }} rows="2" placeholder="Papildoma informacija treneriui" value={form.notes} onChange={(event) => updateForm("notes", event.target.value)} />
+                  </>
+                )}
+
+                {step === 2 && (
+                  <>
+                    <h2 className="section-title">3. {requiresSchedule ? "Pageidaujamas laikas" : "Pageidaujamas ritmas"}</h2>
+                    {requiresSchedule ? (
+                      <>
+                        <div className="slots-header">
+                          <span className="slots-badge">{activeSlotsCount} laikai laisvi</span>
+                        </div>
+                        <input className="input-field" type="date" value={selectedDate} onChange={(event) => setSelectedDate(event.target.value)} style={{ marginBottom: 12 }} />
+                        <div className="time-grid">
+                          {availableSlots.map((slot) => (
+                            <button key={slot.time} type="button" disabled={!slot.available} className={`time-btn ${selectedTime === slot.time ? "active" : ""}`} onClick={() => setSelectedTime(slot.time)}>
+                              {slot.time}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="micro-note">{selectedService.nextStepNote}</div>
+                        <div className="form-grid" style={{ marginTop: 12 }}>
+                          <input className="input-field" placeholder="Kokiomis dienomis patogiausia? *" value={form.preferredDays} onChange={(event) => updateForm("preferredDays", event.target.value)} />
+                          <input className="input-field" placeholder="Rytais, dieną ar vakarais? *" value={form.preferredTime} onChange={(event) => updateForm("preferredTime", event.target.value)} />
+                        </div>
+                        <select className="input-field" style={{ marginTop: 12 }} value={form.trainingPlace} onChange={(event) => updateForm("trainingPlace", event.target.value)}>
+                          <option value="">Kur planuojate sportuoti?</option>
+                          <option>Sporto salėje</option>
+                          <option>Namuose</option>
+                          <option>Lauke</option>
+                          <option>Mišriai</option>
+                        </select>
+                      </>
+                    )}
+                  </>
+                )}
+
+                {step === 3 && (
+                  <>
+                    <h2 className="section-title">4. Kontaktai ir patvirtinimas</h2>
+                    <div className="form-grid">
+                      <input className="input-field" placeholder="Vardas ir pavardė *" value={form.name} onChange={(event) => updateForm("name", event.target.value)} required />
+                      <input className="input-field" placeholder="Telefono numeris *" value={form.phone} onChange={(event) => updateForm("phone", event.target.value)} required />
+                      <select className="input-field" value={form.contactMethod} onChange={(event) => updateForm("contactMethod", event.target.value)}>
+                        <option>Telefonu</option>
+                        <option>El. paštu</option>
+                        <option>Instagram</option>
+                      </select>
+                      <input className="input-field" placeholder="El. paštas / Instagram" value={form.email} onChange={(event) => updateForm("email", event.target.value)} />
+                    </div>
+                    <label style={{ display: "flex", gap: 10, alignItems: "flex-start", marginTop: 14, color: "var(--muted)", fontSize: 13, fontWeight: 800, lineHeight: 1.5 }}>
+                      <input type="checkbox" checked={form.consent} onChange={(event) => updateForm("consent", event.target.checked)} style={{ marginTop: 3 }} />
+                      Sutinku, kad treneris susisiektų dėl paslaugos, plano, laikų ir registracijos patvirtinimo.
+                    </label>
+                  </>
+                )}
+
+                <div className="wizard-actions">
+                  <button className="btn btn-light" type="button" onClick={() => (step === 0 ? onClose() : setStep((current) => current - 1))}>
+                    {step === 0 ? "Uždaryti" : "Atgal"}
+                  </button>
+                  {step < wizardSteps.length - 1 ? (
+                    <button className="btn btn-dark" type="button" disabled={!canContinue} onClick={() => setStep((current) => current + 1)}>
+                      Toliau
+                    </button>
+                  ) : (
+                    <button className="btn btn-dark" type="submit" disabled={!canContinue}>
+                      Pateikti registraciją
+                    </button>
+                  )}
                 </div>
-              )}
+              </section>
 
-              <h2 className="section-title">3. Kliento anketa</h2>
-              <p className="form-section-note">Kuo tiksliau užpildysite informaciją, tuo lengviau treneriui paruošti saugų ir realistišką treniravimo planą.</p>
-
-              <div className="form-row">
-                <input className="input-field" placeholder="Vardas ir pavardė *" required value={name} onChange={(event) => setName(event.target.value)} />
-                <input className="input-field" placeholder="Telefono numeris *" required value={phone} onChange={(event) => setPhone(event.target.value)} />
-              </div>
-
-              <div className="form-row">
-                <select className="input-field" value={contactMethod} onChange={(event) => setContactMethod(event.target.value)}>
-                  <option value="Telefonu">Telefonu</option>
-                  <option value="Instagram">Instagram</option>
-                  <option value="El. paštu">El. paštu</option>
-                </select>
-                <input className="input-field" placeholder="El. paštas / Instagram" value={email} onChange={(event) => setEmail(event.target.value)} />
-              </div>
-
-              <div className="form-row">
-                <select className="input-field" required value={activityLevel} onChange={(event) => setActivityLevel(event.target.value)}>
-                  <option value="">Fizinio aktyvumo lygis *</option>
-                  <option value="Žemas">Žemas — sėdimas darbas, nesportuoju</option>
-                  <option value="Vidutinis">Vidutinis — pajudu 1–2 k. per savaitę</option>
-                  <option value="Aukštas">Aukštas — reguliariai sportuoju</option>
-                </select>
-                <select className="input-field" value={experience} onChange={(event) => setExperience(event.target.value)}>
-                  <option value="">Treniruočių patirtis</option>
-                  <option value="Pradedantysis">Pradedantysis</option>
-                  <option value="1–2 metai">1–2 metai</option>
-                  <option value="3+ metai">3+ metai</option>
-                </select>
-              </div>
-
-              <div className="form-row">
-                <select className="input-field" value={trainingPlace} onChange={(event) => setTrainingPlace(event.target.value)}>
-                  <option value="">Kur planuojate sportuoti?</option>
-                  <option value="Sporto salėje">Sporto salėje</option>
-                  <option value="Namuose">Namuose</option>
-                  <option value="Lauke">Lauke</option>
-                  <option value="Dar nežinau">Dar nežinau</option>
-                </select>
-                <input className="input-field" placeholder="Pageidaujamos dienos / laikai" value={preferredDays} onChange={(event) => setPreferredDays(event.target.value)} />
-              </div>
-
-              <textarea
-                className="input-field danger-border"
-                rows="2"
-                placeholder="SVARBU: traumos, sveikatos sutrikimai, skausmai ar gydytojo apribojimai. Jei nėra, įrašykite „Nėra“ *"
-                required
-                value={healthIssues}
-                onChange={(event) => setHealthIssues(event.target.value)}
-              />
-
-              <div style={{ height: 12 }} />
-
-              <textarea
-                className="input-field"
-                rows="2"
-                placeholder="Pagrindinis tikslas: jėga, svorio mažinimas, laikysena, raumenų masė, energija ar kita... *"
-                required
-                value={goal}
-                onChange={(event) => setGoal(event.target.value)}
-              />
-
-              <div style={{ height: 12 }} />
-
-              <textarea
-                className="input-field"
-                rows="2"
-                placeholder="Papildoma informacija treneriui: darbo grafikas, sporto įranga, miego režimas, mitybos įpročiai..."
-                value={message}
-                onChange={(event) => setMessage(event.target.value)}
-              />
-
-              <label className="checkbox-row">
-                <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
-                <span>Sutinku, kad treneris susisiektų dėl registracijos, plano aptarimo ir tinkamiausių laikų suderinimo.</span>
-              </label>
-
-              <button type="submit" className="submit-btn" disabled={!isFormReady}>
-                {!hasRequiredSchedule ? "Pasirinkite datą ir laiką" : !consent ? "Patvirtinkite sutikimą" : "Siųsti registraciją"}
-              </button>
+              <aside className="wizard-summary">
+                <span className="eyebrow">Santrauka</span>
+                <h3>{selectedService.title}</h3>
+                <p>{selectedService.description}</p>
+                <div style={{ marginTop: 18 }}>
+                  <div className="summary-line"><span>Kaina</span><strong>{selectedService.price}</strong></div>
+                  <div className="summary-line"><span>Formatas</span><strong>{requiresSchedule ? "Su laiku" : "Derinama"}</strong></div>
+                  <div className="summary-line"><span>Laikas</span><strong>{requiresSchedule ? (selectedTime || "Nepasirinkta") : "Po pokalbio"}</strong></div>
+                  <div className="summary-line"><span>Kontaktas</span><strong>{form.name || "Dar neįvestas"}</strong></div>
+                </div>
+                <p>{selectedService.nextStepNote}</p>
+              </aside>
             </div>
           </form>
         ) : (
           <div className="success-box">
             <h2>Registracija sėkmingai gauta</h2>
-            {requiresSchedule ? (
-              <p>Paslauga: {selectedService.title}<br />Data: {selectedDate}<br />Laikas: {selectedTime} val.<br />Treneris susisieks dėl patvirtinimo.</p>
-            ) : (
-              <p>Paslauga: {selectedService.title}<br />Datos rinktis nereikėjo — treneris susisieks aptarti plano, formato ir laikų.</p>
-            )}
+            <p>{requiresSchedule ? `Pasirinktas laikas: ${selectedDate} · ${selectedTime}` : "Laikai ir treniravimo planas bus suderinti po pokalbio."}</p>
             <button className="btn btn-dark" type="button" onClick={onClose}>Uždaryti</button>
           </div>
         )}
@@ -935,6 +942,34 @@ export default function TrainerLanding() {
             <strong>100%</strong>
             <span>individualizuotas krūvis pagal žmogų</span>
           </div>
+        </div>
+      </section>
+
+
+      <section id="sistema" className="container section">
+        <div className="section-head">
+          <h2>Ne tik svetainė — trenerio darbo sistema.</h2>
+          <p className="section-lead">
+            Demo parodo, kaip treneris gali valdyti registracijas, klientus, grafiką ir individualias sporto programas.
+          </p>
+        </div>
+
+        <div className="cards">
+          <article className="card">
+            <h3>Registracijos</h3>
+            <p>Kliento tikslas, patirtis, kontaktai ir saugumo informacija surenkami vienoje vietoje.</p>
+            <span className="price">Mažiau chaoso žinutėse</span>
+          </article>
+          <article className="card">
+            <h3>Admin panelė</h3>
+            <p>Treneris mato dienos / mėnesio užimtumą, užklausas, aktyvius klientus ir būsenas.</p>
+            <span className="price">Grafikas ir klientai</span>
+          </article>
+          <article className="card">
+            <h3>Programos PDF</h3>
+            <p>Individualios programos su pratimais, progresija, RPE, saugumo pastabomis ir eksportu į PDF.</p>
+            <span className="price">Profesionalus planas klientui</span>
+          </article>
         </div>
       </section>
 
