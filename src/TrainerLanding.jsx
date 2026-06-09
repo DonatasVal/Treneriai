@@ -421,6 +421,7 @@ const css = `
   .input-field::placeholder { color: #98a2b3; }
   .input-field:focus { outline: none; border-color: #111827; }
   .danger-border { border: 1px solid #fca5a5 !important; background: #fffbfa; }
+  .field-hint { margin-top: 7px; color: rgba(15, 23, 42, .52); font-size: 12px; font-weight: 750; line-height: 1.45; }
   .submit-btn { width: 100%; background: #111827; color: white; border: 0; border-radius: 999px; padding: 16px; font-weight: 950; font-size: 16px; margin-top: 16px; cursor: pointer; transition: 0.2s; }
   .submit-btn:hover { background: #233027; transform: translateY(-2px); }
   .submit-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
@@ -449,9 +450,6 @@ const css = `
   .wizard-actions .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
   .service-list.wizard-services { display: grid; grid-template-columns: 1fr 1fr; }
   .micro-note { margin-top: 12px; border-radius: 18px; background: var(--lime-soft); color: var(--forest); padding: 12px 14px; font-size: 12px; line-height: 1.55; font-weight: 850; }
-  .field-hint { margin-top: 7px; color: rgba(15, 23, 42, .52); font-size: 12px; font-weight: 750; line-height: 1.45; }
-  .safety-note { margin: 0 0 14px; border: 1px solid rgba(183, 243, 74, .55); border-radius: 18px; background: rgba(183, 243, 74, .14); color: var(--forest); padding: 13px 14px; font-size: 13px; font-weight: 850; line-height: 1.55; }
-  .privacy-note { margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; background: rgba(15, 23, 42, .04); color: rgba(15, 23, 42, .58); padding: 8px 11px; font-size: 11px; font-weight: 900; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
   @media (max-width: 980px) {
@@ -633,61 +631,25 @@ function BookingModal({ onClose }) {
                 {step === 1 && (
                   <>
                     <h2 className="section-title">2. Tikslas, patirtis ir saugumas</h2>
-                    <div className="safety-note">
-                      Ši dalis nėra medicininė anketa. Ji padeda treneriui suprasti jūsų starto lygį, parinkti saugų krūvį ir išvengti netinkamų pratimų.
-                    </div>
-
                     <div className="form-grid">
-                      <label>
-                        <select className="input-field" value={form.activityLevel} onChange={(event) => updateForm("activityLevel", event.target.value)} required>
-                          <option value="">Fizinio aktyvumo lygis *</option>
-                          <option>Žemas — sėdimas darbas, nesportuoju</option>
-                          <option>Vidutinis — pajudu 1–2 k. per savaitę</option>
-                          <option>Aukštas — reguliariai sportuoju</option>
-                        </select>
-                        <div className="field-hint">Padeda parinkti realistišką pradžios krūvį.</div>
-                      </label>
-
-                      <label>
-                        <select className="input-field" value={form.experience} onChange={(event) => updateForm("experience", event.target.value)}>
-                          <option value="">Treniruočių patirtis</option>
-                          <option>Pradedantysis</option>
-                          <option>Sportavau anksčiau, grįžtu po pertraukos</option>
-                          <option>Sportuoju reguliariai</option>
-                          <option>Pažengęs</option>
-                        </select>
-                        <div className="field-hint">Padeda išvengti per lengvos arba per sunkios pradžios.</div>
-                      </label>
+                      <select className="input-field" value={form.activityLevel} onChange={(event) => updateForm("activityLevel", event.target.value)} required>
+                        <option value="">Fizinio aktyvumo lygis *</option>
+                        <option>Žemas — sėdimas darbas, nesportuoju</option>
+                        <option>Vidutinis — pajudu 1–2 k. per savaitę</option>
+                        <option>Aukštas — reguliariai sportuoju</option>
+                      </select>
+                      <select className="input-field" value={form.experience} onChange={(event) => updateForm("experience", event.target.value)}>
+                        <option value="">Treniruočių patirtis</option>
+                        <option>Pradedantysis</option>
+                        <option>Sportavau anksčiau, grįžtu po pertraukos</option>
+                        <option>Sportuoju reguliariai</option>
+                        <option>Pažengęs</option>
+                      </select>
                     </div>
-
-                    <label style={{ display: "block", marginTop: 12 }}>
-                      <textarea
-                        className="input-field"
-                        rows="3"
-                        placeholder="Pagrindinis tikslas: jėga, svorio mažinimas, laikysena, energija ar kita... *"
-                        value={form.goal}
-                        onChange={(event) => updateForm("goal", event.target.value)}
-                        required
-                      />
-                      <div className="field-hint">Tikslas padeda parinkti tinkamiausią treniravimo kryptį ir formatą.</div>
-                    </label>
-
-                    <label style={{ display: "block", marginTop: 12 }}>
-                      <textarea
-                        className="input-field danger-border"
-                        rows="3"
-                        placeholder="SVARBU: traumos, skausmai, sveikatos apribojimai. Jei nėra, įrašykite „Nėra“ *"
-                        value={form.healthIssues}
-                        onChange={(event) => updateForm("healthIssues", event.target.value)}
-                        required
-                      />
-                      <div className="field-hint">
-                        Tai padeda parinkti saugų krūvį, pratimų alternatyvas ir programos korekcijas. Informacija naudojama tik registracijai ir pasiruošimui konsultacijai.
-                      </div>
-                    </label>
-
+                    <textarea className="input-field" style={{ marginTop: 12 }} rows="3" placeholder="Pagrindinis tikslas: jėga, svorio mažinimas, laikysena, energija ar kita... *" value={form.goal} onChange={(event) => updateForm("goal", event.target.value)} required />
+                    <textarea className="input-field danger-border" style={{ marginTop: 12 }} rows="3" placeholder="SVARBU: traumos, skausmai, sveikatos apribojimai. Jei nėra, įrašykite „Nėra“ *" value={form.healthIssues} onChange={(event) => updateForm("healthIssues", event.target.value)} required />
+                    <div className="field-hint">Tai padeda parinkti saugų krūvį, pratimų alternatyvas ir programos korekcijas.</div>
                     <textarea className="input-field" style={{ marginTop: 12 }} rows="2" placeholder="Papildoma informacija treneriui" value={form.notes} onChange={(event) => updateForm("notes", event.target.value)} />
-                    <div className="privacy-note">🔒 Jautri informacija nėra rodoma viešai.</div>
                   </>
                 )}
 
