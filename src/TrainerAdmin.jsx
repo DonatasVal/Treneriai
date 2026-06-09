@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "vardenis_admin_demo_v4";
+const STORAGE_KEY = "vardenis_admin_demo_v7";
 
 const timeSlots = [
   "06:30",
@@ -171,17 +171,179 @@ function getStatusClass(status) {
   return statusStyles[status] || "bg-stone-100 text-stone-700";
 }
 
+function createDefaultWorkoutPlan(client = {}) {
+  return {
+    title: "SPORTO PROGRAMA",
+    subtitle: "Progresuojanti hipertrofijos ir bendro pasirengimo sistema",
+    coach: "Vardenis Pavardenis",
+    clientName: client.name || "Klientas",
+    weight: "",
+    height: "",
+    duration: "4–6 savaitės",
+    system: "Upper / Lower · 4 d. per savaitę",
+    alerts: client.health || "Nėra nurodytų apribojimų.",
+    days: [
+      {
+        title: "DIENA A: VIRŠUTINĖ KŪNO DALIS",
+        exercises: [
+          { id: "A1", name: "Štangos spaudimas kampu", meta: "Kontroliuojamas nuleidimas, stabilūs pečiai.", setsReps: "3 x 6–8", rpe: "RPE 8 / 2 RIR", rest: "3 min.", tempo: "3-0-1-0", result: "" },
+          { id: "A2", name: "Štangos trauka pasilenkus", meta: "Horizontalus traukimas, pilnas nugaros ištempimas apačioje.", setsReps: "3 x 8–10", rpe: "RPE 8 / 2 RIR", rest: "2.5 min.", tempo: "2-1-1-0", result: "" },
+          { id: "B1", name: "Hantelių spaudimas sėdint", meta: "Nenaudoti per didelio nugaros išlinkimo.", setsReps: "3 x 10–12", rpe: "RPE 8.5 / 1–2 RIR", rest: "2 min.", tempo: "3-0-1-0", result: "" },
+        ],
+      },
+      {
+        title: "DIENA B: APATINĖ KŪNO DALIS",
+        exercises: [
+          { id: "A1", name: "Pritūpimai su štanga", meta: "Pilna saugi amplitudė, stabili pėda, kontrolė apačioje.", setsReps: "4 x 6", rpe: "RPE 8 / 2 RIR", rest: "3.5 min.", tempo: "3-1-1-0", result: "" },
+          { id: "B1", name: "Rumuniška mirties trauka", meta: "Judesys per klubus, akcentas į sėdmenis ir šlaunies galą.", setsReps: "3 x 8–10", rpe: "RPE 8 / 2 RIR", rest: "2.5 min.", tempo: "3-0-1-0", result: "" },
+          { id: "C1", name: "Kojų lenkimas treniruoklyje", meta: "Izoliuotas darbas šlaunies užpakalinei daliai.", setsReps: "3 x 12–15", rpe: "RPE 9 / 1 RIR", rest: "90 sek.", tempo: "2-0-1-1", result: "" },
+        ],
+      },
+    ],
+  };
+}
+
+function normalizeWorkoutPlan(client) {
+  const plan = client.workoutPlan || createDefaultWorkoutPlan(client);
+
+  return {
+    ...plan,
+    title: plan.title || "SPORTO PROGRAMA",
+    subtitle: plan.subtitle || "Individuali treniruočių sistema",
+    coach: plan.coach || "Vardenis Pavardenis",
+    clientName: plan.clientName || client.name || "Klientas",
+    alerts: plan.alerts || client.health || "Nėra nurodytų apribojimų.",
+    days: Array.isArray(plan.days) && plan.days.length ? plan.days.map((day, index) => ({
+      title: day.title || `DIENA ${index + 1}`,
+      exercises: Array.isArray(day.exercises) ? day.exercises.map((exercise, exerciseIndex) => ({
+        id: exercise.id || `A${exerciseIndex + 1}`,
+        name: exercise.name || "Pratimas",
+        meta: exercise.meta || "Technikos pastabos",
+        setsReps: exercise.setsReps || "3 x 10",
+        rpe: exercise.rpe || "RPE 8 / 2 RIR",
+        rest: exercise.rest || "2 min.",
+        tempo: exercise.tempo || "3-0-1-0",
+        result: exercise.result || "",
+      })) : [],
+    })) : createDefaultWorkoutPlan(client).days,
+  };
+}
+
+function normalizeState(data) {
+  return {
+    clients: (data?.clients || initialClients).map((client) => ({
+      ...client,
+      workoutPlan: normalizeWorkoutPlan(client),
+    })),
+    registrations: data?.registrations || initialRegistrations,
+    blocked: data?.blocked || initialBlocked,
+  };
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function buildWorkoutPlanHtml(client, plan) {
+  const safePlan = normalizeWorkoutPlan({ ...client, workoutPlan: plan });
+  const daysHtml = safePlan.days.map((day) => `
+    <section class="day">
+      <h2>${escapeHtml(day.title)}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Pratimas</th>
+            <th>Serijos x pakart.</th>
+            <th>Intensyvumas</th>
+            <th>Poilsis / tempas</th>
+            <th>Rezultatas</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${day.exercises.map((exercise) => `
+            <tr>
+              <td><strong>${escapeHtml(exercise.id)}</strong></td>
+              <td><strong>${escapeHtml(exercise.name)}</strong><small>${escapeHtml(exercise.meta)}</small></td>
+              <td>${escapeHtml(exercise.setsReps)}</td>
+              <td>${escapeHtml(exercise.rpe)}</td>
+              <td>${escapeHtml(exercise.rest)}<small>Tempas: ${escapeHtml(exercise.tempo)}</small></td>
+              <td>${escapeHtml(exercise.result || "kg x pak.")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </section>
+  `).join("");
+
+  return `<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8" />
+<title>${escapeHtml(safePlan.title)} - ${escapeHtml(safePlan.clientName)}</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, Arial, sans-serif; color: #111827; background: white; }
+  .sheet { max-width: 1000px; margin: 0 auto; padding: 28px; }
+  header { display: flex; justify-content: space-between; gap: 24px; border-bottom: 2px solid #111827; padding-bottom: 18px; margin-bottom: 24px; }
+  h1 { margin: 0; font-size: 30px; letter-spacing: -.04em; }
+  .subtitle { color: #475467; margin-top: 4px; font-size: 14px; }
+  .coach { text-align: right; font-size: 13px; line-height: 1.6; }
+  .meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; background: #f8fafc; border: 1px solid #e5e7eb; padding: 16px; border-radius: 14px; margin-bottom: 18px; font-size: 13px; }
+  .alert { background: #fff1f2; border: 1px solid #fda4af; color: #9f1239; padding: 12px; border-radius: 12px; margin-bottom: 18px; font-size: 13px; }
+  .day { break-inside: avoid; margin-top: 22px; }
+  .day h2 { background: #111827; color: white; padding: 10px 12px; border-radius: 10px; font-size: 15px; margin: 0 0 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; background: #f3f4f6; color: #475467; padding: 9px; border-bottom: 2px solid #e5e7eb; }
+  td { padding: 10px 9px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  small { display: block; color: #64748b; margin-top: 4px; line-height: 1.35; }
+  .guide { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; border-radius: 14px; padding: 16px; margin-top: 24px; font-size: 12px; color: #334155; }
+  @media print { .sheet { padding: 0; } }
+</style>
+</head>
+<body>
+  <main class="sheet">
+    <header>
+      <div>
+        <h1>${escapeHtml(safePlan.title)}</h1>
+        <div class="subtitle">${escapeHtml(safePlan.subtitle)}</div>
+      </div>
+      <div class="coach"><strong>Treneris:</strong> ${escapeHtml(safePlan.coach)}<br /><strong>Data:</strong> ${new Date().toLocaleDateString("lt-LT")}</div>
+    </header>
+    <section class="meta">
+      <div><strong>Klientas:</strong> ${escapeHtml(safePlan.clientName)}</div>
+      <div><strong>Sistemos tipas:</strong> ${escapeHtml(safePlan.system)}</div>
+      <div><strong>Ūgis / svoris:</strong> ${escapeHtml(safePlan.height || "—")} cm / ${escapeHtml(safePlan.weight || "—")} kg</div>
+      <div><strong>Trukmė:</strong> ${escapeHtml(safePlan.duration)}</div>
+    </section>
+    <section class="alert"><strong>Sveikatos apribojimai:</strong> ${escapeHtml(safePlan.alerts)}</section>
+    ${daysHtml}
+    <section class="guide">
+      <div><strong>RPE ir RIR:</strong><br />RIR reiškia, kiek pakartojimų lieka atsargoje iki techninio nebegalėjimo. 2 RIR = galėtumėte padaryti dar 2 kokybiškus pakartojimus.</div>
+      <div><strong>Tempo pavyzdys 3-0-1-0:</strong><br />3 sek. nuleidimas, 0 sek. pauzė apačioje, 1 sek. kėlimas, 0 sek. pauzė viršuje.</div>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
 function loadInitialState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) throw new Error("No saved state");
-    return JSON.parse(saved);
+    return normalizeState(JSON.parse(saved));
   } catch {
-    return {
+    return normalizeState({
       clients: initialClients,
       registrations: initialRegistrations,
       blocked: initialBlocked,
-    };
+    });
   }
 }
 
@@ -238,6 +400,7 @@ export default function TrainerAdmin() {
   const [toast, setToast] = useState("");
 
   const selectedClient = state.clients.find((client) => client.id === selectedClientId);
+  const selectedWorkoutPlan = selectedClient?.workoutPlan || createDefaultWorkoutPlan(selectedClient);
   const selectedRegistration = state.registrations.find((item) => item.id === selectedRegistrationId);
 
   useEffect(() => {
@@ -343,6 +506,109 @@ export default function TrainerAdmin() {
     }));
   }
 
+  function updateSelectedWorkoutPlan(updater) {
+    setState((current) => ({
+      ...current,
+      clients: current.clients.map((client) => {
+        if (client.id !== selectedClientId) return client;
+        const currentPlan = normalizeWorkoutPlan(client);
+        const nextPlan = typeof updater === "function" ? updater(currentPlan) : { ...currentPlan, ...updater };
+        return { ...client, workoutPlan: nextPlan };
+      }),
+    }));
+  }
+
+  function updateWorkoutDay(dayIndex, patch) {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: plan.days.map((day, index) => index === dayIndex ? { ...day, ...patch } : day),
+    }));
+  }
+
+  function addWorkoutDay() {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: [
+        ...plan.days,
+        {
+          title: `DIENA ${plan.days.length + 1}: NAUJA TRENIRUOTĖ`,
+          exercises: [
+            { id: "A1", name: "Naujas pratimas", meta: "Technikos pastabos", setsReps: "3 x 10", rpe: "RPE 8 / 2 RIR", rest: "2 min.", tempo: "3-0-1-0", result: "" },
+          ],
+        },
+      ],
+    }));
+  }
+
+  function removeWorkoutDay(dayIndex) {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: plan.days.length > 1 ? plan.days.filter((_, index) => index !== dayIndex) : plan.days,
+    }));
+  }
+
+  function updateWorkoutExercise(dayIndex, exerciseIndex, patch) {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: plan.days.map((day, index) => {
+        if (index !== dayIndex) return day;
+        return {
+          ...day,
+          exercises: day.exercises.map((exercise, itemIndex) =>
+            itemIndex === exerciseIndex ? { ...exercise, ...patch } : exercise
+          ),
+        };
+      }),
+    }));
+  }
+
+  function addWorkoutExercise(dayIndex) {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: plan.days.map((day, index) => {
+        if (index !== dayIndex) return day;
+        const nextNumber = day.exercises.length + 1;
+        return {
+          ...day,
+          exercises: [
+            ...day.exercises,
+            { id: `A${nextNumber}`, name: "Naujas pratimas", meta: "Technikos pastabos", setsReps: "3 x 10", rpe: "RPE 8 / 2 RIR", rest: "2 min.", tempo: "3-0-1-0", result: "" },
+          ],
+        };
+      }),
+    }));
+  }
+
+  function removeWorkoutExercise(dayIndex, exerciseIndex) {
+    updateSelectedWorkoutPlan((plan) => ({
+      ...plan,
+      days: plan.days.map((day, index) => {
+        if (index !== dayIndex) return day;
+        return {
+          ...day,
+          exercises: day.exercises.length > 1 ? day.exercises.filter((_, itemIndex) => itemIndex !== exerciseIndex) : day.exercises,
+        };
+      }),
+    }));
+  }
+
+  function exportWorkoutPlanToPdf() {
+    if (!selectedClient) return;
+    const printWindow = window.open("", "_blank", "width=1100,height=900");
+
+    if (!printWindow) {
+      showToast("Naršyklė užblokavo PDF langą. Leiskite iššokančius langus.");
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(buildWorkoutPlanHtml(selectedClient, selectedWorkoutPlan));
+    printWindow.document.close();
+    printWindow.focus();
+    window.setTimeout(() => printWindow.print(), 350);
+    showToast("Atidarytas PDF eksportas. Pasirinkite Save as PDF.");
+  }
+
   function updateRegistration(registrationId, patch) {
     setState((current) => ({
       ...current,
@@ -428,11 +694,11 @@ export default function TrainerAdmin() {
 
   function resetDemoData() {
     localStorage.removeItem(STORAGE_KEY);
-    setState({
+    setState(normalizeState({
       clients: initialClients,
       registrations: initialRegistrations,
       blocked: initialBlocked,
-    });
+    }));
     setSelectedClientId(initialClients[0].id);
     setSelectedRegistrationId(initialRegistrations[0].id);
     setStatusFilter("Visos būsenos");
@@ -897,6 +1163,13 @@ export default function TrainerAdmin() {
                 >
                   Kopijuoti planą
                 </button>
+                <button
+                  type="button"
+                  onClick={exportWorkoutPlanToPdf}
+                  className="rounded-full bg-lime px-4 py-2 text-xs font-black text-forest shadow-soft"
+                >
+                  Eksportuoti PDF
+                </button>
               </div>
             )}
           </div>
@@ -1008,6 +1281,119 @@ export default function TrainerAdmin() {
           ) : (
             <div className="mt-5 rounded-2xl border border-ink/10 bg-white p-5 text-sm font-bold text-ink/55">
               Pasirinkite klientą.
+            </div>
+          )}
+
+          {selectedClient && (
+            <div className="mt-6 rounded-[1.6rem] border border-ink/10 bg-bone/70 p-4 sm:p-5">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">Sporto programos sudarymas</h3>
+                  <p className="mt-1 text-sm text-ink/55">
+                    Kiekvienam klientui programa saugoma atskirai. Galima redaguoti dienas, pratimus ir eksportuoti į PDF.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={addWorkoutDay} className="rounded-full bg-white px-4 py-2 text-xs font-black text-ink shadow-soft">
+                    + Pridėti dieną
+                  </button>
+                  <button type="button" onClick={exportWorkoutPlanToPdf} className="rounded-full bg-forest px-4 py-2 text-xs font-black text-white shadow-soft">
+                    Eksportuoti į PDF
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Programos pavadinimas
+                  <input value={selectedWorkoutPlan.title} onChange={(event) => updateSelectedWorkoutPlan({ title: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Sistema
+                  <input value={selectedWorkoutPlan.system} onChange={(event) => updateSelectedWorkoutPlan({ system: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Trukmė
+                  <input value={selectedWorkoutPlan.duration} onChange={(event) => updateSelectedWorkoutPlan({ duration: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Treneris
+                  <input value={selectedWorkoutPlan.coach} onChange={(event) => updateSelectedWorkoutPlan({ coach: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+              </div>
+
+              <div className="mt-3 grid gap-3 md:grid-cols-3">
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Kliento ūgis, cm
+                  <input value={selectedWorkoutPlan.height} onChange={(event) => updateSelectedWorkoutPlan({ height: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                  Kliento svoris, kg
+                  <input value={selectedWorkoutPlan.weight} onChange={(event) => updateSelectedWorkoutPlan({ weight: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+                <label className="grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45 md:col-span-1">
+                  Paantraštė
+                  <input value={selectedWorkoutPlan.subtitle} onChange={(event) => updateSelectedWorkoutPlan({ subtitle: event.target.value })} className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-lime/20" />
+                </label>
+              </div>
+
+              <label className="mt-3 grid gap-1 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                Sveikatos apribojimai / trenerio saugumo pastabos
+                <textarea value={selectedWorkoutPlan.alerts} onChange={(event) => updateSelectedWorkoutPlan({ alerts: event.target.value })} className="min-h-20 rounded-2xl border border-rose-200 bg-white px-4 py-3 text-sm font-bold normal-case tracking-normal text-ink outline-none focus:ring-4 focus:ring-rose-100" />
+              </label>
+
+              <div className="mt-5 grid gap-4">
+                {selectedWorkoutPlan.days.map((day, dayIndex) => (
+                  <article key={`${day.title}-${dayIndex}`} className="overflow-hidden rounded-[1.4rem] border border-ink/10 bg-white">
+                    <div className="flex flex-col gap-3 border-b border-ink/10 bg-paper p-4 md:flex-row md:items-center md:justify-between">
+                      <input
+                        value={day.title}
+                        onChange={(event) => updateWorkoutDay(dayIndex, { title: event.target.value })}
+                        className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-black text-ink outline-none focus:ring-4 focus:ring-lime/20"
+                      />
+                      <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={() => addWorkoutExercise(dayIndex)} className="rounded-full bg-lime/40 px-4 py-2 text-xs font-black text-forest">
+                          + Pratimas
+                        </button>
+                        <button type="button" onClick={() => removeWorkoutDay(dayIndex)} className="rounded-full bg-rose-100 px-4 py-2 text-xs font-black text-rose-700">
+                          Šalinti dieną
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <div className="min-w-[980px]">
+                        <div className="grid grid-cols-[70px_1.55fr_150px_150px_130px_120px_86px] gap-2 border-b border-ink/10 bg-bone px-3 py-3 text-xs font-black uppercase tracking-[.12em] text-ink/45">
+                          <div>#</div>
+                          <div>Pratimas</div>
+                          <div>Serijos x pak.</div>
+                          <div>Intensyvumas</div>
+                          <div>Poilsis</div>
+                          <div>Tempas</div>
+                          <div></div>
+                        </div>
+
+                        {day.exercises.map((exercise, exerciseIndex) => (
+                          <div key={`${exercise.id}-${exerciseIndex}`} className="grid grid-cols-[70px_1.55fr_150px_150px_130px_120px_86px] gap-2 border-b border-ink/10 px-3 py-3">
+                            <input value={exercise.id} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { id: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <div className="grid gap-2">
+                              <input value={exercise.name} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { name: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                              <input value={exercise.meta} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { meta: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                            </div>
+                            <input value={exercise.setsReps} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { setsReps: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <input value={exercise.rpe} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rpe: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <input value={exercise.rest} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rest: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <input value={exercise.tempo} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { tempo: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold" />
+                            <button type="button" onClick={() => removeWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-700">
+                              Šalinti
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           )}
 
