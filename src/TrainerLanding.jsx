@@ -228,17 +228,22 @@ const css = `
   }
 
   .hero-card::before {
-    content: "";
+    content: "Nuotraukos vieta";
     position: absolute;
     inset: 28px 28px 120px;
     border-radius: 34px;
+    display: grid;
+    place-items: center;
     background:
-      linear-gradient(180deg, rgba(23, 53, 31, .1), rgba(23, 53, 31, .32)),
-      url("/assets/klinika-hero.png"),
-      url("/klinika-hero.png");
-    background-size: cover;
-    background-position: center;
-    filter: saturate(.98);
+      radial-gradient(circle at 18% 18%, rgba(183, 243, 74, .22), transparent 34%),
+      linear-gradient(135deg, rgba(23, 53, 31, .08), rgba(255, 255, 255, .62));
+    border: 2px dashed rgba(23, 53, 31, .22);
+    color: rgba(23, 53, 31, .58);
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    text-align: center;
   }
 
   .floating-card {
@@ -403,16 +408,30 @@ const css = `
 
   .about-grid { display: grid; grid-template-columns: .92fr 1.08fr; gap: 18px; align-items: stretch; }
   .about-photo {
+    position: relative;
     min-height: 480px;
     border-radius: 36px;
     background:
-      linear-gradient(180deg, rgba(15, 23, 42, .06), rgba(15, 23, 42, .34)),
-      url("/assets/klinika-hero.png"),
-      url("/klinika-hero.png");
-    background-size: cover;
-    background-position: center;
-    border: 1px solid var(--line);
+      radial-gradient(circle at 18% 18%, rgba(183, 243, 74, .18), transparent 34%),
+      linear-gradient(135deg, rgba(23, 53, 31, .06), rgba(255, 255, 255, .72));
+    border: 2px dashed rgba(23, 53, 31, .18);
     overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  .about-photo::after {
+    content: "Nuotraukos vieta";
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .76);
+    border: 1px solid rgba(23, 53, 31, .12);
+    color: rgba(23, 53, 31, .58);
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
   }
 
   .about-text {
