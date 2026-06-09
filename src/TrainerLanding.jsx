@@ -61,9 +61,45 @@ const services = [
 const slots = ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
 const existingSessions = [
-  { time: "10:00", durationMin: 60 },
-  { time: "17:00", durationMin: 60 },
+  {
+    id: "s1",
+    date: "2026-06-08",
+    start: "10:00",
+    durationMin: 60,
+    status: "confirmed",
+  },
+  {
+    id: "s2",
+    date: "2026-06-08",
+    start: "17:00",
+    durationMin: 60,
+    status: "confirmed",
+  },
 ];
+
+function timeToMinutes(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function rangesOverlap(startA, endA, startB, endB) {
+  return Math.max(startA, startB) < Math.min(endA, endB);
+}
+
+function isSlotAvailable({ date, time, durationMin, sessions }) {
+  const start = timeToMinutes(time);
+  const end = start + durationMin;
+
+  return !sessions.some((session) => {
+    if (session.date !== date) return false;
+    if (["cancelled", "rejected", "Atšaukta", "Atmestas"].includes(session.status)) return false;
+
+    const sessionStart = timeToMinutes(session.start || session.time);
+    const sessionEnd = sessionStart + session.durationMin;
+
+    return rangesOverlap(start, end, sessionStart, sessionEnd);
+  });
+}
 
 const css = `
   :root {
@@ -181,17 +217,19 @@ const css = `
 
   .hero h1 {
     margin: 22px 0 0;
-    font-size: clamp(3rem, 8vw, 7.2rem);
-    line-height: .86;
-    letter-spacing: -.085em;
+    max-width: 860px;
+    font-size: clamp(2.45rem, 5.2vw, 5.15rem);
+    line-height: .95;
+    letter-spacing: -.062em;
     font-weight: 950;
+    text-wrap: balance;
   }
 
   .hero p {
-    margin: 26px 0 0;
+    margin: 22px 0 0;
     color: rgba(15, 23, 42, .62);
-    font-size: 18px;
-    line-height: 1.75;
+    font-size: clamp(1rem, 1.45vw, 1.12rem);
+    line-height: 1.7;
     max-width: 620px;
   }
 
@@ -227,17 +265,22 @@ const css = `
   }
 
   .hero-card::before {
-    content: "";
+    content: "Nuotraukos vieta";
     position: absolute;
     inset: 28px 28px 120px;
     border-radius: 34px;
+    display: grid;
+    place-items: center;
     background:
-      linear-gradient(180deg, rgba(23, 53, 31, .1), rgba(23, 53, 31, .32)),
-      url("/assets/klinika-hero.png"),
-      url("/klinika-hero.png");
-    background-size: cover;
-    background-position: center;
-    filter: saturate(.98);
+      radial-gradient(circle at 18% 18%, rgba(183, 243, 74, .22), transparent 34%),
+      linear-gradient(135deg, rgba(23, 53, 31, .08), rgba(255, 255, 255, .62));
+    border: 2px dashed rgba(23, 53, 31, .22);
+    color: rgba(23, 53, 31, .58);
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    text-align: center;
   }
 
   .floating-card {
@@ -296,18 +339,136 @@ const css = `
   .card p { margin: 12px 0 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
   .price { margin-top: 20px; display: inline-flex; border-radius: 999px; background: var(--lime-soft); color: var(--forest); padding: 8px 12px; font-size: 13px; font-weight: 950; }
 
+  .fit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .fit-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 250px;
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, .88);
+    padding: 26px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, .045);
+  }
+  .fit-card::after {
+    content: attr(data-no);
+    position: absolute;
+    right: 18px;
+    bottom: -6px;
+    color: rgba(15, 23, 42, .045);
+    font-size: 76px;
+    font-weight: 950;
+    letter-spacing: -.08em;
+  }
+  .fit-card h3 { margin: 18px 0 0; font-size: 22px; letter-spacing: -.055em; }
+  .fit-card p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
+
+  .method-panel {
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+  .method-intro {
+    border-radius: 34px;
+    background: var(--forest);
+    color: white;
+    padding: 32px;
+  }
+  .method-intro h3 { margin: 18px 0 0; font-size: 34px; line-height: 1; letter-spacing: -.07em; }
+  .method-intro p { margin: 16px 0 0; color: rgba(255,255,255,.7); line-height: 1.7; }
+  .method-list { display: grid; gap: 12px; }
+  .method-item {
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 14px;
+    align-items: start;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: white;
+    padding: 18px;
+  }
+  .method-no {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    background: var(--lime-soft);
+    color: var(--forest);
+    font-weight: 950;
+  }
+  .method-item h3 { margin: 0; font-size: 20px; letter-spacing: -.045em; }
+  .method-item p { margin: 6px 0 0; color: var(--muted); line-height: 1.6; font-size: 14px; }
+
+  .safety-card {
+    border-radius: 38px;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(183, 243, 74, .18), transparent 32%),
+      var(--forest);
+    color: white;
+    padding: 38px;
+  }
+  .safety-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+  .safety-item {
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 24px;
+    background: rgba(255,255,255,.07);
+    padding: 20px;
+  }
+  .safety-item h3 { margin: 0; font-size: 21px; letter-spacing: -.055em; }
+  .safety-item p { margin: 10px 0 0; color: rgba(255,255,255,.66); line-height: 1.6; font-size: 14px; }
+
+  .trust-board {
+    display: grid;
+    grid-template-columns: .95fr 1.05fr;
+    gap: 18px;
+    align-items: stretch;
+  }
+  .trust-dark {
+    border-radius: 36px;
+    background: var(--forest);
+    color: white;
+    padding: 34px;
+  }
+  .trust-dark h2 { color: white; margin-top: 18px; }
+  .trust-dark p { color: rgba(255,255,255,.68); line-height: 1.7; }
+  .trust-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+  .trust-metric { border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.07); border-radius: 22px; padding: 18px; }
+  .trust-metric strong { display: block; font-size: 30px; letter-spacing: -.06em; }
+  .trust-metric span { display: block; margin-top: 4px; color: rgba(255,255,255,.6); font-size: 12px; font-weight: 900; }
+  .story-grid { display: grid; gap: 12px; }
+  .story-card { border: 1px solid var(--line); border-radius: 28px; background: white; padding: 22px; }
+  .story-card small { display: inline-flex; border-radius: 999px; background: var(--lime-soft); color: var(--forest); padding: 6px 10px; font-weight: 950; }
+  .story-card h3 { margin: 14px 0 0; font-size: 22px; letter-spacing: -.055em; }
+  .story-card p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
+
   .about-grid { display: grid; grid-template-columns: .92fr 1.08fr; gap: 18px; align-items: stretch; }
   .about-photo {
+    position: relative;
     min-height: 480px;
     border-radius: 36px;
     background:
-      linear-gradient(180deg, rgba(15, 23, 42, .06), rgba(15, 23, 42, .34)),
-      url("/assets/klinika-hero.png"),
-      url("/klinika-hero.png");
-    background-size: cover;
-    background-position: center;
-    border: 1px solid var(--line);
+      radial-gradient(circle at 18% 18%, rgba(183, 243, 74, .18), transparent 34%),
+      linear-gradient(135deg, rgba(23, 53, 31, .06), rgba(255, 255, 255, .72));
+    border: 2px dashed rgba(23, 53, 31, .18);
     overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+
+  .about-photo::after {
+    content: "Nuotraukos vieta";
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .76);
+    border: 1px solid rgba(23, 53, 31, .12);
+    color: rgba(23, 53, 31, .58);
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
   }
 
   .about-text {
@@ -421,7 +582,6 @@ const css = `
   .input-field::placeholder { color: #98a2b3; }
   .input-field:focus { outline: none; border-color: #111827; }
   .danger-border { border: 1px solid #fca5a5 !important; background: #fffbfa; }
-  .field-hint { margin-top: 7px; color: rgba(15, 23, 42, .52); font-size: 12px; font-weight: 750; line-height: 1.45; }
   .submit-btn { width: 100%; background: #111827; color: white; border: 0; border-radius: 999px; padding: 16px; font-weight: 950; font-size: 16px; margin-top: 16px; cursor: pointer; transition: 0.2s; }
   .submit-btn:hover { background: #233027; transform: translateY(-2px); }
   .submit-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
@@ -460,7 +620,9 @@ const css = `
     .hero-card { min-height: 520px; }
     .hero-points { grid-template-columns: repeat(3, 1fr); }
     .section-head { align-items: start; flex-direction: column; }
-    .cards, .reviews { grid-template-columns: 1fr 1fr; }
+    .cards, .reviews, .fit-grid { grid-template-columns: 1fr 1fr; }
+    .method-panel, .trust-board { grid-template-columns: 1fr; }
+    .safety-grid { grid-template-columns: 1fr; }
     .steps { grid-template-columns: 1fr 1fr; }
     .results { grid-template-columns: 1fr 1fr; }
     .about-grid { grid-template-columns: 1fr; }
@@ -478,8 +640,17 @@ const css = `
     .brand-mark { width: 40px; height: 40px; border-radius: 14px; }
     .btn { width: 100%; padding: 15px 18px; }
     .nav .btn { width: auto; padding: 12px 16px; font-size: 13px; }
-    .hero { padding-top: 34px; }
-    .hero h1 { font-size: clamp(3rem, 18vw, 4.5rem); }
+    .hero { padding-top: 30px; }
+    .hero h1 {
+      font-size: clamp(2.15rem, 10.2vw, 3.35rem);
+      line-height: .98;
+      letter-spacing: -.052em;
+    }
+
+    .hero p {
+      font-size: 15.5px;
+      line-height: 1.62;
+    }
     .hero p { font-size: 16px; line-height: 1.65; }
     .hero-actions { flex-direction: column; }
     .hero-points { grid-template-columns: 1fr; }
@@ -487,8 +658,10 @@ const css = `
     .hero-card::before { inset: 16px 16px 116px; border-radius: 22px; }
     .floating-card { left: 16px; right: 16px; bottom: 16px; border-radius: 22px; padding: 18px; }
     .section { padding: 44px 0; }
-    .cards, .reviews, .steps, .results { grid-template-columns: 1fr; }
-    .card, .review, .step, .result { border-radius: 24px; padding: 22px; }
+    .cards, .reviews, .steps, .results, .fit-grid, .safety-grid { grid-template-columns: 1fr; }
+    .card, .review, .step, .result, .fit-card, .safety-item { border-radius: 24px; padding: 22px; }
+    .method-intro, .safety-card, .trust-dark { border-radius: 28px; padding: 24px; }
+    .trust-metrics { grid-template-columns: 1fr; }
     .about-photo { min-height: 360px; border-radius: 28px; }
     .about-text { min-height: auto; border-radius: 28px; padding: 24px; }
     .about-list { grid-template-columns: 1fr; }
@@ -538,32 +711,40 @@ function BookingModal({ onClose }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const requiresSchedule = selectedService.requiresSchedule;
-  const wizardSteps = ["Paslauga", "Tikslas", requiresSchedule ? "Laikas" : "Ritmas", "Kontaktai"];
+  const wizardSteps = [
+    "Tikslas",
+    "Patirtis",
+    "Formatas",
+    requiresSchedule ? "Laikas" : "Ritmas",
+    "Kontaktai",
+  ];
 
   const availableSlots = useMemo(() => {
-    return slots.map((slot) => {
-      if (!selectedService.durationMin) return { time: slot, available: true };
-
-      const startMins = Number(slot.split(":")[0]) * 60;
-      const endMins = startMins + selectedService.durationMin;
-
-      const isOverlap = existingSessions.some((session) => {
-        const sessionStart = Number(session.time.split(":")[0]) * 60;
-        const sessionEnd = sessionStart + session.durationMin;
-        return Math.max(startMins, sessionStart) < Math.min(endMins, sessionEnd);
-      });
-
-      return { time: slot, available: !isOverlap };
-    });
-  }, [selectedService]);
+    return slots.map((slot) => ({
+      time: slot,
+      available: !selectedService.requiresSchedule
+        ? true
+        : isSlotAvailable({
+            date: selectedDate,
+            time: slot,
+            durationMin: selectedService.durationMin,
+            sessions: existingSessions,
+          }),
+    }));
+  }, [selectedDate, selectedService]);
 
   const activeSlotsCount = availableSlots.filter((slot) => slot.available).length;
 
   const canContinue = useMemo(() => {
-    if (step === 0) return Boolean(selectedService);
-    if (step === 1) return form.goal.trim() && form.activityLevel && form.healthIssues.trim();
-    if (step === 2) return requiresSchedule ? selectedDate && selectedTime : form.preferredDays.trim() && form.preferredTime.trim();
-    return form.name.trim() && form.phone.trim() && form.consent;
+    if (step === 0) return Boolean(form.goal.trim());
+    if (step === 1) return Boolean(form.activityLevel && form.healthIssues.trim());
+    if (step === 2) return Boolean(selectedService);
+    if (step === 3) {
+      return requiresSchedule
+        ? Boolean(selectedDate && selectedTime)
+        : Boolean(form.preferredDays.trim() && form.preferredTime.trim());
+    }
+    return Boolean(form.name.trim() && form.phone.trim() && form.consent);
   }, [step, selectedService, form, requiresSchedule, selectedDate, selectedTime]);
 
   function updateForm(key, value) {
@@ -606,7 +787,85 @@ function BookingModal({ onClose }) {
               <section className="wizard-panel">
                 {step === 0 && (
                   <>
-                    <h2 className="section-title">1. Paslauga</h2>
+                    <h2 className="section-title">1. Koks pagrindinis tikslas?</h2>
+                    <p className="reg-sub" style={{ marginBottom: 16 }}>
+                      Pirma įvertiname situaciją, o tik tada parenkame tinkamiausią treniravimo formatą.
+                    </p>
+
+                    <textarea
+                      className="input-field"
+                      rows="4"
+                      placeholder="Pvz.: sustiprėti, sumažinti svorį, grįžti po pertraukos, pagerinti laikyseną..."
+                      value={form.goal}
+                      onChange={(event) => updateForm("goal", event.target.value)}
+                    />
+
+                    <div className="quick-goals">
+                      {["Svorio mažinimas", "Jėga", "Laikysena", "Grįžimas po pertraukos"].map((goal) => (
+                        <button
+                          key={goal}
+                          type="button"
+                          className="quick-goal"
+                          onClick={() => updateForm("goal", goal)}
+                        >
+                          {goal}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {step === 1 && (
+                  <>
+                    <h2 className="section-title">2. Patirtis ir saugumas</h2>
+                    <div className="form-grid">
+                      <select className="input-field" value={form.activityLevel} onChange={(event) => updateForm("activityLevel", event.target.value)} required>
+                        <option value="">Fizinio aktyvumo lygis *</option>
+                        <option>Žemas — sėdimas darbas, nesportuoju</option>
+                        <option>Vidutinis — pajudu 1–2 k. per savaitę</option>
+                        <option>Aukštas — reguliariai sportuoju</option>
+                      </select>
+                      <select className="input-field" value={form.experience} onChange={(event) => updateForm("experience", event.target.value)}>
+                        <option value="">Treniruočių patirtis</option>
+                        <option>Pradedantysis</option>
+                        <option>Sportavau anksčiau, grįžtu po pertraukos</option>
+                        <option>Sportuoju reguliariai</option>
+                        <option>Pažengęs</option>
+                      </select>
+                    </div>
+
+                    <label style={{ display: "block", marginTop: 12 }}>
+                      <textarea
+                        className="input-field danger-border"
+                        rows="3"
+                        placeholder="Traumos, skausmai, sveikatos apribojimai. Jei nėra, įrašykite „Nėra“ *"
+                        value={form.healthIssues}
+                        onChange={(event) => updateForm("healthIssues", event.target.value)}
+                        required
+                      />
+                      <div className="field-hint">
+                        Ši informacija padeda parinkti saugesnį krūvį, pratimų alternatyvas ir programos korekcijas.
+                      </div>
+                    </label>
+
+                    <textarea
+                      className="input-field"
+                      style={{ marginTop: 12 }}
+                      rows="2"
+                      placeholder="Papildoma informacija treneriui"
+                      value={form.notes}
+                      onChange={(event) => updateForm("notes", event.target.value)}
+                    />
+                  </>
+                )}
+
+                {step === 2 && (
+                  <>
+                    <h2 className="section-title">3. Tinkamiausias formatas</h2>
+                    <p className="reg-sub" style={{ marginBottom: 16 }}>
+                      Pasirinkite paslaugą. Ji gali būti patikslinta po pirmo pokalbio, jei tikslui labiau tiktų kitas formatas.
+                    </p>
+
                     <div className="service-list wizard-services">
                       {services.map((service) => (
                         <button
@@ -628,34 +887,9 @@ function BookingModal({ onClose }) {
                   </>
                 )}
 
-                {step === 1 && (
+                {step === 3 && (
                   <>
-                    <h2 className="section-title">2. Tikslas, patirtis ir saugumas</h2>
-                    <div className="form-grid">
-                      <select className="input-field" value={form.activityLevel} onChange={(event) => updateForm("activityLevel", event.target.value)} required>
-                        <option value="">Fizinio aktyvumo lygis *</option>
-                        <option>Žemas — sėdimas darbas, nesportuoju</option>
-                        <option>Vidutinis — pajudu 1–2 k. per savaitę</option>
-                        <option>Aukštas — reguliariai sportuoju</option>
-                      </select>
-                      <select className="input-field" value={form.experience} onChange={(event) => updateForm("experience", event.target.value)}>
-                        <option value="">Treniruočių patirtis</option>
-                        <option>Pradedantysis</option>
-                        <option>Sportavau anksčiau, grįžtu po pertraukos</option>
-                        <option>Sportuoju reguliariai</option>
-                        <option>Pažengęs</option>
-                      </select>
-                    </div>
-                    <textarea className="input-field" style={{ marginTop: 12 }} rows="3" placeholder="Pagrindinis tikslas: jėga, svorio mažinimas, laikysena, energija ar kita... *" value={form.goal} onChange={(event) => updateForm("goal", event.target.value)} required />
-                    <textarea className="input-field danger-border" style={{ marginTop: 12 }} rows="3" placeholder="SVARBU: traumos, skausmai, sveikatos apribojimai. Jei nėra, įrašykite „Nėra“ *" value={form.healthIssues} onChange={(event) => updateForm("healthIssues", event.target.value)} required />
-                    <div className="field-hint">Tai padeda parinkti saugų krūvį, pratimų alternatyvas ir programos korekcijas.</div>
-                    <textarea className="input-field" style={{ marginTop: 12 }} rows="2" placeholder="Papildoma informacija treneriui" value={form.notes} onChange={(event) => updateForm("notes", event.target.value)} />
-                  </>
-                )}
-
-                {step === 2 && (
-                  <>
-                    <h2 className="section-title">3. {requiresSchedule ? "Pageidaujamas laikas" : "Pageidaujamas ritmas"}</h2>
+                    <h2 className="section-title">4. {requiresSchedule ? "Pageidaujamas laikas" : "Pageidaujamas ritmas"}</h2>
                     {requiresSchedule ? (
                       <>
                         <div className="slots-header">
@@ -689,9 +923,9 @@ function BookingModal({ onClose }) {
                   </>
                 )}
 
-                {step === 3 && (
+                {step === 4 && (
                   <>
-                    <h2 className="section-title">4. Kontaktai ir patvirtinimas</h2>
+                    <h2 className="section-title">5. Kontaktai ir patvirtinimas</h2>
                     <div className="form-grid">
                       <input className="input-field" placeholder="Vardas ir pavardė *" value={form.name} onChange={(event) => updateForm("name", event.target.value)} required />
                       <input className="input-field" placeholder="Telefono numeris *" value={form.phone} onChange={(event) => updateForm("phone", event.target.value)} required />
@@ -769,58 +1003,58 @@ export default function TrainerLanding() {
           </a>
 
           <nav className="nav-links" aria-label="Pagrindinė navigacija">
-            <a href="#apie">Apie</a>
+            <a href="#kam-tinka">Kam tinka</a>
             <a href="#paslaugos">Paslaugos</a>
-            <a href="#procesas">Procesas</a>
-            <a href="#atsiliepimai">Atsiliepimai</a>
+            <a href="#metodika">Metodika</a>
+            <a href="#saugumas">Saugumas</a>
             <a href="#kontaktai">Kontaktai</a>
           </nav>
 
           <button className="btn btn-dark" type="button" onClick={() => setBookingOpen(true)}>
-            Registruotis
+            Pirma konsultacija
           </button>
         </div>
       </header>
 
       <section id="top" className="container hero">
         <div>
-          <span className="eyebrow">Individualios treniruotės</span>
-          <h1>Stipresnis kūnas. Aiškus planas. Saugus progresas.</h1>
+          <span className="eyebrow">Individualus treniravimas</span>
+          <h1>Aiškus planas, saugus krūvis ir progresas per 4–8 savaites.</h1>
           <p>
-            Asmeninės treniruotės, treniruočių planai ir nuotolinė priežiūra žmonėms,
-            kurie nori sportuoti protingai, be chaoso ir be kraštutinumų.
+            Pirma įvertiname tikslą, patirtį ir sveikatos apribojimus. Tada sudarome treniruočių kryptį,
+            kurią galima realiai išlaikyti.
           </p>
 
           <div className="hero-actions">
             <button className="btn btn-dark" type="button" onClick={() => setBookingOpen(true)}>
-              Rezervuoti laiką
+              Registruotis į pirmą konsultaciją
             </button>
-            <a className="btn btn-light" href="#paslaugos">
-              Peržiūrėti paslaugas
+            <a className="btn btn-light" href="#metodika">
+              Kaip vyksta procesas
             </a>
           </div>
 
           <div className="hero-points">
             <div className="point">
               <strong>1:1</strong>
-              <span>individualus darbas</span>
+              <span>individualus įvertinimas</span>
             </div>
             <div className="point">
-              <strong>4 sav.</strong>
-              <span>aiškus planas</span>
+              <strong>4–8 sav.</strong>
+              <span>aiškus treniruočių etapas</span>
             </div>
             <div className="point">
-              <strong>60 min.</strong>
-              <span>saugios treniruotės</span>
+              <strong>PDF</strong>
+              <span>programa klientui</span>
             </div>
           </div>
         </div>
 
         <div className="hero-card" aria-label="Trenerio nuotrauka ir informacija">
           <div className="floating-card">
-            <h3>Treniruotės pagal jūsų tikslą</h3>
+            <h3>Pradžia nuo įvertinimo, ne nuo atsitiktinių pratimų</h3>
             <p>
-              Prieš pradžią įvertiname fizinį aktyvumą, sveikatos apribojimus ir sudarome logišką treniruočių kryptį.
+              Pirmiausia išsiaiškiname tikslą, patirtį, sveikatos apribojimus ir tik tada parenkame treniruočių kryptį.
             </p>
             <div className="mini-row">
               <span className="mini-pill">Technika</span>
@@ -829,6 +1063,33 @@ export default function TrainerLanding() {
               <span className="mini-pill">Progresas</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="kam-tinka" className="container section">
+        <div className="section-head">
+          <h2>Kam tinka šis treniravimo formatas?</h2>
+          <p className="section-lead">
+            Šis formatas skirtas žmonėms, kurie nori ne tiesiog „pasportuoti“, o turėti aiškią kryptį, saugų krūvį ir suprasti, ką daro kiekvienoje treniruotėje.
+          </p>
+        </div>
+
+        <div className="fit-grid">
+          <article className="fit-card" data-no="01">
+            <span className="eyebrow">Pradedantiems</span>
+            <h3>Norite pradėti be chaoso ir traumų rizikos</h3>
+            <p>Jei sporto salėje neaišku nuo ko pradėti, pirmiausia sutvarkome techniką, krūvį ir savaitės ritmą.</p>
+          </article>
+          <article className="fit-card" data-no="02">
+            <span className="eyebrow">Po pertraukos</span>
+            <h3>Grįžtate į sportą po ilgesnės pauzės</h3>
+            <p>Krūvis didinamas palaipsniui, atsižvelgiant į savijautą, mobilumą ir ankstesnę patirtį.</p>
+          </article>
+          <article className="fit-card" data-no="03">
+            <span className="eyebrow">Premium tikslui</span>
+            <h3>Norite aiškaus plano, o ne atsitiktinių pratimų</h3>
+            <p>Treniruotės sudedamos į sistemą: tikslas, pratimai, progresija, RPE, poilsis ir korekcijos.</p>
+          </article>
         </div>
       </section>
 
@@ -894,19 +1155,96 @@ export default function TrainerLanding() {
         </div>
       </section>
 
+      <section id="metodika" className="container section">
+        <div className="section-head">
+          <h2>Metodika: aiškus procesas nuo įvertinimo iki progreso.</h2>
+          <p className="section-lead">
+            Treniravimas remiasi ne atsitiktiniais pratimais, o struktūra: tikslas, įvertinimas, programa, kontrolė ir korekcijos.
+          </p>
+        </div>
+
+        <div className="method-panel">
+          <div className="method-intro">
+            <span className="eyebrow">Metodika</span>
+            <h3>Programa kuriama pagal žmogų, ne pagal šabloną.</h3>
+            <p>
+              Pirmoje konsultacijoje įvertinamas tikslas, patirtis, sveikatos apribojimai ir realus savaitės ritmas.
+              Tik po to parenkama treniruočių sistema, pratimai ir progresijos taisyklės.
+            </p>
+          </div>
+
+          <div className="method-list">
+            <article className="method-item">
+              <div className="method-no">01</div>
+              <div>
+                <h3>Tikslas ir pirminis įvertinimas</h3>
+                <p>Aptariamas tikslas, aktyvumo lygis, patirtis, grafikas, galimi skausmai ir apribojimai.</p>
+              </div>
+            </article>
+            <article className="method-item">
+              <div className="method-no">02</div>
+              <div>
+                <h3>Individuali treniruočių kryptis</h3>
+                <p>Parenkamas formatas: individualios treniruotės, abonementas, planas, nuotolinė priežiūra arba konsultacija.</p>
+              </div>
+            </article>
+            <article className="method-item">
+              <div className="method-no">03</div>
+              <div>
+                <h3>Progresijos taisyklės</h3>
+                <p>Nustatomas krūvio didinimas, RPE / RIR gairės, poilsis, tempas ir kada reikia koreguoti programą.</p>
+              </div>
+            </article>
+            <article className="method-item">
+              <div className="method-no">04</div>
+              <div>
+                <h3>Programos korekcijos pagal savijautą</h3>
+                <p>Programa peržiūrima pagal techniką, rezultatus, miego kokybę, nuovargį ir realų savaitės ritmą.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="saugumas" className="container section">
+        <div className="safety-card">
+          <span className="eyebrow">Saugumas ir traumos</span>
+          <h2>Saugus krūvio valdymas yra svarbiau už greitą rezultatą.</h2>
+          <p className="section-lead" style={{ color: "rgba(255,255,255,.7)", marginTop: 16 }}>
+            Prieš pradedant renkama informacija apie traumas, skausmus, sveikatos apribojimus ir ankstesnę patirtį.
+            Tai leidžia parinkti pratimus, kurie padeda progresuoti be nereikalingos rizikos.
+          </p>
+
+          <div className="safety-grid">
+            <article className="safety-item">
+              <h3>Traumų istorija</h3>
+              <p>Registracijos metu klausiama apie skausmus, apribojimus ir gydytojo rekomendacijas.</p>
+            </article>
+            <article className="safety-item">
+              <h3>Technikos kontrolė</h3>
+              <p>Pirmiausia vertinama judesio kokybė, amplitudė ir stabilumas, tik tada didinamas krūvis.</p>
+            </article>
+            <article className="safety-item">
+              <h3>Krūvio korekcijos</h3>
+              <p>Jei atsiranda diskomfortas ar nuovargis, pratimai keičiami, mažinama apimtis arba koreguojamas planas.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="procesas" className="container section">
         <div className="section-head">
-          <h2>Paprastas procesas nuo užklausos iki progreso.</h2>
+          <h2>Nuo pirmos konsultacijos iki aiškios treniruočių programos.</h2>
           <p className="section-lead">
-            Viskas aišku: pasirenkate paslaugą, užpildote anketą, suderiname laiką ir pradedame dirbti.
+            Procesas sukurtas taip, kad klientas jaustų aiškumą: nuo pirminės anketos iki saugaus plano ir tolimesnių korekcijų.
           </p>
         </div>
 
         <div className="steps">
           <article className="step" data-no="01">
             <span className="eyebrow">Startas</span>
-            <h3>Registracija</h3>
-            <p>Pasirenkate paslaugą, laiką ir trumpai aprašote tikslą bei sveikatos informaciją.</p>
+            <h3>Pirma konsultacija</h3>
+            <p>Užpildote trumpą anketą apie tikslą, patirtį, sveikatą ir pageidaujamą treniruočių ritmą.</p>
           </article>
           <article className="step" data-no="02">
             <span className="eyebrow">Įvertinimas</span>
@@ -947,31 +1285,60 @@ export default function TrainerLanding() {
         </div>
       </section>
 
-
-      <section id="sistema" className="container section">
+      <section id="pasitikejimas" className="container section">
         <div className="section-head">
-          <h2>Ne tik svetainė — trenerio darbo sistema.</h2>
+          <h2>Pasitikėjimo pagrindas: patirtis, metodika ir aiškūs rezultatai.</h2>
           <p className="section-lead">
-            Demo parodo, kaip treneris gali valdyti registracijas, klientus, grafiką ir individualias sporto programas.
+            Premium klientui svarbu ne vien gražus puslapis. Jis turi matyti, kad treniravimas paremtas aiškiu procesu, saugumu ir realiomis istorijomis.
           </p>
         </div>
 
-        <div className="cards">
-          <article className="card">
-            <h3>Registracijos</h3>
-            <p>Kliento tikslas, patirtis, kontaktai ir saugumo informacija surenkami vienoje vietoje.</p>
-            <span className="price">Mažiau chaoso žinutėse</span>
-          </article>
-          <article className="card">
-            <h3>Admin panelė</h3>
-            <p>Treneris mato dienos / mėnesio užimtumą, užklausas, aktyvius klientus ir būsenas.</p>
-            <span className="price">Grafikas ir klientai</span>
-          </article>
-          <article className="card">
-            <h3>Programos PDF</h3>
-            <p>Individualios programos su pratimais, progresija, RPE, saugumo pastabomis ir eksportu į PDF.</p>
-            <span className="price">Profesionalus planas klientui</span>
-          </article>
+        <div className="trust-board">
+          <div className="trust-dark">
+            <span className="eyebrow">Pasitikėjimas</span>
+            <h2>Ne „atsitiktinė treniruotė“, o valdoma sistema.</h2>
+            <p>
+              Kiekvienas klientas pradedamas nuo tikslo, patirties, sveikatos informacijos ir realaus savaitės ritmo.
+              Tai leidžia sudaryti aiškią programą, valdyti krūvį ir klientui parodyti profesionalų planą.
+            </p>
+
+            <div className="trust-metrics">
+              <div className="trust-metric">
+                <strong>200+</strong>
+                <span>treniruočių patirtis</span>
+              </div>
+              <div className="trust-metric">
+                <strong>4–8 sav.</strong>
+                <span>aiškus progreso etapas</span>
+              </div>
+              <div className="trust-metric">
+                <strong>1:1</strong>
+                <span>individuali kryptis</span>
+              </div>
+              <div className="trust-metric">
+                <strong>PDF</strong>
+                <span>programa klientui</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="story-grid">
+            <article className="story-card">
+              <small>Kliento istorija</small>
+              <h3>Pradedantysis be aiškaus plano</h3>
+              <p>Problema: neaišku, ką daryti sporto salėje. Sprendimas: baziniai judesiai, technika, krūvio kontrolė ir 4 savaičių starto planas.</p>
+            </article>
+            <article className="story-card">
+              <small>Rezultatas</small>
+              <h3>Grįžimas po pertraukos</h3>
+              <p>Krūvis didinamas palaipsniui, vengiant per greito starto. Programa koreguojama pagal savijautą, miegą ir judesių kokybę.</p>
+            </article>
+            <article className="story-card">
+              <small>Metodika</small>
+              <h3>Progresija, ne spėlionės</h3>
+              <p>Kiekvienas pratimas turi serijas, pakartojimus, RPE / RIR, poilsį, tempą, alternatyvas ir saugumo pastabas.</p>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -979,7 +1346,7 @@ export default function TrainerLanding() {
         <div className="section-head">
           <h2>Ką sako klientai.</h2>
           <p className="section-lead">
-            Šie tekstai yra demonstraciniai — realioje svetainėje būtų įkelti tikri kliento atsiliepimai.
+            Klientų istorijos turi komunikuoti aiškumą, saugumą, progresą ir pasitikėjimą trenerio metodika.
           </p>
         </div>
 
@@ -1003,13 +1370,13 @@ export default function TrainerLanding() {
         <div className="contact-card">
           <div>
             <span className="eyebrow">Kontaktai</span>
-            <h2>Pradėkite nuo trumpos registracijos.</h2>
+            <h2>Pradėkite nuo pirmos konsultacijos.</h2>
             <p>
-              Užpildykite formą, pasirinkite pageidaujamą laiką ir treneris susisieks dėl patvirtinimo.
-              Realioje versijoje registracijos gali keliauti į admin panelę, el. paštą arba duomenų bazę.
+              Užpildykite trumpą anketą, o treneris susisieks aptarti tikslo, saugumo informacijos,
+              treniruočių formato ir tinkamiausio plano.
             </p>
             <button className="btn btn-lime" type="button" onClick={() => setBookingOpen(true)}>
-              Atidaryti registraciją
+              Registruotis į pirmą konsultaciją
             </button>
           </div>
 
