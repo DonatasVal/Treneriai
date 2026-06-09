@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "vardenis_admin_stage_3_cards_pdf_preview";
+const STORAGE_KEY = "vardenis_admin_demo_v11_senior_designer";
 
 const timeSlots = [
   "06:30",
@@ -1070,12 +1070,12 @@ export default function TrainerAdmin() {
       <div className="mx-auto w-[min(1520px,100%)]">
         <header className="mb-5 flex flex-col gap-4 rounded-[1.4rem] border border-ink/10 bg-white/90 p-4 shadow-soft sm:mb-6 sm:rounded-[2rem] sm:p-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Trenerio darbo sistema</p>
+            <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Admin panelė</p>
             <h1 className="mt-2 font-display text-[clamp(2.2rem,5vw,5rem)] font-extrabold leading-none tracking-[-.075em]">
               Trenerio valdymas
             </h1>
             <p className="mt-3 max-w-3xl text-ink/58">
-              Apžvalga, registracijos, grafikas, klientai ir programos vienoje vietoje.
+              Dienos ir mėnesio užimtumas, veikianti filtracija, aktyvūs klientai ir registracijų valdymas.
             </p>
           </div>
 
@@ -1096,29 +1096,7 @@ export default function TrainerAdmin() {
           </div>
         </header>
 
-        <nav className="sticky top-3 z-20 mb-6 flex gap-2 overflow-x-auto rounded-[1.5rem] border border-ink/10 bg-white/90 p-2 shadow-soft backdrop-blur">
-          {[
-            ["apzvalga", "Apžvalga"],
-            ["registracijos", "Registracijos"],
-            ["grafikas", "Grafikas"],
-            ["klientai", "Klientai"],
-            ["programos", "Programos"],
-          ].map(([id, label]) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className="shrink-0 rounded-[1.1rem] px-5 py-3 text-sm font-black text-ink/62 transition hover:bg-forest hover:text-white"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        <section className="mb-6 rounded-[1.4rem] border border-lime/40 bg-lime/15 px-4 py-3 text-sm font-bold leading-6 text-forest shadow-soft">
-          Demo režimas: duomenys yra pavyzdiniai. Realioje versijoje admin panelė būtų apsaugota prisijungimu, o registracijos būtų saugomos duomenų bazėje.
-        </section>
-
-        <section id="apzvalga" className="scroll-mt-28 mb-6 grid gap-4 md:grid-cols-4">
+        <section className="mb-6 grid gap-4 md:grid-cols-4">
           {stats.map(([label, value]) => (
             <article key={label} className="rounded-[1.6rem] border border-ink/10 bg-white/90 p-5 shadow-soft">
               <div className="font-display text-5xl font-extrabold tracking-[-.07em]">{value}</div>
@@ -1186,8 +1164,6 @@ export default function TrainerAdmin() {
             Filtracija veikia automatiškai. Pasirinkus būseną arba įvedus tekstą, keičiasi dienos grafikas, mėnesio užimtumas ir registracijų sąrašai.
           </div>
         </section>
-
-        <div id="grafikas" className="scroll-mt-28" />
 
         {viewMode === "Mėnuo" && (
           <section className="mb-6 overflow-x-auto rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
@@ -1396,7 +1372,7 @@ export default function TrainerAdmin() {
           </div>
 
           <aside className="grid gap-6">
-            <section id="registracijos" className="scroll-mt-28 rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
+            <section className="rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
               <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">Registracijos ir užklausos</h2>
               <p className="mt-1 text-sm text-ink/55">Rodoma pagal pasirinktą datą, būseną ir paiešką.</p>
 
@@ -1471,7 +1447,7 @@ export default function TrainerAdmin() {
               </div>
             </section>
 
-            <section id="klientai" className="scroll-mt-28 rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
+            <section className="rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
               <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">Klientai</h2>
               <p className="mt-1 text-sm text-ink/55">Klientų sąrašas taip pat filtruojamas pagal paiešką ir būseną.</p>
 
@@ -1668,13 +1644,14 @@ export default function TrainerAdmin() {
           )}
 
           {selectedClient && (
-            <div id="programos" className="scroll-mt-28 mt-6 rounded-[1.6rem] border border-ink/10 bg-bone/70 p-4 sm:p-5">
+            <div className="mt-6 rounded-[1.6rem] border border-ink/10 bg-bone/70 p-4 sm:p-5">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Profesionali programa</p>
-                  <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">Programos builderis</h3>
+                  <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">Sporto programos sudarymas · senior v11</h3>
                   <p className="mt-1 max-w-3xl text-sm leading-6 text-ink/55">
-                    Kompaktiškas builderis: kortelės, išskleidžiamas redagavimas ir A4 PDF peržiūra.
+                    Programa kuriama kiekvienam klientui atskirai: tikslas, lygis, įranga, fazė, progresija,
+                    deload taisyklės, apšilimas, treniruotės dienos, pratimai, alternatyvos ir saugumo apribojimai.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -1864,37 +1841,9 @@ export default function TrainerAdmin() {
 
                     <div className="grid gap-3 p-3">
                       {day.exercises.map((exercise, exerciseIndex) => (
-                        <details
-                          key={`${exercise.id}-${exerciseIndex}`}
-                          className="group rounded-[1.15rem] border border-ink/10 bg-white p-3 shadow-soft open:border-lime/70 open:bg-lime/5"
-                        >
-                          <summary className="flex cursor-pointer list-none flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <span className="rounded-full bg-forest px-3 py-1 text-xs font-black text-white">{exercise.id}</span>
-                                <strong className="text-base tracking-[-.03em] text-ink sm:text-lg">{exercise.name}</strong>
-                              </div>
-                              <div className="mt-2 flex flex-wrap gap-2 text-xs font-black text-ink/50">
-                                <span className="rounded-full bg-paper px-3 py-1">{exercise.movement}</span>
-                                <span className="rounded-full bg-paper px-3 py-1">{exercise.muscleGroup}</span>
-                                <span className="rounded-full bg-paper px-3 py-1">{exercise.setsReps || `${exercise.sets} x ${exercise.reps}`}</span>
-                                <span className="rounded-full bg-paper px-3 py-1">{exercise.rpe}</span>
-                                <span className="rounded-full bg-paper px-3 py-1">{exercise.rest}</span>
-                              </div>
-                            </div>
-
-                            <div className="flex flex-wrap gap-2">
-                              <span className="rounded-full bg-white px-4 py-2 text-xs font-black text-ink shadow-soft group-open:hidden">Redaguoti</span>
-                              <span className="hidden rounded-full bg-forest px-4 py-2 text-xs font-black text-white group-open:inline-flex">Suskleisti</span>
-                              <button type="button" onClick={(event) => { event.preventDefault(); moveWorkoutExercise(dayIndex, exerciseIndex, -1); }} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↑</button>
-                              <button type="button" onClick={(event) => { event.preventDefault(); moveWorkoutExercise(dayIndex, exerciseIndex, 1); }} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↓</button>
-                              <button type="button" onClick={(event) => { event.preventDefault(); duplicateWorkoutExercise(dayIndex, exerciseIndex); }} className="rounded-full bg-lime/30 px-4 py-2 text-xs font-black text-forest">Kopijuoti</button>
-                              <button type="button" onClick={(event) => { event.preventDefault(); removeWorkoutExercise(dayIndex, exerciseIndex); }} className="rounded-full bg-rose-50 px-4 py-2 text-xs font-black text-rose-700">Šalinti</button>
-                            </div>
-                          </summary>
-
-                          <div className="mt-4 border-t border-ink/10 pt-4">
-                            <div className="grid gap-3 md:grid-cols-[76px_160px_160px_1fr]">
+                        <article key={`${exercise.id}-${exerciseIndex}`} className="rounded-[1.35rem] border border-ink/10 bg-white p-3 shadow-soft">
+                          <div className="mb-3 flex flex-col gap-3 border-b border-ink/10 pb-3 xl:flex-row xl:items-center xl:justify-between">
+                            <div className="grid flex-1 gap-2 md:grid-cols-[78px_170px_170px_1fr]">
                               <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
                                 #
                                 <input value={exercise.id} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { id: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
@@ -1927,76 +1876,82 @@ export default function TrainerAdmin() {
                               </label>
                             </div>
 
-                            <div className="mt-3 grid gap-3 xl:grid-cols-[1fr_1fr]">
-                              <div className="grid gap-3">
+                            <div className="flex flex-wrap gap-2 xl:flex-nowrap">
+                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, -1)} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↑</button>
+                              <button type="button" onClick={() => moveWorkoutExercise(dayIndex, exerciseIndex, 1)} className="rounded-full bg-white px-3 py-2 text-xs font-black text-ink shadow-soft">↓</button>
+                              <button type="button" onClick={() => duplicateWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-full bg-lime/30 px-4 py-2 text-xs font-black text-forest">Kopijuoti</button>
+                              <button type="button" onClick={() => removeWorkoutExercise(dayIndex, exerciseIndex)} className="rounded-full bg-rose-50 px-4 py-2 text-xs font-black text-rose-700">Šalinti</button>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-3 xl:grid-cols-[1.1fr_.9fr]">
+                            <div className="grid gap-3">
+                              <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                Technikos pastabos
+                                <textarea value={exercise.meta} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { meta: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold leading-5 text-ink/70" />
+                              </label>
+
+                              <div className="grid gap-3 md:grid-cols-2">
                                 <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                  Technika
-                                  <textarea value={exercise.meta} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { meta: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold leading-5 text-ink/70" />
+                                  Progresija
+                                  <textarea value={exercise.progression} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { progression: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold leading-5 text-ink/70" />
                                 </label>
 
-                                <div className="grid gap-3 md:grid-cols-2">
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Progresija
-                                    <textarea value={exercise.progression} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { progression: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold leading-5 text-ink/70" />
-                                  </label>
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Alternatyvos
+                                  <textarea value={exercise.alternatives} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { alternatives: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold leading-5 text-ink/70" />
+                                </label>
+                              </div>
+                            </div>
 
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Alternatyvos
-                                    <textarea value={exercise.alternatives} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { alternatives: event.target.value })} className="min-h-20 rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold leading-5 text-ink/70" />
-                                  </label>
-                                </div>
+                            <div className="grid gap-3">
+                              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Serijos
+                                  <input value={exercise.sets} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { sets: event.target.value, setsReps: `${event.target.value} x ${exercise.reps}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Pakart.
+                                  <input value={exercise.reps} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { reps: event.target.value, setsReps: `${exercise.sets} x ${event.target.value}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Krūvis
+                                  <input value={exercise.load} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { load: event.target.value })} placeholder="kg / %" className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  RPE/RIR
+                                  <input value={exercise.rpe} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rpe: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Poilsis
+                                  <input value={exercise.rest} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rest: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
+
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Tempas
+                                  <input value={exercise.tempo} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { tempo: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
+                                </label>
                               </div>
 
-                              <div className="grid gap-3">
-                                <div className="grid gap-2 sm:grid-cols-3 xl:grid-cols-6">
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Serijos
-                                    <input value={exercise.sets} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { sets: event.target.value, setsReps: `${event.target.value} x ${exercise.reps}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
-                                  </label>
+                              <div className="grid gap-3 md:grid-cols-2">
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
+                                  Video / demonstracija
+                                  <input value={exercise.videoUrl} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { videoUrl: event.target.value })} placeholder="Nuoroda arba trumpa pastaba" className="rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
+                                </label>
 
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Pakart.
-                                    <input value={exercise.reps} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { reps: event.target.value, setsReps: `${exercise.sets} x ${event.target.value}` })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-black text-ink" />
-                                  </label>
-
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Krūvis
-                                    <input value={exercise.load} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { load: event.target.value })} placeholder="kg / %" className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
-                                  </label>
-
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    RPE/RIR
-                                    <input value={exercise.rpe} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rpe: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
-                                  </label>
-
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Poilsis
-                                    <input value={exercise.rest} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { rest: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
-                                  </label>
-
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Tempas
-                                    <input value={exercise.tempo} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { tempo: event.target.value })} className="rounded-xl border border-ink/10 px-3 py-2 text-sm font-bold text-ink" />
-                                  </label>
-                                </div>
-
-                                <div className="grid gap-3 md:grid-cols-2">
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-ink/40">
-                                    Video / demonstracija
-                                    <input value={exercise.videoUrl} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { videoUrl: event.target.value })} placeholder="Nuoroda arba trumpa pastaba" className="rounded-xl border border-ink/10 px-3 py-2 text-xs font-bold text-ink/70" />
-                                  </label>
-
-                                  <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-rose-500">
-                                    Saugumo apribojimai
-                                    <textarea value={exercise.contraindications} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { contraindications: event.target.value })} className="min-h-16 rounded-xl border border-rose-100 px-3 py-2 text-xs font-bold leading-5 text-rose-700" />
-                                  </label>
-                                </div>
+                                <label className="grid gap-1 text-[10px] font-black uppercase tracking-[.12em] text-rose-500">
+                                  Saugumo apribojimai
+                                  <textarea value={exercise.contraindications} onChange={(event) => updateWorkoutExercise(dayIndex, exerciseIndex, { contraindications: event.target.value })} className="min-h-16 rounded-xl border border-rose-100 px-3 py-2 text-xs font-bold leading-5 text-rose-700" />
+                                </label>
                               </div>
                             </div>
                           </div>
-                        </details>
+                        </article>
                       ))}
-
                     </div>
 
                   </article>
@@ -2005,92 +1960,50 @@ export default function TrainerAdmin() {
               )}
 
               {programView === "preview" && (
-                <div className="mt-5 grid gap-5 2xl:grid-cols-[1fr_340px]">
-                  <div className="overflow-x-auto rounded-[1.6rem] border border-ink/10 bg-stone-100 p-4 shadow-inner">
-                    <div className="mx-auto min-h-[1120px] w-[min(794px,100%)] bg-white p-8 text-ink shadow-lift sm:p-10">
-                      <div className="flex flex-col gap-5 border-b-2 border-ink pb-5 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <p className="text-xs font-black uppercase tracking-[.18em] text-ink/40">Individuali programa</p>
-                          <h3 className="mt-2 font-display text-4xl font-extrabold leading-none tracking-[-.07em]">{selectedWorkoutPlan.title}</h3>
-                          <p className="mt-2 text-sm font-bold text-ink/55">{selectedWorkoutPlan.subtitle}</p>
-                        </div>
-                        <div className="rounded-2xl bg-paper p-4 text-sm font-bold leading-6 text-ink/70">
-                          <div>Treneris: <span className="text-ink">{selectedWorkoutPlan.coach}</span></div>
-                          <div>Klientas: <span className="text-ink">{selectedWorkoutPlan.clientName}</span></div>
-                          <div>Data: <span className="text-ink">{new Date().toLocaleDateString("lt-LT")}</span></div>
-                        </div>
-                      </div>
+                <div className="mt-5 grid gap-5 xl:grid-cols-[1fr_.62fr]">
+                  <div className="rounded-[1.5rem] border border-ink/10 bg-white p-5 shadow-soft">
+                    <div className="border-b-2 border-ink pb-4">
+                      <h3 className="font-display text-3xl font-extrabold tracking-[-.06em]">{selectedWorkoutPlan.title}</h3>
+                      <p className="mt-1 text-sm font-bold text-ink/55">{selectedWorkoutPlan.subtitle}</p>
+                    </div>
 
-                      <div className="mt-5 grid gap-2 sm:grid-cols-4">
-                        <div className="rounded-xl border border-ink/10 bg-paper p-3">
-                          <div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Sistema</div>
-                          <div className="mt-1 text-sm font-black">{selectedWorkoutPlan.system}</div>
-                        </div>
-                        <div className="rounded-xl border border-ink/10 bg-paper p-3">
-                          <div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Trukmė</div>
-                          <div className="mt-1 text-sm font-black">{selectedWorkoutPlan.duration}</div>
-                        </div>
-                        <div className="rounded-xl border border-ink/10 bg-paper p-3">
-                          <div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Lygis</div>
-                          <div className="mt-1 text-sm font-black">{selectedWorkoutPlan.level}</div>
-                        </div>
-                        <div className="rounded-xl border border-ink/10 bg-paper p-3">
-                          <div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Peržiūra</div>
-                          <div className="mt-1 text-sm font-black">{selectedWorkoutPlan.reviewDate}</div>
-                        </div>
-                      </div>
+                    <div className="mt-4 grid gap-2 md:grid-cols-4">
+                      <div className="rounded-xl border border-ink/10 bg-paper p-3"><div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Klientas</div><div className="mt-1 text-sm font-black">{selectedWorkoutPlan.clientName}</div></div>
+                      <div className="rounded-xl border border-ink/10 bg-paper p-3"><div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Sistema</div><div className="mt-1 text-sm font-black">{selectedWorkoutPlan.system}</div></div>
+                      <div className="rounded-xl border border-ink/10 bg-paper p-3"><div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Trukmė</div><div className="mt-1 text-sm font-black">{selectedWorkoutPlan.duration}</div></div>
+                      <div className="rounded-xl border border-ink/10 bg-paper p-3"><div className="text-[10px] font-black uppercase tracking-[.12em] text-ink/40">Tikslas</div><div className="mt-1 text-sm font-black">{selectedWorkoutPlan.goal}</div></div>
+                    </div>
 
-                      <div className="mt-4 rounded-2xl border border-lime/50 bg-lime/10 p-4 text-sm font-bold leading-6 text-forest">
-                        <span className="text-ink">Tikslas:</span> {selectedWorkoutPlan.goal || selectedClient.goal}
-                      </div>
+                    <div className="mt-4 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700">
+                      Sveikatos apribojimai: {selectedWorkoutPlan.alerts}
+                    </div>
 
-                      <div className="mt-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold leading-6 text-rose-700">
-                        Sveikatos apribojimai: {selectedWorkoutPlan.alerts}
-                      </div>
-
-                      <div className="mt-6 grid gap-6">
-                        {selectedWorkoutPlan.days.map((day, index) => (
-                          <article key={`${day.title}-${index}`} className="break-inside-avoid overflow-hidden rounded-[1.15rem] border border-ink/10">
-                            <div className="bg-ink px-4 py-3 text-white">
-                              <strong>{day.title}</strong>
-                              <div className="mt-1 text-xs text-white/60">{day.focus} · {day.priority}</div>
-                            </div>
-
-                            <div className="grid gap-2 border-b border-ink/10 bg-paper p-3 text-xs font-bold text-ink/55 sm:grid-cols-3">
-                              <div><span className="text-ink">Apšilimas:</span> {day.warmup}</div>
-                              <div><span className="text-ink">Pabaiga:</span> {day.cooldown}</div>
-                              <div><span className="text-ink">Pastabos:</span> {day.notes || "—"}</div>
-                            </div>
-
-                            <div className="divide-y divide-ink/10">
-                              {day.exercises.map((exercise) => (
-                                <div key={`${exercise.id}-${exercise.name}`} className="grid gap-3 p-3 text-sm sm:grid-cols-[54px_1fr_190px]">
-                                  <div className="font-black text-ink">{exercise.id}</div>
-                                  <div>
-                                    <strong>{exercise.name}</strong>
-                                    <div className="mt-1 text-xs font-bold leading-5 text-ink/55">{exercise.meta}</div>
-                                    {exercise.contraindications && (
-                                      <div className="mt-1 text-xs font-bold text-rose-700">Saugumas: {exercise.contraindications}</div>
-                                    )}
-                                  </div>
-                                  <div className="rounded-xl bg-paper p-3 text-xs font-black leading-5 text-ink/70">
-                                    <div>{exercise.setsReps || `${exercise.sets} x ${exercise.reps}`}</div>
-                                    <div>{exercise.rpe}</div>
-                                    <div>{exercise.rest} · {exercise.tempo}</div>
-                                  </div>
+                    <div className="mt-5 grid gap-4">
+                      {selectedWorkoutPlan.days.map((day, index) => (
+                        <article key={`${day.title}-${index}`} className="overflow-hidden rounded-[1.25rem] border border-ink/10">
+                          <div className="bg-ink px-4 py-3 text-white">
+                            <strong>{day.title}</strong>
+                            <div className="mt-1 text-xs text-white/60">{day.focus} · {day.priority}</div>
+                          </div>
+                          <div className="grid gap-2 p-3">
+                            {day.exercises.map((exercise) => (
+                              <div key={`${exercise.id}-${exercise.name}`} className="rounded-xl bg-paper p-3 text-sm">
+                                <strong>{exercise.id} · {exercise.name}</strong>
+                                <div className="mt-1 text-xs font-bold text-ink/55">
+                                  {exercise.muscleGroup} · {exercise.setsReps || `${exercise.sets} x ${exercise.reps}`} · {exercise.rpe} · {exercise.rest}
                                 </div>
-                              ))}
-                            </div>
-                          </article>
-                        ))}
-                      </div>
+                              </div>
+                            ))}
+                          </div>
+                        </article>
+                      ))}
                     </div>
                   </div>
 
                   <aside className="rounded-[1.5rem] border border-ink/10 bg-forest p-5 text-white shadow-soft">
-                    <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">A4 PDF peržiūra</h3>
+                    <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">PDF eksportas</h3>
                     <p className="mt-2 text-sm leading-6 text-white/65">
-                      Kairėje matomas dokumento vaizdas, kurį klientas gautų kaip sporto programą.
+                      Peržiūra kairėje rodo dokumento struktūrą. Eksportas atidarys spausdinimo langą, kuriame pasirinkite „Save as PDF“.
                     </p>
                     <button type="button" onClick={exportWorkoutPlanToPdf} className="mt-5 w-full rounded-full bg-lime px-5 py-3 text-sm font-black text-forest">
                       Eksportuoti į PDF
