@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "vardenis_admin_demo_v11_senior_designer";
+const STORAGE_KEY = "vardenis_admin_demo_v12_clean_public_labels";
 
 const timeSlots = [
   "06:30",
@@ -1648,7 +1648,7 @@ export default function TrainerAdmin() {
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Profesionali programa</p>
-                  <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">Sporto programos sudarymas · senior v11</h3>
+                  <h3 className="font-display text-2xl font-extrabold tracking-[-.06em]">Sporto programos sudarymas</h3>
                   <p className="mt-1 max-w-3xl text-sm leading-6 text-ink/55">
                     Programa kuriama kiekvienam klientui atskirai: tikslas, lygis, įranga, fazė, progresija,
                     deload taisyklės, apšilimas, treniruotės dienos, pratimai, alternatyvos ir saugumo apribojimai.
