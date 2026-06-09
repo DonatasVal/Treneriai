@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "vardenis_admin_demo_v12_clean_public_labels";
+const STORAGE_KEY = "vardenis_admin_clean_public_stage_1";
 
 const timeSlots = [
   "06:30",
@@ -1070,12 +1070,12 @@ export default function TrainerAdmin() {
       <div className="mx-auto w-[min(1520px,100%)]">
         <header className="mb-5 flex flex-col gap-4 rounded-[1.4rem] border border-ink/10 bg-white/90 p-4 shadow-soft sm:mb-6 sm:rounded-[2rem] sm:p-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Admin panelė</p>
+            <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Trenerio darbo sistema</p>
             <h1 className="mt-2 font-display text-[clamp(2.2rem,5vw,5rem)] font-extrabold leading-none tracking-[-.075em]">
               Trenerio valdymas
             </h1>
             <p className="mt-3 max-w-3xl text-ink/58">
-              Dienos ir mėnesio užimtumas, veikianti filtracija, aktyvūs klientai ir registracijų valdymas.
+              Aiški struktūra: apžvalga, registracijos, grafikas, klientai ir individualios programos vienoje vietoje.
             </p>
           </div>
 
@@ -1096,7 +1096,29 @@ export default function TrainerAdmin() {
           </div>
         </header>
 
-        <section className="mb-6 grid gap-4 md:grid-cols-4">
+        <nav className="sticky top-3 z-20 mb-6 flex gap-2 overflow-x-auto rounded-[1.5rem] border border-ink/10 bg-white/90 p-2 shadow-soft backdrop-blur">
+          {[
+            ["apzvalga", "Apžvalga"],
+            ["registracijos", "Registracijos"],
+            ["grafikas", "Grafikas"],
+            ["klientai", "Klientai"],
+            ["programos", "Programos"],
+          ].map(([id, label]) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className="shrink-0 rounded-[1.1rem] px-5 py-3 text-sm font-black text-ink/62 transition hover:bg-forest hover:text-white"
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        <section className="mb-6 rounded-[1.4rem] border border-lime/40 bg-lime/15 px-4 py-3 text-sm font-bold leading-6 text-forest shadow-soft">
+          Demo režimas: duomenys yra pavyzdiniai. Realioje versijoje admin panelė būtų apsaugota prisijungimu, o registracijos būtų saugomos duomenų bazėje.
+        </section>
+
+        <section id="apzvalga" className="scroll-mt-28 mb-6 grid gap-4 md:grid-cols-4">
           {stats.map(([label, value]) => (
             <article key={label} className="rounded-[1.6rem] border border-ink/10 bg-white/90 p-5 shadow-soft">
               <div className="font-display text-5xl font-extrabold tracking-[-.07em]">{value}</div>
@@ -1164,6 +1186,8 @@ export default function TrainerAdmin() {
             Filtracija veikia automatiškai. Pasirinkus būseną arba įvedus tekstą, keičiasi dienos grafikas, mėnesio užimtumas ir registracijų sąrašai.
           </div>
         </section>
+
+        <div id="grafikas" className="scroll-mt-28" />
 
         {viewMode === "Mėnuo" && (
           <section className="mb-6 overflow-x-auto rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
@@ -1372,7 +1396,7 @@ export default function TrainerAdmin() {
           </div>
 
           <aside className="grid gap-6">
-            <section className="rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
+            <section id="registracijos" className="scroll-mt-28 rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
               <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">Registracijos ir užklausos</h2>
               <p className="mt-1 text-sm text-ink/55">Rodoma pagal pasirinktą datą, būseną ir paiešką.</p>
 
@@ -1447,7 +1471,7 @@ export default function TrainerAdmin() {
               </div>
             </section>
 
-            <section className="rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
+            <section id="klientai" className="scroll-mt-28 rounded-[1.4rem] border border-ink/10 bg-white/92 p-4 shadow-soft sm:rounded-[2rem] sm:p-5">
               <h2 className="font-display text-2xl font-extrabold tracking-[-.06em]">Klientai</h2>
               <p className="mt-1 text-sm text-ink/55">Klientų sąrašas taip pat filtruojamas pagal paiešką ir būseną.</p>
 
@@ -1644,7 +1668,7 @@ export default function TrainerAdmin() {
           )}
 
           {selectedClient && (
-            <div className="mt-6 rounded-[1.6rem] border border-ink/10 bg-bone/70 p-4 sm:p-5">
+            <div id="programos" className="scroll-mt-28 mt-6 rounded-[1.6rem] border border-ink/10 bg-bone/70 p-4 sm:p-5">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[.18em] text-ink/42">Profesionali programa</p>
