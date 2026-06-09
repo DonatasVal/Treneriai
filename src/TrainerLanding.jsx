@@ -61,9 +61,45 @@ const services = [
 const slots = ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
 const existingSessions = [
-  { time: "10:00", durationMin: 60 },
-  { time: "17:00", durationMin: 60 },
+  {
+    id: "s1",
+    date: "2026-06-08",
+    start: "10:00",
+    durationMin: 60,
+    status: "confirmed",
+  },
+  {
+    id: "s2",
+    date: "2026-06-08",
+    start: "17:00",
+    durationMin: 60,
+    status: "confirmed",
+  },
 ];
+
+function timeToMinutes(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function rangesOverlap(startA, endA, startB, endB) {
+  return Math.max(startA, startB) < Math.min(endA, endB);
+}
+
+function isSlotAvailable({ date, time, durationMin, sessions }) {
+  const start = timeToMinutes(time);
+  const end = start + durationMin;
+
+  return !sessions.some((session) => {
+    if (session.date !== date) return false;
+    if (["cancelled", "rejected", "Atšaukta", "Atmestas"].includes(session.status)) return false;
+
+    const sessionStart = timeToMinutes(session.start || session.time);
+    const sessionEnd = sessionStart + session.durationMin;
+
+    return rangesOverlap(start, end, sessionStart, sessionEnd);
+  });
+}
 
 const css = `
   :root {
@@ -181,18 +217,19 @@ const css = `
 
   .hero h1 {
     margin: 22px 0 0;
-    max-width: 820px;
-    font-size: clamp(2.7rem, 5.8vw, 5.7rem);
-    line-height: .92;
-    letter-spacing: -.065em;
+    max-width: 860px;
+    font-size: clamp(2.45rem, 5.2vw, 5.15rem);
+    line-height: .95;
+    letter-spacing: -.062em;
     font-weight: 950;
+    text-wrap: balance;
   }
 
   .hero p {
-    margin: 26px 0 0;
+    margin: 22px 0 0;
     color: rgba(15, 23, 42, .62);
-    font-size: 18px;
-    line-height: 1.75;
+    font-size: clamp(1rem, 1.45vw, 1.12rem);
+    line-height: 1.7;
     max-width: 620px;
   }
 
@@ -605,9 +642,14 @@ const css = `
     .nav .btn { width: auto; padding: 12px 16px; font-size: 13px; }
     .hero { padding-top: 30px; }
     .hero h1 {
-      font-size: clamp(2.35rem, 11.8vw, 3.7rem);
-      line-height: .94;
-      letter-spacing: -.06em;
+      font-size: clamp(2.15rem, 10.2vw, 3.35rem);
+      line-height: .98;
+      letter-spacing: -.052em;
+    }
+
+    .hero p {
+      font-size: 15.5px;
+      line-height: 1.62;
     }
     .hero p { font-size: 16px; line-height: 1.65; }
     .hero-actions { flex-direction: column; }
@@ -669,32 +711,40 @@ function BookingModal({ onClose }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const requiresSchedule = selectedService.requiresSchedule;
-  const wizardSteps = ["Paslauga", "Tikslas", requiresSchedule ? "Laikas" : "Ritmas", "Kontaktai"];
+  const wizardSteps = [
+    "Tikslas",
+    "Patirtis",
+    "Formatas",
+    requiresSchedule ? "Laikas" : "Ritmas",
+    "Kontaktai",
+  ];
 
   const availableSlots = useMemo(() => {
-    return slots.map((slot) => {
-      if (!selectedService.durationMin) return { time: slot, available: true };
-
-      const startMins = Number(slot.split(":")[0]) * 60;
-      const endMins = startMins + selectedService.durationMin;
-
-      const isOverlap = existingSessions.some((session) => {
-        const sessionStart = Number(session.time.split(":")[0]) * 60;
-        const sessionEnd = sessionStart + session.durationMin;
-        return Math.max(startMins, sessionStart) < Math.min(endMins, sessionEnd);
-      });
-
-      return { time: slot, available: !isOverlap };
-    });
-  }, [selectedService]);
+    return slots.map((slot) => ({
+      time: slot,
+      available: !selectedService.requiresSchedule
+        ? true
+        : isSlotAvailable({
+            date: selectedDate,
+            time: slot,
+            durationMin: selectedService.durationMin,
+            sessions: existingSessions,
+          }),
+    }));
+  }, [selectedDate, selectedService]);
 
   const activeSlotsCount = availableSlots.filter((slot) => slot.available).length;
 
   const canContinue = useMemo(() => {
-    if (step === 0) return Boolean(selectedService);
-    if (step === 1) return form.goal.trim() && form.activityLevel && form.healthIssues.trim();
-    if (step === 2) return requiresSchedule ? selectedDate && selectedTime : form.preferredDays.trim() && form.preferredTime.trim();
-    return form.name.trim() && form.phone.trim() && form.consent;
+    if (step === 0) return Boolean(form.goal.trim());
+    if (step === 1) return Boolean(form.activityLevel && form.healthIssues.trim());
+    if (step === 2) return Boolean(selectedService);
+    if (step === 3) {
+      return requiresSchedule
+        ? Boolean(selectedDate && selectedTime)
+        : Boolean(form.preferredDays.trim() && form.preferredTime.trim());
+    }
+    return Boolean(form.name.trim() && form.phone.trim() && form.consent);
   }, [step, selectedService, form, requiresSchedule, selectedDate, selectedTime]);
 
   function updateForm(key, value) {
@@ -737,7 +787,85 @@ function BookingModal({ onClose }) {
               <section className="wizard-panel">
                 {step === 0 && (
                   <>
-                    <h2 className="section-title">1. Paslauga</h2>
+                    <h2 className="section-title">1. Koks pagrindinis tikslas?</h2>
+                    <p className="reg-sub" style={{ marginBottom: 16 }}>
+                      Pirma įvertiname situaciją, o tik tada parenkame tinkamiausią treniravimo formatą.
+                    </p>
+
+                    <textarea
+                      className="input-field"
+                      rows="4"
+                      placeholder="Pvz.: sustiprėti, sumažinti svorį, grįžti po pertraukos, pagerinti laikyseną..."
+                      value={form.goal}
+                      onChange={(event) => updateForm("goal", event.target.value)}
+                    />
+
+                    <div className="quick-goals">
+                      {["Svorio mažinimas", "Jėga", "Laikysena", "Grįžimas po pertraukos"].map((goal) => (
+                        <button
+                          key={goal}
+                          type="button"
+                          className="quick-goal"
+                          onClick={() => updateForm("goal", goal)}
+                        >
+                          {goal}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {step === 1 && (
+                  <>
+                    <h2 className="section-title">2. Patirtis ir saugumas</h2>
+                    <div className="form-grid">
+                      <select className="input-field" value={form.activityLevel} onChange={(event) => updateForm("activityLevel", event.target.value)} required>
+                        <option value="">Fizinio aktyvumo lygis *</option>
+                        <option>Žemas — sėdimas darbas, nesportuoju</option>
+                        <option>Vidutinis — pajudu 1–2 k. per savaitę</option>
+                        <option>Aukštas — reguliariai sportuoju</option>
+                      </select>
+                      <select className="input-field" value={form.experience} onChange={(event) => updateForm("experience", event.target.value)}>
+                        <option value="">Treniruočių patirtis</option>
+                        <option>Pradedantysis</option>
+                        <option>Sportavau anksčiau, grįžtu po pertraukos</option>
+                        <option>Sportuoju reguliariai</option>
+                        <option>Pažengęs</option>
+                      </select>
+                    </div>
+
+                    <label style={{ display: "block", marginTop: 12 }}>
+                      <textarea
+                        className="input-field danger-border"
+                        rows="3"
+                        placeholder="Traumos, skausmai, sveikatos apribojimai. Jei nėra, įrašykite „Nėra“ *"
+                        value={form.healthIssues}
+                        onChange={(event) => updateForm("healthIssues", event.target.value)}
+                        required
+                      />
+                      <div className="field-hint">
+                        Ši informacija padeda parinkti saugesnį krūvį, pratimų alternatyvas ir programos korekcijas.
+                      </div>
+                    </label>
+
+                    <textarea
+                      className="input-field"
+                      style={{ marginTop: 12 }}
+                      rows="2"
+                      placeholder="Papildoma informacija treneriui"
+                      value={form.notes}
+                      onChange={(event) => updateForm("notes", event.target.value)}
+                    />
+                  </>
+                )}
+
+                {step === 2 && (
+                  <>
+                    <h2 className="section-title">3. Tinkamiausias formatas</h2>
+                    <p className="reg-sub" style={{ marginBottom: 16 }}>
+                      Pasirinkite paslaugą. Ji gali būti patikslinta po pirmo pokalbio, jei tikslui labiau tiktų kitas formatas.
+                    </p>
+
                     <div className="service-list wizard-services">
                       {services.map((service) => (
                         <button
@@ -759,33 +887,9 @@ function BookingModal({ onClose }) {
                   </>
                 )}
 
-                {step === 1 && (
+                {step === 3 && (
                   <>
-                    <h2 className="section-title">2. Tikslas, patirtis ir saugumas</h2>
-                    <div className="form-grid">
-                      <select className="input-field" value={form.activityLevel} onChange={(event) => updateForm("activityLevel", event.target.value)} required>
-                        <option value="">Fizinio aktyvumo lygis *</option>
-                        <option>Žemas — sėdimas darbas, nesportuoju</option>
-                        <option>Vidutinis — pajudu 1–2 k. per savaitę</option>
-                        <option>Aukštas — reguliariai sportuoju</option>
-                      </select>
-                      <select className="input-field" value={form.experience} onChange={(event) => updateForm("experience", event.target.value)}>
-                        <option value="">Treniruočių patirtis</option>
-                        <option>Pradedantysis</option>
-                        <option>Sportavau anksčiau, grįžtu po pertraukos</option>
-                        <option>Sportuoju reguliariai</option>
-                        <option>Pažengęs</option>
-                      </select>
-                    </div>
-                    <textarea className="input-field" style={{ marginTop: 12 }} rows="3" placeholder="Pagrindinis tikslas: jėga, svorio mažinimas, laikysena, energija ar kita... *" value={form.goal} onChange={(event) => updateForm("goal", event.target.value)} required />
-                    <textarea className="input-field danger-border" style={{ marginTop: 12 }} rows="3" placeholder="SVARBU: traumos, skausmai, sveikatos apribojimai. Jei nėra, įrašykite „Nėra“ *" value={form.healthIssues} onChange={(event) => updateForm("healthIssues", event.target.value)} required />
-                    <textarea className="input-field" style={{ marginTop: 12 }} rows="2" placeholder="Papildoma informacija treneriui" value={form.notes} onChange={(event) => updateForm("notes", event.target.value)} />
-                  </>
-                )}
-
-                {step === 2 && (
-                  <>
-                    <h2 className="section-title">3. {requiresSchedule ? "Pageidaujamas laikas" : "Pageidaujamas ritmas"}</h2>
+                    <h2 className="section-title">4. {requiresSchedule ? "Pageidaujamas laikas" : "Pageidaujamas ritmas"}</h2>
                     {requiresSchedule ? (
                       <>
                         <div className="slots-header">
@@ -819,9 +923,9 @@ function BookingModal({ onClose }) {
                   </>
                 )}
 
-                {step === 3 && (
+                {step === 4 && (
                   <>
-                    <h2 className="section-title">4. Kontaktai ir patvirtinimas</h2>
+                    <h2 className="section-title">5. Kontaktai ir patvirtinimas</h2>
                     <div className="form-grid">
                       <input className="input-field" placeholder="Vardas ir pavardė *" value={form.name} onChange={(event) => updateForm("name", event.target.value)} required />
                       <input className="input-field" placeholder="Telefono numeris *" value={form.phone} onChange={(event) => updateForm("phone", event.target.value)} required />
@@ -914,11 +1018,11 @@ export default function TrainerLanding() {
 
       <section id="top" className="container hero">
         <div>
-          <span className="eyebrow">Individualus treniravimas Kaune</span>
-          <h1>Aiškus treniruočių planas ir saugus progresas per 4–8 savaites.</h1>
+          <span className="eyebrow">Individualus treniravimas</span>
+          <h1>Aiškus planas, saugus krūvis ir progresas per 4–8 savaites.</h1>
           <p>
-            Individualios treniruotės žmonėms, kurie nori sportuoti protingai: su įvertinimu,
-            aiškia metodika, krūvio kontrole ir profesionaliai paruošta programa pagal tikslą.
+            Pirma įvertiname tikslą, patirtį ir sveikatos apribojimus. Tada sudarome treniruočių kryptį,
+            kurią galima realiai išlaikyti.
           </p>
 
           <div className="hero-actions">
@@ -1201,7 +1305,7 @@ export default function TrainerLanding() {
             <div className="trust-metrics">
               <div className="trust-metric">
                 <strong>200+</strong>
-                <span>demo treniruočių patirtis</span>
+                <span>treniruočių patirtis</span>
               </div>
               <div className="trust-metric">
                 <strong>4–8 sav.</strong>
@@ -1242,7 +1346,7 @@ export default function TrainerLanding() {
         <div className="section-head">
           <h2>Ką sako klientai.</h2>
           <p className="section-lead">
-            Demo istorijos parodo, kokią žinutę verta komunikuoti realioje svetainėje: aiškumas, saugumas, progresas ir pasitikėjimas.
+            Klientų istorijos turi komunikuoti aiškumą, saugumą, progresą ir pasitikėjimą trenerio metodika.
           </p>
         </div>
 
