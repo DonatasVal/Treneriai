@@ -3,12 +3,12 @@ import { useMemo, useState } from "react";
 const services = [
   {
     id: "one",
-    title: "Registruotis ir įvertinimas",
+    title: "Pirma konsultacija ir įvertinimas",
     price: "35 €",
-    meta: "60 min. · Tikslas, patirtis, saugus startas",
-    description: "Pradinis pokalbis ir fizinio pasirengimo krypties įvertinimas prieš sudarant planą.",
+    meta: "60 min. · Saugi pradžia",
+    description: "Įvertiname tikslą, patirtį, judėjimo istoriją ir parenkame tinkamiausią treniruočių kryptį.",
     bullets: ["Tikslas ir lūkesčiai", "Patirties bei apribojimų peržiūra", "Pirminė treniruočių kryptis"],
-    result: "klientas gauna aiškią pradžios kryptį ir supranta, koks krūvis jam tinkamas.",
+    result: "aiškus startas be spėlionių ir saugesnis pirmas krūvis.",
     durationMin: 60,
     requiresSchedule: true,
     bookingType: "vizitas",
@@ -18,10 +18,10 @@ const services = [
     id: "sub",
     title: "Individualios treniruotės",
     price: "nuo 120 €",
-    meta: "mėn. · Reguliarus darbas 1:1",
-    description: "Savaitinis treniruočių ritmas, technikos kontrolė ir progresas pagal jūsų fizinę būklę.",
+    meta: "mėn. · Darbas 1:1",
+    description: "Reguliarus darbas su technikos kontrole, krūvio valdymu ir progresu pagal jūsų fizinę būklę.",
     bullets: ["Gyvos treniruotės 1:1", "Technikos ir krūvio kontrolė", "Korekcijos pagal savijautą"],
-    result: "klientas sportuoja nuosekliai, saugiau ir be atsitiktinių sprendimų.",
+    result: "nuoseklus progresas, aiškus savaitės ritmas ir mažiau chaoso.",
     durationMin: 0,
     requiresSchedule: false,
     bookingType: "abonementas",
@@ -31,10 +31,10 @@ const services = [
     id: "plan",
     title: "Sporto programa savarankiškam darbui",
     price: "89 €",
-    meta: "4 savaitės · Sporto salei arba namams",
-    description: "Individualus planas su pratimais, serijomis, pakartojimais, tempu ir aiškia logika.",
-    bullets: ["Pratimai ir alternatyvos", "Serijos, pakartojimai, poilsis", "PDF programos dokumentas klientui"],
-    result: "klientas gauna ne pratimų sąrašą, o aiškų veiksmų planą pagal tikslą.",
+    meta: "4 savaitės · PDF planas",
+    description: "Individualus planas su pratimais, serijomis, pakartojimais, poilsiu, tempu ir alternatyvomis.",
+    bullets: ["Pratimai ir alternatyvos", "Serijos, pakartojimai, poilsis", "PDF programa klientui"],
+    result: "ne pratimų sąrašas, o aiški veiksmų sistema pagal tikslą.",
     durationMin: 0,
     requiresSchedule: false,
     bookingType: "planas",
@@ -44,10 +44,10 @@ const services = [
     id: "online",
     title: "Nuotolinė priežiūra",
     price: "129 €",
-    meta: "mėn. · Planas, korekcijos, palaikymas",
-    description: "Tinka, kai norite aiškios struktūros ir trenerio priežiūros, bet sportuojate savarankiškai.",
+    meta: "mėn. · Planas ir korekcijos",
+    description: "Tinka, kai sportuojate savarankiškai, bet norite aiškios struktūros, palaikymo ir plano korekcijų.",
     bullets: ["Programos korekcijos", "Reguliarus grįžtamasis ryšys", "Progreso ir savijautos stebėjimas"],
-    result: "klientas turi kryptį, palaikymą ir aiškias korekcijas net sportuodamas nuotoliu.",
+    result: "kryptis ir kontrolė net tada, kai treniruojatės nuotoliu.",
     durationMin: 0,
     requiresSchedule: false,
     bookingType: "nuotoliu",
@@ -57,10 +57,10 @@ const services = [
     id: "food",
     title: "Bendros mitybos gairės",
     price: "45 €",
-    meta: "45 min. · Papildomas premium priedas",
-    description: "Praktiškos sporto mitybos rekomendacijos, kurios padeda palaikyti treniruočių tikslą.",
+    meta: "45 min. · Papildomas priedas",
+    description: "Praktiškos sporto mitybos gairės, padedančios palaikyti treniruočių tikslą, energiją ir atsistatymą.",
     bullets: ["Valgymo struktūra", "Treniruočių dienų gairės", "Praktiški pasirinkimai kasdienai"],
-    result: "klientas gauna aiškesnę mitybos kryptį, derinamą su treniruočių programa.",
+    result: "aiškesnė mitybos kryptis, suderinta su treniruočių programa.",
     durationMin: 45,
     requiresSchedule: true,
     bookingType: "konsultacija",
@@ -113,66 +113,113 @@ function isSlotAvailable({ date, time, durationMin, sessions }) {
 
 const css = `
   :root {
-    --ink: #0f172a;
-    --muted: #64748b;
-    --paper: #fbfaf6;
-    --bone: #f3f5ef;
-    --line: rgba(15, 23, 42, .1);
-    --lime: #b7f34a;
-    --lime-soft: #eefdd7;
-    --forest: #17351f;
+    --ink: #172019;
+    --muted: #657169;
+    --soft: #8a958d;
+    --paper: #fbfaf5;
+    --cream: #f2ecdf;
+    --cream-2: #f7f3ea;
+    --white: rgba(255, 255, 255, .78);
+    --line: rgba(23, 32, 25, .10);
+    --line-strong: rgba(23, 32, 25, .16);
+    --forest: #193722;
+    --forest-2: #244b33;
+    --sage: #e8efe3;
+    --sage-2: #f1f6ed;
+    --lime: #c7ef5f;
+    --lime-soft: #f1fad8;
     --rose: #fff1f2;
+    --shadow: 0 24px 70px rgba(30, 42, 31, .10);
+    --shadow-soft: 0 16px 44px rgba(30, 42, 31, .07);
   }
 
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-rendering: optimizeLegibility;
+  }
   button, input, select, textarea { font: inherit; }
+  a { color: inherit; }
 
   .landing {
     min-height: 100vh;
     background:
-      radial-gradient(circle at 8% 12%, rgba(183, 243, 74, .22), transparent 32%),
-      radial-gradient(circle at 84% 8%, rgba(255, 255, 255, .9), transparent 28%),
-      linear-gradient(180deg, #fbfaf6 0%, #f4f1ea 100%);
+      radial-gradient(circle at 12% 8%, rgba(199, 239, 95, .16), transparent 27%),
+      radial-gradient(circle at 86% 4%, rgba(255, 255, 255, .94), transparent 27%),
+      linear-gradient(180deg, #fbfaf5 0%, #f3eee3 52%, #fbfaf5 100%);
   }
 
-  .container { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+  .container { width: min(1180px, calc(100% - 44px)); margin: 0 auto; }
+
   .header {
     position: sticky;
     top: 0;
     z-index: 30;
-    backdrop-filter: blur(18px);
-    background: rgba(251, 250, 246, .78);
-    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(22px);
+    background: rgba(251, 250, 245, .84);
+    border-bottom: 1px solid rgba(23, 32, 25, .08);
   }
 
   .nav {
-    min-height: 78px;
+    min-height: 76px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
   }
 
-  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ink);
+    min-width: max-content;
+  }
+
   .brand-mark {
     width: 44px;
     height: 44px;
-    border-radius: 16px;
+    border-radius: 15px;
     display: grid;
     place-items: center;
     background: var(--forest);
     color: white;
     font-weight: 950;
-    box-shadow: 0 12px 35px rgba(23, 53, 31, .22);
+    letter-spacing: -.04em;
+    box-shadow: 0 16px 42px rgba(25, 55, 34, .22);
   }
-  .brand strong { display: block; font-size: 16px; letter-spacing: -.04em; }
-  .brand span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 700; }
 
-  .nav-links { display: flex; align-items: center; gap: 20px; }
-  .nav-links a { color: rgba(15, 23, 42, .62); text-decoration: none; font-size: 14px; font-weight: 800; }
-  .nav-links a:hover { color: var(--ink); }
+  .brand strong { display: block; font-size: 15px; letter-spacing: -.035em; }
+  .brand span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 750; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid rgba(23, 32, 25, .07);
+    background: rgba(255, 255, 255, .58);
+    border-radius: 999px;
+  }
+
+  .nav-links a {
+    color: rgba(23, 32, 25, .62);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 850;
+    padding: 10px 12px;
+    border-radius: 999px;
+  }
+
+  .nav-links a:hover {
+    color: var(--forest);
+    background: rgba(25, 55, 34, .06);
+  }
 
   .btn {
     border: 0;
@@ -185,19 +232,21 @@ const css = `
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+    white-space: nowrap;
   }
 
   .btn:hover { transform: translateY(-2px); }
-  .btn-dark { background: var(--forest); color: white; box-shadow: 0 18px 45px rgba(23, 53, 31, .2); }
-  .btn-light { background: white; color: var(--ink); border: 1px solid var(--line); }
-  .btn-lime { background: var(--lime); color: var(--forest); }
+  .btn:disabled { opacity: .48; cursor: not-allowed; transform: none; }
+  .btn-dark { background: var(--forest); color: white; box-shadow: 0 18px 45px rgba(25, 55, 34, .20); }
+  .btn-light { background: rgba(255,255,255,.82); color: var(--ink); border: 1px solid var(--line); }
+  .btn-lime { background: var(--lime); color: var(--forest); box-shadow: 0 16px 40px rgba(150, 180, 55, .18); }
 
   .hero {
-    padding: 72px 0 54px;
+    padding: 72px 0 42px;
     display: grid;
-    grid-template-columns: 1.03fr .97fr;
-    gap: 46px;
+    grid-template-columns: minmax(0, 1.02fr) minmax(360px, .98fr);
+    gap: 54px;
     align-items: center;
   }
 
@@ -205,546 +254,42 @@ const css = `
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border: 1px solid var(--line);
-    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(23, 32, 25, .10);
+    background: rgba(255, 255, 255, .70);
     border-radius: 999px;
     padding: 8px 12px;
-    color: rgba(15, 23, 42, .58);
-    font-size: 12px;
+    color: rgba(23, 32, 25, .58);
+    font-size: 11px;
     font-weight: 950;
     text-transform: uppercase;
-    letter-spacing: .12em;
+    letter-spacing: .13em;
   }
 
   .eyebrow::before {
     content: "";
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 999px;
     background: var(--lime);
-    box-shadow: 0 0 0 6px rgba(183, 243, 74, .22);
+    box-shadow: 0 0 0 6px rgba(199, 239, 95, .24);
   }
 
   .hero h1 {
     margin: 22px 0 0;
-    max-width: 860px;
-    font-size: clamp(2.45rem, 5.2vw, 5.15rem);
-    line-height: .95;
-    letter-spacing: -.062em;
-    font-weight: 950;
-    text-wrap: balance;
-  }
-
-  .hero p {
-    margin: 22px 0 0;
-    color: rgba(15, 23, 42, .62);
-    font-size: clamp(1rem, 1.45vw, 1.12rem);
-    line-height: 1.7;
-    max-width: 620px;
-  }
-
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-
-  .hero-points {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 34px;
-  }
-
-  .point {
-    background: rgba(255, 255, 255, .75);
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    padding: 18px;
-  }
-
-  .point strong { display: block; font-size: 24px; letter-spacing: -.05em; }
-  .point span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; font-weight: 800; }
-
-  .hero-card {
-    position: relative;
-    min-height: 620px;
-    border-radius: 42px;
-    overflow: hidden;
-    border: 1px solid rgba(15, 23, 42, .08);
-    background:
-      linear-gradient(145deg, rgba(15, 23, 42, .05), transparent 45%),
-      linear-gradient(180deg, #e6eadf, #ffffff);
-    box-shadow: 0 30px 90px rgba(15, 23, 42, .12);
-  }
-
-  .hero-card::before {
-    content: "Nuotraukos vieta";
-    position: absolute;
-    inset: 28px 28px 120px;
-    border-radius: 34px;
-    display: grid;
-    place-items: center;
-    background:
-      radial-gradient(circle at 18% 18%, rgba(183, 243, 74, .22), transparent 34%),
-      linear-gradient(135deg, rgba(23, 53, 31, .08), rgba(255, 255, 255, .62));
-    border: 2px dashed rgba(23, 53, 31, .22);
-    color: rgba(23, 53, 31, .58);
-    font-size: 13px;
-    font-weight: 950;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    text-align: center;
-  }
-
-  .floating-card {
-    position: absolute;
-    left: 28px;
-    right: 28px;
-    bottom: 28px;
-    border-radius: 30px;
-    background: rgba(255, 255, 255, .88);
-    border: 1px solid rgba(255, 255, 255, .6);
-    backdrop-filter: blur(18px);
-    padding: 22px;
-  }
-
-  .floating-card h3 { margin: 0; font-size: 24px; letter-spacing: -.055em; }
-  .floating-card p { margin: 10px 0 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
-  .mini-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-  .mini-pill { border-radius: 999px; background: var(--lime-soft); color: var(--forest); padding: 8px 12px; font-size: 12px; font-weight: 950; }
-
-  .section { padding: 64px 0; }
-  .section-head {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 26px;
-    margin-bottom: 28px;
-  }
-
-  .section h2 {
-    margin: 0;
-    max-width: 760px;
-    font-size: clamp(2.1rem, 5vw, 4.8rem);
-    line-height: .92;
-    letter-spacing: -.08em;
-    font-weight: 950;
-  }
-
-  .section-lead {
-    max-width: 410px;
-    color: rgba(15, 23, 42, .58);
-    font-size: 15px;
-    line-height: 1.7;
-    font-weight: 650;
-  }
-
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .card {
-    background: rgba(255, 255, 255, .86);
-    border: 1px solid var(--line);
-    border-radius: 30px;
-    padding: 26px;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, .05);
-  }
-
-  .card h3 { margin: 0; font-size: 22px; letter-spacing: -.055em; }
-  .card p { margin: 12px 0 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
-  .price { margin-top: 20px; display: inline-flex; border-radius: 999px; background: var(--lime-soft); color: var(--forest); padding: 8px 12px; font-size: 13px; font-weight: 950; }
-
-  .fit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .fit-card {
-    position: relative;
-    overflow: hidden;
-    min-height: 250px;
-    border: 1px solid var(--line);
-    border-radius: 30px;
-    background: rgba(255, 255, 255, .88);
-    padding: 26px;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, .045);
-  }
-  .fit-card::after {
-    content: attr(data-no);
-    position: absolute;
-    right: 18px;
-    bottom: -6px;
-    color: rgba(15, 23, 42, .045);
-    font-size: 76px;
-    font-weight: 950;
-    letter-spacing: -.08em;
-  }
-  .fit-card h3 { margin: 18px 0 0; font-size: 22px; letter-spacing: -.055em; }
-  .fit-card p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
-
-  .method-panel {
-    display: grid;
-    grid-template-columns: .9fr 1.1fr;
-    gap: 18px;
-    align-items: stretch;
-  }
-  .method-intro {
-    border-radius: 34px;
-    background: var(--forest);
-    color: white;
-    padding: 32px;
-  }
-  .method-intro h3 { margin: 18px 0 0; font-size: 34px; line-height: 1; letter-spacing: -.07em; }
-  .method-intro p { margin: 16px 0 0; color: rgba(255,255,255,.7); line-height: 1.7; }
-  .method-list { display: grid; gap: 12px; }
-  .method-item {
-    display: grid;
-    grid-template-columns: 54px 1fr;
-    gap: 14px;
-    align-items: start;
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    background: white;
-    padding: 18px;
-  }
-  .method-no {
-    width: 54px;
-    height: 54px;
-    border-radius: 18px;
-    display: grid;
-    place-items: center;
-    background: var(--lime-soft);
-    color: var(--forest);
-    font-weight: 950;
-  }
-  .method-item h3 { margin: 0; font-size: 20px; letter-spacing: -.045em; }
-  .method-item p { margin: 6px 0 0; color: var(--muted); line-height: 1.6; font-size: 14px; }
-
-  .safety-card {
-    border-radius: 38px;
-    background:
-      radial-gradient(circle at 10% 0%, rgba(183, 243, 74, .18), transparent 32%),
-      var(--forest);
-    color: white;
-    padding: 38px;
-  }
-  .safety-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
-  .safety-item {
-    border: 1px solid rgba(255,255,255,.14);
-    border-radius: 24px;
-    background: rgba(255,255,255,.07);
-    padding: 20px;
-  }
-  .safety-item h3 { margin: 0; font-size: 21px; letter-spacing: -.055em; }
-  .safety-item p { margin: 10px 0 0; color: rgba(255,255,255,.66); line-height: 1.6; font-size: 14px; }
-
-  .trust-board {
-    display: grid;
-    grid-template-columns: .95fr 1.05fr;
-    gap: 18px;
-    align-items: stretch;
-  }
-  .trust-dark {
-    border-radius: 36px;
-    background: var(--forest);
-    color: white;
-    padding: 34px;
-  }
-  .trust-dark h2 { color: white; margin-top: 18px; }
-  .trust-dark p { color: rgba(255,255,255,.68); line-height: 1.7; }
-  .trust-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
-  .trust-metric { border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.07); border-radius: 22px; padding: 18px; }
-  .trust-metric strong { display: block; font-size: 30px; letter-spacing: -.06em; }
-  .trust-metric span { display: block; margin-top: 4px; color: rgba(255,255,255,.6); font-size: 12px; font-weight: 900; }
-  .story-grid { display: grid; gap: 12px; }
-  .story-card { border: 1px solid var(--line); border-radius: 28px; background: white; padding: 22px; }
-  .story-card small { display: inline-flex; border-radius: 999px; background: var(--lime-soft); color: var(--forest); padding: 6px 10px; font-weight: 950; }
-  .story-card h3 { margin: 14px 0 0; font-size: 22px; letter-spacing: -.055em; }
-  .story-card p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
-
-  .about-grid { display: grid; grid-template-columns: .92fr 1.08fr; gap: 18px; align-items: stretch; }
-  .about-photo {
-    position: relative;
-    min-height: 480px;
-    border-radius: 36px;
-    background:
-      radial-gradient(circle at 18% 18%, rgba(183, 243, 74, .18), transparent 34%),
-      linear-gradient(135deg, rgba(23, 53, 31, .06), rgba(255, 255, 255, .72));
-    border: 2px dashed rgba(23, 53, 31, .18);
-    overflow: hidden;
-    display: grid;
-    place-items: center;
-  }
-
-  .about-photo::after {
-    content: "Nuotraukos vieta";
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .76);
-    border: 1px solid rgba(23, 53, 31, .12);
-    color: rgba(23, 53, 31, .58);
-    padding: 10px 14px;
-    font-size: 12px;
-    font-weight: 950;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
-  }
-
-  .about-text {
-    border-radius: 36px;
-    background: var(--forest);
-    color: white;
-    padding: 34px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 480px;
-  }
-
-  .about-text p { color: rgba(255, 255, 255, .72); font-size: 17px; line-height: 1.75; margin: 0; }
-  .about-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
-  .about-item { border: 1px solid rgba(255, 255, 255, .14); border-radius: 22px; padding: 16px; background: rgba(255, 255, 255, .06); }
-  .about-item strong { display: block; }
-  .about-item span { display: block; margin-top: 5px; color: rgba(255, 255, 255, .58); font-size: 13px; line-height: 1.4; }
-
-  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-  .step { position: relative; min-height: 245px; background: white; border: 1px solid var(--line); border-radius: 30px; padding: 24px; overflow: hidden; }
-  .step::before { content: attr(data-no); position: absolute; right: 18px; bottom: 8px; font-size: 86px; font-weight: 950; letter-spacing: -.08em; color: rgba(15, 23, 42, .045); }
-  .step h3 { margin: 32px 0 0; font-size: 21px; letter-spacing: -.055em; }
-  .step p { margin: 12px 0 0; color: var(--muted); line-height: 1.6; font-size: 14px; }
-
-  .results {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-  }
-
-  .result {
-    background: rgba(255, 255, 255, .82);
-    border: 1px solid var(--line);
-    border-radius: 28px;
-    padding: 24px;
-  }
-
-  .result strong { display: block; font-size: 42px; line-height: 1; letter-spacing: -.07em; }
-  .result span { display: block; margin-top: 10px; color: var(--muted); font-size: 13px; font-weight: 800; line-height: 1.45; }
-
-  .reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .review { background: white; border: 1px solid var(--line); border-radius: 30px; padding: 26px; }
-  .review p { margin: 0; color: rgba(15, 23, 42, .68); line-height: 1.7; }
-  .review strong { display: block; margin-top: 20px; }
-
-  .contact-card {
-    display: grid;
-    grid-template-columns: 1.1fr .9fr;
-    gap: 20px;
-    align-items: center;
-    border-radius: 40px;
-    background: var(--forest);
-    color: white;
-    padding: 40px;
-    overflow: hidden;
-  }
-
-  .contact-card h2 { color: white; }
-  .contact-card p { color: rgba(255, 255, 255, .72); font-size: 16px; line-height: 1.7; max-width: 620px; }
-  .contact-box { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .14); border-radius: 28px; padding: 24px; }
-  .contact-line { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid rgba(255, 255, 255, .12); }
-  .contact-line:last-child { border-bottom: 0; }
-  .contact-line span { color: rgba(255, 255, 255, .58); font-weight: 800; }
-  .contact-line strong { text-align: right; }
-
-  .footer { padding: 28px 0 42px; color: rgba(15, 23, 42, .52); font-size: 13px; font-weight: 750; }
-
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(15, 23, 42, .42);
-    backdrop-filter: blur(14px);
-    display: grid;
-    place-items: center;
-    padding: 22px;
-  }
-
-  .modal {
-    width: min(1100px, 100%);
-    max-height: min(92vh, 980px);
-    overflow: auto;
-    background: #fbfbf9;
-    border-radius: 32px;
-    padding: 40px;
-    box-shadow: 0 30px 110px rgba(0,0,0,.24);
-  }
-
-  .reg-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
-  .reg-title { font-size: 36px; font-weight: 950; margin: 0 0 6px 0; letter-spacing: -0.055em; }
-  .reg-sub { color: var(--muted); font-size: 15px; margin-bottom: 32px; }
-  .close-btn { background: #f3f4f1; border: 0; width: 44px; height: 44px; border-radius: 50%; font-size: 22px; cursor: pointer; flex: 0 0 auto; }
-  .reg-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; }
-  .section-title { font-size: 20px; font-weight: 950; margin: 0 0 18px 0; letter-spacing: -0.03em; }
-  .service-list { display: flex; flex-direction: column; gap: 12px; }
-  .service-card { background: white; border: 1px solid rgba(17,24,39,0.08); border-radius: 20px; padding: 20px; text-align: left; cursor: pointer; transition: 0.2s; }
-  .service-card:hover { transform: translateY(-2px); border-color: rgba(17,24,39,0.15); }
-  .service-card.active { background: #f4fbe9; border: 2px solid #b7f34a; }
-  .service-name { font-size: 17px; font-weight: 950; margin: 0 0 6px 0; }
-  .service-meta { color: var(--muted); font-size: 14px; }
-  .slots-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 12px; }
-  .slots-badge { background: #e8f7cc; color: #3b6110; font-size: 12px; font-weight: 950; padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
-  .time-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px; }
-  .time-btn { background: white; border: 1px solid rgba(17,24,39,0.08); border-radius: 14px; padding: 14px 0; font-weight: 950; font-size: 15px; text-align: center; cursor: pointer; transition: 0.2s; }
-  .time-btn:hover:not(:disabled) { border-color: #111827; }
-  .time-btn.active { background: #111827; color: white; border-color: #111827; }
-  .time-btn:disabled { background: #f3f4f1; color: #98a2b3; cursor: not-allowed; text-decoration: line-through; border-color: transparent; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  .input-field { width: 100%; border: 1px solid rgba(17,24,39,0.08); background: white; border-radius: 16px; padding: 14px 16px; font-size: 15px; color: #111827; }
-  .input-field::placeholder { color: #98a2b3; }
-  .input-field:focus { outline: none; border-color: #111827; }
-  .danger-border { border: 1px solid #fca5a5 !important; background: #fffbfa; }
-  .submit-btn { width: 100%; background: #111827; color: white; border: 0; border-radius: 999px; padding: 16px; font-weight: 950; font-size: 16px; margin-top: 16px; cursor: pointer; transition: 0.2s; }
-  .submit-btn:hover { background: #233027; transform: translateY(-2px); }
-  .submit-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
-  .success-box { background: #e8f7cc; color: #2f4b18; padding: 24px; border-radius: 24px; text-align: center; font-weight: 800; }
-
-  .small-note { margin: 8px 0 0; color: rgba(15, 23, 42, .52); font-size: 12px; line-height: 1.55; font-weight: 750; }
-  .schedule-card { border: 1px solid rgba(15, 23, 42, .08); background: rgba(183, 243, 74, .13); border-radius: 18px; padding: 16px; margin-bottom: 20px; }
-  .schedule-card strong { display: block; font-size: 15px; letter-spacing: -.025em; }
-  .schedule-card p { margin: 6px 0 0; color: rgba(15, 23, 42, .58); font-size: 12px; line-height: 1.55; font-weight: 750; }
-  .form-section-note { margin: -8px 0 14px; color: rgba(15, 23, 42, .52); font-size: 12px; line-height: 1.55; font-weight: 750; }
-  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; color: rgba(15, 23, 42, .62); font-size: 12px; line-height: 1.5; font-weight: 750; }
-  .checkbox-row input { width: 18px; height: 18px; margin-top: 1px; flex: 0 0 auto; }
-
-  .wizard-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 22px 0; }
-  .wizard-tab { border: 1px solid var(--line); background: white; color: var(--muted); border-radius: 16px; padding: 12px; text-align: left; font-size: 12px; font-weight: 950; cursor: pointer; }
-  .wizard-tab.active { background: var(--forest); color: white; border-color: var(--forest); }
-  .wizard-tab.done { background: var(--lime-soft); color: var(--forest); border-color: rgba(183,243,74,.7); }
-  .wizard-layout { display: grid; grid-template-columns: 1fr .82fr; gap: 24px; align-items: start; }
-  .wizard-panel { border: 1px solid var(--line); background: white; border-radius: 26px; padding: 22px; }
-  .wizard-summary { position: sticky; top: 16px; background: var(--forest); color: white; border-radius: 26px; padding: 22px; }
-  .wizard-summary h3 { margin: 16px 0 0; font-size: 26px; letter-spacing: -.055em; }
-  .wizard-summary p { color: rgba(255,255,255,.66); line-height: 1.6; font-size: 13px; margin: 12px 0 0; }
-  .summary-line { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.12); padding: 10px 0; font-size: 13px; }
-  .summary-line span { color: rgba(255,255,255,.58); }
-  .wizard-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
-  .wizard-actions .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-  .service-list.wizard-services { display: grid; grid-template-columns: 1fr 1fr; }
-  .micro-note { margin-top: 12px; border-radius: 18px; background: var(--lime-soft); color: var(--forest); padding: 12px 14px; font-size: 12px; line-height: 1.55; font-weight: 850; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-
-  @media (max-width: 980px) {
-    .container { width: min(100% - 28px, 1180px); }
-    .nav { min-height: 68px; }
-    .nav-links { display: none; }
-    .hero { grid-template-columns: 1fr; padding: 46px 0 40px; gap: 28px; }
-    .hero-card { min-height: 520px; }
-    .hero-points { grid-template-columns: repeat(3, 1fr); }
-    .section-head { align-items: start; flex-direction: column; }
-    .cards, .reviews, .fit-grid { grid-template-columns: 1fr 1fr; }
-    .method-panel, .trust-board { grid-template-columns: 1fr; }
-    .safety-grid { grid-template-columns: 1fr; }
-    .steps { grid-template-columns: 1fr 1fr; }
-    .results { grid-template-columns: 1fr 1fr; }
-    .about-grid { grid-template-columns: 1fr; }
-    .contact-card { grid-template-columns: 1fr; padding: 30px; border-radius: 32px; }
-    .modal { padding: 28px; }
-    .reg-grid { grid-template-columns: 1fr; gap: 28px; }
-    .wizard-layout { grid-template-columns: 1fr; }
-    .wizard-summary { position: static; }
-    .time-grid { grid-template-columns: repeat(4, 1fr); }
-  }
-
-  @media (max-width: 640px) {
-    .container { width: calc(100% - 24px); }
-    .brand span { display: none; }
-    .brand-mark { width: 40px; height: 40px; border-radius: 14px; }
-    .btn { width: 100%; padding: 15px 18px; }
-    .nav .btn { width: auto; padding: 12px 16px; font-size: 13px; }
-    .hero { padding-top: 30px; }
-    .hero h1 {
-      font-size: clamp(2.15rem, 10.2vw, 3.35rem);
-      line-height: .98;
-      letter-spacing: -.052em;
-    }
-
-    .hero p {
-      font-size: 15.5px;
-      line-height: 1.62;
-    }
-    .hero p { font-size: 16px; line-height: 1.65; }
-    .hero-actions { flex-direction: column; }
-    .hero-points { grid-template-columns: 1fr; }
-    .hero-card { min-height: 420px; border-radius: 28px; }
-    .hero-card::before { inset: 16px 16px 116px; border-radius: 22px; }
-    .floating-card { left: 16px; right: 16px; bottom: 16px; border-radius: 22px; padding: 18px; }
-    .section { padding: 44px 0; }
-    .cards, .reviews, .steps, .results, .fit-grid, .safety-grid { grid-template-columns: 1fr; }
-    .card, .review, .step, .result, .fit-card, .safety-item { border-radius: 24px; padding: 22px; }
-    .method-intro, .safety-card, .trust-dark { border-radius: 28px; padding: 24px; }
-    .trust-metrics { grid-template-columns: 1fr; }
-    .about-photo { min-height: 360px; border-radius: 28px; }
-    .about-text { min-height: auto; border-radius: 28px; padding: 24px; }
-    .about-list { grid-template-columns: 1fr; }
-    .contact-card { padding: 24px; border-radius: 28px; }
-    .contact-line { flex-direction: column; gap: 5px; }
-    .contact-line strong { text-align: left; }
-    .modal-backdrop { padding: 0; align-items: stretch; }
-    .modal { width: 100%; max-height: 100vh; border-radius: 0; padding: 20px; }
-    .reg-title { font-size: 28px; line-height: 1.04; }
-    .reg-sub { font-size: 14px; line-height: 1.55; margin-bottom: 24px; }
-    .section-title { font-size: 18px; }
-    .service-card { border-radius: 18px; padding: 16px; }
-    .service-name { font-size: 16px; }
-    .service-meta { font-size: 13px; line-height: 1.45; }
-    .slots-header { align-items: flex-start; flex-direction: column; }
-    .time-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .time-btn { padding: 15px 0; border-radius: 16px; }
-    .form-row { grid-template-columns: 1fr; gap: 10px; }
-    .wizard-tabs { grid-template-columns: 1fr 1fr; }
-    .service-list.wizard-services, .form-grid { grid-template-columns: 1fr; }
-    .wizard-actions { flex-direction: column; }
-    .input-field { font-size: 16px; padding: 15px 16px; }
-    .submit-btn { padding: 17px; font-size: 15px; }
-  }
-
-  /* Premium clean design polish */
-  .landing {
-    background:
-      radial-gradient(circle at 8% 8%, rgba(183, 243, 74, .14), transparent 28%),
-      radial-gradient(circle at 88% 4%, rgba(255, 255, 255, .92), transparent 26%),
-      linear-gradient(180deg, #fbfaf4 0%, #f3efe5 54%, #fbfaf4 100%);
-  }
-
-  .header {
-    background: rgba(251, 250, 244, .84);
-    backdrop-filter: blur(22px);
-  }
-
-  .nav-links {
-    gap: 6px;
-    padding: 7px;
-    border: 1px solid rgba(22, 32, 24, .07);
-    background: rgba(255, 255, 255, .58);
-    border-radius: 999px;
-  }
-
-  .nav-links a {
-    padding: 10px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-  }
-
-  .nav-links a:hover {
-    background: rgba(23, 53, 31, .06);
-  }
-
-  .hero {
-    padding-top: 76px;
-    gap: 52px;
-  }
-
-  .hero h1 {
-    max-width: 850px;
-    font-size: clamp(2.55rem, 4.65vw, 4.75rem);
+    max-width: 880px;
+    font-size: clamp(2.65rem, 4.8vw, 4.9rem);
     line-height: .98;
-    letter-spacing: -.058em;
+    letter-spacing: -.06em;
+    font-weight: 950;
     text-wrap: balance;
   }
 
   .hero p {
-    color: rgba(15, 23, 42, .64);
+    margin: 22px 0 0;
+    color: rgba(23, 32, 25, .66);
     font-size: clamp(1.02rem, 1.35vw, 1.16rem);
     line-height: 1.72;
+    max-width: 650px;
   }
 
   .hero-trust {
@@ -752,11 +297,11 @@ const css = `
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: rgba(15, 23, 42, .70);
+    color: rgba(23, 32, 25, .70);
     font-size: 13px;
     font-weight: 850;
     background: rgba(255,255,255,.62);
-    border: 1px solid rgba(15, 23, 42, .08);
+    border: 1px solid rgba(23, 32, 25, .08);
     border-radius: 999px;
     padding: 9px 12px;
   }
@@ -770,43 +315,117 @@ const css = `
     flex: 0 0 auto;
   }
 
-  .hero-card,
-  .about-photo,
-  .about-text,
-  .card,
-  .fit-card,
-  .review,
-  .step,
-  .result,
-  .story-card,
-  .wizard-panel,
-  .wizard-summary {
-    box-shadow: 0 14px 40px rgba(31, 42, 32, .075);
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+  .hero-points {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 720px;
+  }
+
+  .point {
+    border: 1px solid rgba(23, 32, 25, .08);
+    background: rgba(255,255,255,.68);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .point strong { display: block; color: var(--forest); font-size: 21px; font-weight: 950; letter-spacing: -.04em; }
+  .point span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.38; font-weight: 750; }
+
+  .hero-card {
+    min-height: 570px;
+    border-radius: 42px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(23, 32, 25, .10);
+    box-shadow: var(--shadow);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.72)),
+      linear-gradient(135deg, #dfe8d7 0%, #f8f2e6 54%, #dce8d4 100%);
   }
 
   .hero-card::before {
     content: "Nuotraukos vieta";
+    position: absolute;
+    inset: 28px 28px 142px;
+    border-radius: 32px;
+    border: 1px dashed rgba(25, 55, 34, .24);
+    background:
+      radial-gradient(circle at 50% 18%, rgba(255,255,255,.82), transparent 24%),
+      linear-gradient(145deg, rgba(25,55,34,.12), rgba(255,255,255,.42));
     display: grid;
     place-items: center;
-    color: rgba(23, 53, 31, .45);
+    color: rgba(25,55,34,.48);
     font-weight: 900;
     letter-spacing: .04em;
     text-transform: uppercase;
     font-size: 12px;
   }
 
-  .promise-section { padding-top: 28px; }
+  .floating-card {
+    position: absolute;
+    left: 26px;
+    right: 26px;
+    bottom: 26px;
+    background: rgba(255,255,255,.88);
+    border: 1px solid rgba(23, 32, 25, .08);
+    backdrop-filter: blur(16px);
+    border-radius: 30px;
+    padding: 24px;
+    box-shadow: 0 18px 48px rgba(25, 55, 34, .13);
+  }
 
+  .floating-card h3 { margin: 0; font-size: 22px; letter-spacing: -.04em; line-height: 1.12; }
+  .floating-card p { margin: 12px 0 0; color: var(--muted); line-height: 1.62; font-size: 14.5px; }
+
+  .mini-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .mini-pill {
+    border-radius: 999px;
+    padding: 8px 10px;
+    background: var(--sage-2);
+    color: var(--forest);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .section { padding: 64px 0; }
+  .section-head { max-width: 780px; margin-bottom: 30px; }
+
+  .section-head h2,
+  .contact-card h2,
+  .safety-card h2,
+  .trust-dark h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2rem, 3.2vw, 3.45rem);
+    line-height: 1.02;
+    letter-spacing: -.055em;
+    font-weight: 950;
+    text-wrap: balance;
+  }
+
+  .section-lead {
+    margin: 16px 0 0;
+    color: rgba(23, 32, 25, .62);
+    font-size: 1.04rem;
+    line-height: 1.72;
+  }
+
+  .promise-section { padding-top: 28px; }
   .promise-card {
     display: grid;
     grid-template-columns: .82fr 1.18fr;
     gap: 28px;
     align-items: center;
-    border: 1px solid rgba(15, 23, 42, .09);
+    border: 1px solid rgba(23, 32, 25, .09);
     background: rgba(255, 255, 255, .72);
     border-radius: 38px;
     padding: 34px;
-    box-shadow: 0 14px 40px rgba(31, 42, 32, .075);
+    box-shadow: var(--shadow-soft);
   }
 
   .promise-card h2 {
@@ -818,7 +437,7 @@ const css = `
 
   .promise-card p {
     margin: 0;
-    color: rgba(15, 23, 42, .66);
+    color: rgba(23, 32, 25, .66);
     font-size: 1.05rem;
     line-height: 1.75;
   }
@@ -839,12 +458,132 @@ const css = `
     font-weight: 900;
   }
 
+  .fit-grid,
+  .cards,
+  .steps,
+  .reviews,
+  .results,
+  .safety-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .fit-card,
+  .card,
+  .step,
+  .review,
+  .result,
+  .safety-item,
+  .story-card,
+  .wizard-panel,
+  .wizard-summary {
+    border: 1px solid rgba(23, 32, 25, .08);
+    background: rgba(255,255,255,.74);
+    border-radius: 30px;
+    padding: 26px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .fit-card { position: relative; overflow: hidden; }
+  .fit-card::after {
+    content: attr(data-no);
+    position: absolute;
+    right: 20px;
+    top: 16px;
+    color: rgba(25, 55, 34, .10);
+    font-size: 54px;
+    font-weight: 950;
+    letter-spacing: -.06em;
+  }
+
+  .fit-card h3,
+  .card h3,
+  .step h3,
+  .story-card h3,
+  .safety-item h3 {
+    margin: 14px 0 0;
+    font-size: 21px;
+    line-height: 1.12;
+    letter-spacing: -.04em;
+  }
+
+  .fit-card p,
+  .card p,
+  .step p,
+  .story-card p,
+  .safety-item p,
+  .review p {
+    margin: 12px 0 0;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: .88fr 1.12fr;
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  .about-photo {
+    min-height: 520px;
+    border-radius: 38px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(23, 32, 25, .10);
+    background:
+      linear-gradient(145deg, rgba(25,55,34,.12), rgba(255,255,255,.58)),
+      #e7eadf;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .about-photo::after {
+    content: "Trenerio nuotraukos vieta";
+    position: absolute;
+    inset: 24px;
+    border: 1px dashed rgba(25, 55, 34, .24);
+    border-radius: 30px;
+    display: grid;
+    place-items: center;
+    color: rgba(25,55,34,.48);
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+
+  .about-text {
+    min-height: 520px;
+    border-radius: 38px;
+    padding: 34px;
+    border: 1px solid rgba(23, 32, 25, .08);
+    background: rgba(255,255,255,.76);
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .about-text p {
+    color: rgba(23, 32, 25, .68);
+    font-size: 1.04rem;
+    line-height: 1.72;
+    margin: 0;
+  }
+
+  .about-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 26px; }
+  .about-item { border-radius: 22px; background: var(--sage-2); padding: 16px; }
+  .about-item strong { display: block; color: var(--forest); letter-spacing: -.03em; }
+  .about-item span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.48; font-weight: 700; }
+
+  .card { display: flex; flex-direction: column; min-height: 100%; }
   .service-kicker {
     display: inline-flex;
     width: fit-content;
     border-radius: 999px;
     padding: 7px 10px;
-    background: var(--lime-soft);
+    background: var(--sage-2);
     color: var(--forest);
     font-size: 12px;
     font-weight: 900;
@@ -859,7 +598,7 @@ const css = `
   }
 
   .service-bullets li {
-    color: rgba(15,23,42,.68);
+    color: rgba(23,32,25,.68);
     font-size: 14px;
     line-height: 1.45;
     font-weight: 760;
@@ -880,9 +619,9 @@ const css = `
   .card-result {
     margin-top: 18px;
     border-radius: 20px;
-    background: rgba(243, 239, 229, .78);
+    background: rgba(242, 236, 223, .78);
     padding: 14px;
-    color: rgba(15, 23, 42, .70);
+    color: rgba(23, 32, 25, .70);
     font-size: 13px;
     line-height: 1.55;
     font-weight: 760;
@@ -899,10 +638,199 @@ const css = `
     padding-top: 20px;
   }
 
-  .btn-card {
-    padding: 11px 15px;
-    font-size: 13px;
+  .price {
+    color: var(--forest);
+    font-size: 16px;
+    font-weight: 950;
+    letter-spacing: -.03em;
   }
+
+  .btn-card { padding: 11px 15px; font-size: 13px; }
+
+  .method-panel {
+    display: grid;
+    grid-template-columns: .8fr 1.2fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .method-intro {
+    border-radius: 36px;
+    padding: 34px;
+    background: var(--forest);
+    color: white;
+    box-shadow: 0 24px 70px rgba(25, 55, 34, .18);
+  }
+
+  .method-intro .eyebrow,
+  .safety-card .eyebrow,
+  .contact-card .eyebrow {
+    color: rgba(255,255,255,.76);
+    border-color: rgba(255,255,255,.16);
+    background: rgba(255,255,255,.08);
+  }
+
+  .method-intro h3 {
+    margin: 16px 0 0;
+    font-size: clamp(1.7rem, 2.25vw, 2.55rem);
+    line-height: 1.04;
+    letter-spacing: -.05em;
+  }
+
+  .method-intro p { color: rgba(255,255,255,.72); line-height: 1.72; }
+  .method-list { display: grid; gap: 14px; }
+
+  .method-item {
+    border-radius: 28px;
+    padding: 22px;
+    border: 1px solid rgba(23, 32, 25, .08);
+    background: rgba(255,255,255,.76);
+    display: grid;
+    grid-template-columns: 62px 1fr;
+    gap: 16px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .method-no {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    background: var(--lime-soft);
+    color: var(--forest);
+    font-weight: 950;
+  }
+
+  .method-item h3 { margin: 0; font-size: 20px; letter-spacing: -.035em; }
+  .method-item p { margin: 8px 0 0; color: var(--muted); line-height: 1.6; }
+
+  .safety-card {
+    border-radius: 40px;
+    padding: 38px;
+    background:
+      radial-gradient(circle at 80% 8%, rgba(199,239,95,.18), transparent 30%),
+      var(--forest);
+    color: white;
+    box-shadow: 0 26px 76px rgba(25, 55, 34, .18);
+  }
+
+  .safety-card h2,
+  .contact-card h2 { color: white; }
+
+  .safety-card .section-lead,
+  .contact-card p {
+    color: rgba(255,255,255,.72);
+  }
+
+  .safety-grid { margin-top: 28px; }
+  .safety-item {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,255,255,.14);
+    box-shadow: none;
+  }
+
+  .safety-item h3 { color: white; }
+  .safety-item p { color: rgba(255,255,255,.72); }
+
+  .steps { grid-template-columns: repeat(4, 1fr); }
+  .step { position: relative; overflow: hidden; }
+  .step::after {
+    content: attr(data-no);
+    position: absolute;
+    right: 18px;
+    top: 14px;
+    color: rgba(25, 55, 34, .09);
+    font-size: 46px;
+    font-weight: 950;
+  }
+
+  .results {
+    grid-template-columns: repeat(4, 1fr);
+    background: rgba(255,255,255,.64);
+    border: 1px solid rgba(23, 32, 25, .08);
+    border-radius: 34px;
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .result {
+    text-align: center;
+    box-shadow: none;
+    background: transparent;
+    border: 0;
+  }
+
+  .result strong {
+    display: block;
+    font-size: 34px;
+    color: var(--forest);
+    letter-spacing: -.05em;
+  }
+
+  .result span {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 800;
+  }
+
+  .trust-board {
+    display: grid;
+    grid-template-columns: .95fr 1.05fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .trust-dark {
+    border-radius: 38px;
+    padding: 34px;
+    background: rgba(255,255,255,.76);
+    border: 1px solid rgba(23, 32, 25, .08);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .trust-dark p { color: var(--muted); line-height: 1.7; }
+  .trust-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+  .trust-metric { border-radius: 20px; background: var(--sage-2); padding: 14px; }
+  .trust-metric strong { display: block; color: var(--forest); font-weight: 950; font-size: 20px; }
+  .trust-metric span { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; font-weight: 800; }
+  .story-grid { display: grid; gap: 14px; }
+  .story-card small { color: var(--forest); font-weight: 950; text-transform: uppercase; letter-spacing: .12em; }
+
+  .reviews { grid-template-columns: repeat(3, 1fr); }
+  .review p { font-size: 17px; color: rgba(23,32,25,.72); }
+  .review strong { display: block; margin-top: 18px; color: var(--forest); }
+
+  .contact-card {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 28px;
+    align-items: center;
+    border-radius: 42px;
+    padding: 40px;
+    background: var(--forest);
+    color: white;
+    box-shadow: 0 26px 76px rgba(25, 55, 34, .18);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-card::before {
+    content: "";
+    position: absolute;
+    inset: -90px auto auto -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 999px;
+    background: rgba(199,239,95,.18);
+  }
+
+  .contact-card > * { position: relative; z-index: 1; }
+  .contact-card h2 { margin-top: 14px; }
+  .contact-card p { line-height: 1.72; max-width: 650px; }
 
   .contact-actions {
     display: flex;
@@ -911,39 +839,316 @@ const css = `
     margin-top: 22px;
   }
 
-  @media (max-width: 980px) {
-    .promise-card { grid-template-columns: 1fr; }
+  .contact-box {
+    border-radius: 30px;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.14);
+    padding: 20px;
+  }
+
+  .contact-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+  }
+
+  .contact-line:last-child { border-bottom: 0; }
+  .contact-line span { color: rgba(255,255,255,.62); font-size: 13px; font-weight: 800; }
+  .contact-line strong { text-align: right; font-weight: 950; }
+
+  .footer {
+    padding: 26px 0 46px;
+    color: rgba(23, 32, 25, .48);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  /* Booking modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: rgba(14, 24, 18, .54);
+    backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+  }
+
+  .modal {
+    width: min(1100px, 100%);
+    max-height: calc(100vh - 44px);
+    overflow: auto;
+    border-radius: 38px;
+    background: var(--paper);
+    padding: 30px;
+    box-shadow: 0 30px 90px rgba(0,0,0,.26);
+    border: 1px solid rgba(255,255,255,.44);
+  }
+
+  .reg-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 22px; margin-bottom: 22px; }
+  .reg-title { margin: 0; font-size: clamp(2rem, 3vw, 3rem); line-height: 1.02; letter-spacing: -.055em; }
+  .reg-sub { margin: 9px 0 0; color: var(--muted); line-height: 1.6; font-size: 14.5px; }
+
+  .close-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: white;
+    color: var(--ink);
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .wizard-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .wizard-tab {
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.72);
+    color: rgba(23,32,25,.58);
+    border-radius: 999px;
+    padding: 11px 10px;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .wizard-tab.active { background: var(--forest); color: white; border-color: var(--forest); }
+  .wizard-tab.done { background: var(--lime-soft); color: var(--forest); }
+
+  .wizard-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .wizard-summary { position: sticky; top: 96px; }
+  .wizard-summary h3 { margin: 16px 0 0; font-size: 24px; line-height: 1.08; letter-spacing: -.04em; }
+  .wizard-summary p { color: var(--muted); line-height: 1.62; }
+
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .summary-line span { color: var(--muted); font-size: 13px; font-weight: 850; }
+  .summary-line strong { text-align: right; }
+
+  .section-title { margin: 0 0 14px; font-size: 23px; line-height: 1.1; letter-spacing: -.04em; }
+
+  .input-field {
+    width: 100%;
+    border: 1px solid rgba(23, 32, 25, .11);
+    background: white;
+    border-radius: 18px;
+    padding: 15px 16px;
+    font-size: 15px;
+    color: var(--ink);
+    outline: none;
+  }
+
+  .input-field::placeholder { color: #9aa39d; }
+  .input-field:focus { border-color: var(--forest); box-shadow: 0 0 0 4px rgba(25, 55, 34, .07); }
+  .danger-border { border-color: rgba(220, 38, 38, .30) !important; background: #fffafa; }
+
+  .field-hint {
+    margin-top: 7px;
+    color: rgba(23, 32, 25, .54);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.48;
+  }
+
+  .form-grid,
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .quick-goals { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .quick-goal {
+    border: 1px solid rgba(23, 32, 25, .10);
+    background: var(--sage-2);
+    color: var(--forest);
+    border-radius: 999px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .service-list.wizard-services {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .service-card {
+    border: 1px solid rgba(23, 32, 25, .10);
+    background: white;
+    border-radius: 22px;
+    padding: 18px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .service-card.active { border-color: var(--forest); background: var(--lime-soft); }
+  .service-name { margin: 0; font-size: 17px; letter-spacing: -.03em; }
+  .service-meta { color: var(--muted); font-size: 13px; line-height: 1.45; font-weight: 760; }
+
+  .micro-note {
+    margin-top: 12px;
+    border-radius: 18px;
+    background: var(--lime-soft);
+    color: var(--forest);
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.55;
+    font-weight: 850;
+  }
+
+  .slots-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .slots-badge { display: inline-flex; border-radius: 999px; padding: 8px 10px; background: var(--lime-soft); color: var(--forest); font-size: 12px; font-weight: 950; }
+  .time-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 9px; }
+
+  .time-btn {
+    border: 1px solid rgba(23, 32, 25, .10);
+    background: white;
+    color: var(--ink);
+    border-radius: 16px;
+    padding: 13px 0;
+    font-weight: 950;
+    cursor: pointer;
+  }
+
+  .time-btn.active { background: var(--forest); color: white; border-color: var(--forest); }
+  .time-btn:disabled { color: #a8b0aa; background: #f1f0ea; cursor: not-allowed; text-decoration: line-through; }
+  .wizard-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
+  .success-box { border-radius: 28px; background: var(--lime-soft); padding: 28px; color: var(--forest); }
+
+  @media (max-width: 1040px) {
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding-top: 54px; }
+    .hero-card { min-height: 480px; }
+    .promise-card,
+    .about-grid,
+    .method-panel,
+    .trust-board,
+    .contact-card {
+      grid-template-columns: 1fr;
+    }
+    .cards,
+    .fit-grid,
+    .reviews,
+    .safety-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .steps,
+    .results {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .wizard-layout { grid-template-columns: 1fr; }
+    .wizard-summary { position: static; }
+    .time-grid { grid-template-columns: repeat(4, 1fr); }
   }
 
   @media (max-width: 640px) {
-    .hero h1 {
-      font-size: clamp(2.15rem, 10vw, 3.15rem);
-      line-height: 1;
-      letter-spacing: -.054em;
+    .container { width: calc(100% - 24px); }
+    .brand span { display: none; }
+    .brand-mark { width: 40px; height: 40px; border-radius: 14px; }
+    .nav { min-height: 68px; }
+    .nav .btn { padding: 11px 14px; font-size: 13px; }
+    .btn { width: 100%; padding: 15px 18px; }
+    .hero { padding: 34px 0 34px; gap: 26px; }
+    .hero h1 { font-size: clamp(2.15rem, 10vw, 3.15rem); line-height: 1; letter-spacing: -.054em; }
+    .hero p { font-size: 15.5px; line-height: 1.62; }
+    .hero-actions { flex-direction: column; }
+    .hero-trust { border-radius: 18px; align-items: flex-start; }
+    .hero-points,
+    .promise-points,
+    .cards,
+    .fit-grid,
+    .reviews,
+    .safety-grid,
+    .steps,
+    .results {
+      grid-template-columns: 1fr;
     }
-
-    .hero-trust {
-      border-radius: 18px;
-      align-items: flex-start;
+    .hero-card { min-height: 420px; border-radius: 30px; }
+    .hero-card::before { inset: 16px 16px 118px; border-radius: 22px; }
+    .floating-card { left: 16px; right: 16px; bottom: 16px; border-radius: 22px; padding: 18px; }
+    .section { padding: 44px 0; }
+    .section-head h2,
+    .contact-card h2,
+    .safety-card h2,
+    .trust-dark h2 {
+      font-size: clamp(1.9rem, 9vw, 2.65rem);
     }
-
-    .promise-card {
+    .promise-card,
+    .contact-card,
+    .safety-card,
+    .method-intro,
+    .trust-dark,
+    .about-text {
       border-radius: 28px;
       padding: 24px;
     }
-
-    .promise-points {
+    .fit-card,
+    .card,
+    .step,
+    .review,
+    .result,
+    .safety-item,
+    .story-card {
+      border-radius: 24px;
+      padding: 22px;
+    }
+    .about-photo { min-height: 360px; border-radius: 28px; }
+    .about-list,
+    .form-grid,
+    .form-row,
+    .service-list.wizard-services {
       grid-template-columns: 1fr;
     }
-
+    .method-item { grid-template-columns: 1fr; }
     .card-footer,
-    .contact-actions {
+    .contact-actions,
+    .wizard-actions {
       align-items: flex-start;
       flex-direction: column;
     }
+    .contact-line { flex-direction: column; gap: 5px; }
+    .contact-line strong { text-align: left; }
+    .modal-backdrop { padding: 0; align-items: stretch; }
+    .modal { width: 100%; max-height: 100vh; border-radius: 0; padding: 20px; }
+    .reg-header { gap: 12px; }
+    .reg-title { font-size: 28px; }
+    .wizard-tabs { grid-template-columns: 1fr 1fr; }
+    .wizard-tab { font-size: 11px; padding: 10px 8px; }
+    .time-grid { grid-template-columns: repeat(2, 1fr); }
+    .input-field { font-size: 16px; padding: 15px 16px; }
+    .wizard-panel,
+    .wizard-summary {
+      border-radius: 24px;
+      padding: 18px;
+    }
   }
-
 `;
+
 
 function BookingModal({ onClose }) {
   const [step, setStep] = useState(0);
@@ -1019,7 +1224,7 @@ function BookingModal({ onClose }) {
       <div className="modal">
         <div className="reg-header">
           <div>
-            <h1 className="reg-title">Registracija treniruotei</h1>
+            <h1 className="reg-title">Pirma konsultacija</h1>
             <p className="reg-sub">Trumpas įvertinimas padeda suprasti tikslą, patirtį, saugumo informaciją ir tinkamiausią treniravimo formatą.</p>
           </div>
           <button className="close-btn" type="button" onClick={onClose} aria-label="Uždaryti">×</button>
@@ -1260,15 +1465,15 @@ export default function TrainerLanding() {
           </a>
 
           <nav className="nav-links" aria-label="Pagrindinė navigacija">
-            <a href="#kam-tinka">Kam tinka</a>
             <a href="#paslaugos">Paslaugos</a>
-            <a href="#paslaugos">Metodika</a>
+            <a href="#metodika">Metodika</a>
+            <a href="#kam-tinka">Kam tinka</a>
             <a href="#saugumas">Saugumas</a>
             <a href="#kontaktai">Kontaktai</a>
           </nav>
 
           <button className="btn btn-dark" type="button" onClick={() => setBookingOpen(true)}>
-            Pirma konsultacija
+            Registruotis
           </button>
         </div>
       </header>
@@ -1300,7 +1505,7 @@ export default function TrainerLanding() {
             </div>
             <div className="point">
               <strong>4–8 sav.</strong>
-              <span>struktūruotas etapas</span>
+              <span>struktūruotas treniruočių etapas</span>
             </div>
             <div className="point">
               <strong>PDF</strong>
@@ -1345,81 +1550,11 @@ export default function TrainerLanding() {
         </div>
       </section>
 
-      <section id="kam-tinka" className="container section">
-        <div className="section-head">
-          <h2>Kam tinka šis treniravimo formatas?</h2>
-          <p className="section-lead">
-            Šis formatas skirtas žmonėms, kurie nori ne tiesiog „pasportuoti“, o turėti aiškią kryptį, saugų krūvį ir suprasti, ką daro kiekvienoje treniruotėje.
-          </p>
-        </div>
-
-        <div className="fit-grid">
-          <article className="fit-card" data-no="01">
-            <span className="eyebrow">Pradedantiems</span>
-            <h3>Norite pradėti be chaoso ir traumų rizikos</h3>
-            <p>Jei sporto salėje neaišku nuo ko pradėti, pirmiausia sutvarkome techniką, krūvį ir savaitės ritmą.</p>
-          </article>
-          <article className="fit-card" data-no="02">
-            <span className="eyebrow">Po pertraukos</span>
-            <h3>Grįžtate į sportą po ilgesnės pauzės</h3>
-            <p>Krūvis didinamas palaipsniui, atsižvelgiant į savijautą, mobilumą ir ankstesnę patirtį.</p>
-          </article>
-          <article className="fit-card" data-no="03">
-            <span className="eyebrow">Premium tikslui</span>
-            <h3>Norite aiškaus plano, o ne atsitiktinių pratimų</h3>
-            <p>Treniruotės sudedamos į sistemą: tikslas, pratimai, progresija, RPE, poilsis ir korekcijos.</p>
-          </article>
-        </div>
-      </section>
-
-      <section id="apie" className="container section">
-        <div className="section-head">
-          <h2>Treneris, kuris padeda sportuoti aiškiai ir be spėlionių.</h2>
-          <p className="section-lead">
-            Tikslas — ne tik „pavargti treniruotėje“, o suprasti, ką darote, kodėl tai darote ir kaip saugiai judėti į priekį.
-          </p>
-        </div>
-
-        <div className="about-grid">
-          <div className="about-photo" />
-          <div className="about-text">
-            <div>
-              <p>
-                Dirbu su žmonėmis, kurie nori sustiprėti, pagerinti laikyseną, sumažinti kūno diskomfortą,
-                grįžti į sportą po pertraukos arba tiesiog turėti aiškų, realų treniruočių planą.
-              </p>
-              <p style={{ marginTop: 18 }}>
-                Kiekviena programa pradedama nuo tikslo, patirties ir saugumo informacijos. Tai padeda išvengti chaotiško krūvio ir nereikalingos rizikos.
-              </p>
-            </div>
-
-            <div className="about-list">
-              <div className="about-item">
-                <strong>Individualus krūvis</strong>
-                <span>Prisitaikoma prie patirties ir fizinės būklės.</span>
-              </div>
-              <div className="about-item">
-                <strong>Saugumo anketa</strong>
-                <span>Įvertinamos traumos, apribojimai ir rizikos.</span>
-              </div>
-              <div className="about-item">
-                <strong>Aiški struktūra</strong>
-                <span>Treniruotės turi logiką, ne atsitiktinius pratimus.</span>
-              </div>
-              <div className="about-item">
-                <strong>Progreso stebėjimas</strong>
-                <span>Keitimai daromi pagal rezultatą ir savijautą.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section id="paslaugos" className="container section">
         <div className="section-head">
-          <h2>Paslaugos pagal skirtingus poreikius.</h2>
+          <h2>Paslaugos pagal jūsų tikslą ir patirtį.</h2>
           <p className="section-lead">
-            Paslaugos sudėtos taip, kad klientas galėtų pradėti nuo įvertinimo, tęsti su individualiomis treniruotėmis arba gauti aiškų savarankiško darbo planą.
+            Pradėkite nuo įvertinimo, tęskite su individualiomis treniruotėmis arba gaukite aiškų savarankiško darbo planą.
           </p>
         </div>
 
@@ -1450,9 +1585,9 @@ export default function TrainerLanding() {
 
       <section id="metodika" className="container section">
         <div className="section-head">
-          <h2>Metodika: aiškus procesas nuo įvertinimo iki progreso.</h2>
+          <h2>Metodika, kuri padeda treniruotis be chaoso.</h2>
           <p className="section-lead">
-            Treniravimas remiasi ne atsitiktiniais pratimais, o struktūra: tikslas, įvertinimas, programa, kontrolė ir korekcijos.
+            Kiekvienas etapas turi aiškią logiką: įvertinimas, planas, krūvio valdymas ir korekcijos pagal realų progresą.
           </p>
         </div>
 
@@ -1461,8 +1596,8 @@ export default function TrainerLanding() {
             <span className="eyebrow">Metodika</span>
             <h3>Programa kuriama pagal žmogų, ne pagal šabloną.</h3>
             <p>
-              Pirmoje konsultacijoje įvertinamas tikslas, patirtis, sveikatos apribojimai ir realus savaitės ritmas.
-              Tik po to parenkama treniruočių sistema, pratimai ir progresijos taisyklės.
+              Pirmoje konsultacijoje įvertinamas tikslas, patirtis, galimi apribojimai ir realus savaitės ritmas.
+              Tik po to parenkami pratimai, krūvis ir progresavimo kryptis.
             </p>
           </div>
 
@@ -1470,42 +1605,110 @@ export default function TrainerLanding() {
             <article className="method-item">
               <div className="method-no">01</div>
               <div>
-                <h3>Tikslas ir pirminis įvertinimas</h3>
+                <h3>Įvertinimas</h3>
                 <p>Aptariamas tikslas, aktyvumo lygis, patirtis, grafikas, galimi skausmai ir apribojimai.</p>
               </div>
             </article>
             <article className="method-item">
               <div className="method-no">02</div>
               <div>
-                <h3>Individuali treniruočių kryptis</h3>
-                <p>Parenkamas formatas: individualios treniruotės, abonementas, planas, nuotolinė priežiūra arba konsultacija.</p>
+                <h3>Planas</h3>
+                <p>Parenkamas formatas, pratimai, savaitės ritmas ir progresavimo kryptis pagal realias galimybes.</p>
               </div>
             </article>
             <article className="method-item">
               <div className="method-no">03</div>
               <div>
-                <h3>Progresijos taisyklės</h3>
-                <p>Nustatomas krūvio didinimas, RPE / RIR gairės, poilsis, tempas ir kada reikia koreguoti programą.</p>
+                <h3>Krūvio valdymas</h3>
+                <p>Nustatomas krūvio didinimas, poilsis, tempas, alternatyvos ir korekcijų taisyklės.</p>
               </div>
             </article>
             <article className="method-item">
               <div className="method-no">04</div>
               <div>
-                <h3>Programos korekcijos pagal savijautą</h3>
-                <p>Programa peržiūrima pagal techniką, rezultatus, miego kokybę, nuovargį ir realų savaitės ritmą.</p>
+                <h3>Progreso stebėjimas</h3>
+                <p>Programa peržiūrima pagal techniką, rezultatus, nuovargį ir realų savaitės ritmą.</p>
               </div>
             </article>
           </div>
         </div>
       </section>
 
+      <section id="kam-tinka" className="container section">
+        <div className="section-head">
+          <h2>Kam tinka šis treniravimo formatas?</h2>
+          <p className="section-lead">
+            Skirta žmonėms, kurie nori sportuoti aiškiai, saugiai ir be chaoso — nuo pirmo įvertinimo iki realiai įgyvendinamo plano.
+          </p>
+        </div>
+
+        <div className="fit-grid">
+          <article className="fit-card" data-no="01">
+            <span className="eyebrow">Pradedantiems</span>
+            <h3>Norite pradėti be spėlionių ir traumų rizikos</h3>
+            <p>Pirmiausia sutvarkome techniką, krūvį ir savaitės ritmą, kad sporto pradžia būtų aiški.</p>
+          </article>
+          <article className="fit-card" data-no="02">
+            <span className="eyebrow">Po pertraukos</span>
+            <h3>Grįžtate į sportą po ilgesnės pauzės</h3>
+            <p>Krūvis didinamas palaipsniui, atsižvelgiant į savijautą, mobilumą ir ankstesnę patirtį.</p>
+          </article>
+          <article className="fit-card" data-no="03">
+            <span className="eyebrow">Aiškiam tikslui</span>
+            <h3>Norite plano, o ne atsitiktinių pratimų</h3>
+            <p>Treniruotės sudedamos į sistemą: tikslas, pratimai, progresija, poilsis ir korekcijos.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="apie" className="container section">
+        <div className="section-head">
+          <h2>Profesionalus požiūris į treniruotes, krūvį ir kliento savijautą.</h2>
+          <p className="section-lead">
+            Tikslas — ne tik „pavargti treniruotėje“, o suprasti, ką darote, kodėl tai darote ir kaip saugiai judėti į priekį.
+          </p>
+        </div>
+
+        <div className="about-grid">
+          <div className="about-photo" />
+          <div className="about-text">
+            <div>
+              <p>
+                Dirbu su žmonėmis, kurie nori sustiprėti, pagerinti laikyseną, grįžti į sportą po pertraukos arba tiesiog turėti aiškų, realų treniruočių planą.
+              </p>
+              <p style={{ marginTop: 18 }}>
+                Mano darbo principas paprastas: ne motyvaciniai pažadai, o struktūra. Kiekviena programa pradedama nuo tikslo, patirties ir saugumo informacijos.
+              </p>
+            </div>
+
+            <div className="about-list">
+              <div className="about-item">
+                <strong>Individualus krūvis</strong>
+                <span>Prisitaikoma prie patirties ir fizinės būklės.</span>
+              </div>
+              <div className="about-item">
+                <strong>Saugumo anketa</strong>
+                <span>Įvertinamos traumos, apribojimai ir rizikos.</span>
+              </div>
+              <div className="about-item">
+                <strong>Aiški struktūra</strong>
+                <span>Treniruotės turi logiką, ne atsitiktinius pratimus.</span>
+              </div>
+              <div className="about-item">
+                <strong>Progreso stebėjimas</strong>
+                <span>Keitimai daromi pagal rezultatą ir savijautą.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="saugumas" className="container section">
         <div className="safety-card">
-          <span className="eyebrow">Saugumas ir traumos</span>
+          <span className="eyebrow">Saugumas ir atsakomybė</span>
           <h2>Saugus krūvio valdymas yra svarbiau už greitą rezultatą.</h2>
-          <p className="section-lead" style={{ color: "rgba(255,255,255,.7)", marginTop: 16 }}>
-            Prieš pradedant renkama informacija apie traumas, skausmus, sveikatos apribojimus ir ankstesnę patirtį.
-            Tai leidžia parinkti pratimus, kurie padeda progresuoti be nereikalingos rizikos.
+          <p className="section-lead" style={{ color: "rgba(255,255,255,.72)", marginTop: 16 }}>
+            Klausiama apie patirtį ir apribojimus ne dėl biurokratijos, o tam, kad būtų galima parinkti saugesnį krūvį, pratimų alternatyvas ir tinkamą progresiją.
           </p>
 
           <div className="safety-grid">
@@ -1518,8 +1721,8 @@ export default function TrainerLanding() {
               <p>Pirmiausia vertinama judesio kokybė, amplitudė ir stabilumas, tik tada didinamas krūvis.</p>
             </article>
             <article className="safety-item">
-              <h3>Krūvio korekcijos</h3>
-              <p>Jei atsiranda diskomfortas ar nuovargis, pratimai keičiami, mažinama apimtis arba koreguojamas planas.</p>
+              <h3>Atsakomybės riba</h3>
+              <p>Treneris nekuria medicininio gydymo plano. Esant sveikatos problemoms rekomenduojama konsultuotis su specialistu.</p>
             </article>
           </div>
         </div>
@@ -1536,8 +1739,8 @@ export default function TrainerLanding() {
         <div className="steps">
           <article className="step" data-no="01">
             <span className="eyebrow">Startas</span>
-            <h3>Pirma konsultacija</h3>
-            <p>Užpildote trumpą anketą apie tikslą, patirtį, sveikatą ir pageidaujamą treniruočių ritmą.</p>
+            <h3>Registracija</h3>
+            <p>Pasirenkate paslaugą, laiką ir trumpai aprašote tikslą bei saugumo informaciją.</p>
           </article>
           <article className="step" data-no="02">
             <span className="eyebrow">Įvertinimas</span>
@@ -1557,32 +1760,11 @@ export default function TrainerLanding() {
         </div>
       </section>
 
-      <section className="container section">
-        <div className="results">
-          <div className="result">
-            <strong>200+</strong>
-            <span>pravestų individualių treniruočių</span>
-          </div>
-          <div className="result">
-            <strong>4–8</strong>
-            <span>savaitės aiškiam startui ir įpročiui</span>
-          </div>
-          <div className="result">
-            <strong>1:1</strong>
-            <span>dėmesys technikai, saugumui ir tikslui</span>
-          </div>
-          <div className="result">
-            <strong>100%</strong>
-            <span>individualizuotas krūvis pagal žmogų</span>
-          </div>
-        </div>
-      </section>
-
       <section id="pasitikejimas" className="container section">
         <div className="section-head">
-          <h2>Pasitikėjimo pagrindas: patirtis, metodika ir aiškūs rezultatai.</h2>
+          <h2>Pasitikėjimo pagrindas: aiškumas, metodika ir realus procesas.</h2>
           <p className="section-lead">
-            Premium klientui svarbu ne vien gražus puslapis. Jis turi matyti, kad treniravimas paremtas aiškiu procesu, saugumu ir realiomis istorijomis.
+            Premium klientui svarbu matyti, kad treniravimas paremtas ne pažadais, o saugumu, struktūra ir profesionaliu darbo procesu.
           </p>
         </div>
 
@@ -1602,7 +1784,7 @@ export default function TrainerLanding() {
               </div>
               <div className="trust-metric">
                 <strong>4–8 sav.</strong>
-                <span>aiškus progreso etapas</span>
+                <span>aiškus etapas</span>
               </div>
               <div className="trust-metric">
                 <strong>1:1</strong>
@@ -1610,7 +1792,7 @@ export default function TrainerLanding() {
               </div>
               <div className="trust-metric">
                 <strong>PDF</strong>
-                <span>programos dokumentas klientui</span>
+                <span>programa klientui</span>
               </div>
             </div>
           </div>
@@ -1629,7 +1811,7 @@ export default function TrainerLanding() {
             <article className="story-card">
               <small>Metodika</small>
               <h3>Progresija, ne spėlionės</h3>
-              <p>Kiekvienas pratimas turi serijas, pakartojimus, RPE / RIR, poilsį, tempą, alternatyvas ir saugumo pastabas.</p>
+              <p>Kiekvienas pratimas turi serijas, pakartojimus, poilsį, tempą, alternatyvas ir saugumo pastabas.</p>
             </article>
           </div>
         </div>
@@ -1639,7 +1821,7 @@ export default function TrainerLanding() {
         <div className="section-head">
           <h2>Ką sako klientai.</h2>
           <p className="section-lead">
-            Klientų istorijos turi komunikuoti aiškumą, saugumą, progresą ir pasitikėjimą trenerio metodika.
+            Realioje svetainėje čia būtų įkelti tikri kliento atsiliepimai, orientuoti į aiškumą, saugumą ir progresą.
           </p>
         </div>
 
@@ -1665,7 +1847,7 @@ export default function TrainerLanding() {
             <span className="eyebrow">Kontaktai</span>
             <h2>Pradėkite nuo pirmos konsultacijos.</h2>
             <p>
-              Užpildykite trumpą anketą, o treneris susisieks aptarti tikslo, saugumo informacijos,
+              Užpildykite trumpą formą, o treneris susisieks aptarti tikslo, saugumo informacijos,
               treniruočių formato ir tinkamiausio plano.
             </p>
             <div className="contact-actions">
