@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const services = [
   {
@@ -1147,6 +1147,194 @@ const css = `
       padding: 18px;
     }
   }
+
+  /* Modern premium motion layer */
+  .landing {
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .landing::before {
+    content: "";
+    position: fixed;
+    inset: -20% -10% auto -10%;
+    height: 52vh;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 18% 26%, rgba(199, 239, 95, .13), transparent 28%),
+      radial-gradient(circle at 78% 18%, rgba(255, 255, 255, .72), transparent 30%);
+    filter: blur(6px);
+    opacity: .9;
+    z-index: 0;
+    animation: ambientDrift 16s ease-in-out infinite alternate;
+  }
+
+  .header,
+  .hero,
+  .section,
+  .footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes ambientDrift {
+    from { transform: translate3d(-1.5%, -1%, 0) scale(1); }
+    to { transform: translate3d(1.5%, 2%, 0) scale(1.04); }
+  }
+
+  @keyframes softFloat {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -10px, 0); }
+  }
+
+  @keyframes softPulse {
+    0%, 100% { box-shadow: 0 18px 45px rgba(25, 55, 34, .20); }
+    50% { box-shadow: 0 24px 58px rgba(25, 55, 34, .27); }
+  }
+
+  @keyframes shineSweep {
+    from { transform: translateX(-120%) rotate(8deg); opacity: 0; }
+    20% { opacity: .55; }
+    to { transform: translateX(160%) rotate(8deg); opacity: 0; }
+  }
+
+  .hero-card {
+    animation: softFloat 7s ease-in-out infinite;
+  }
+
+  .floating-card,
+  .promise-card,
+  .contact-card {
+    overflow: hidden;
+  }
+
+  .floating-card::after,
+  .promise-card::after,
+  .contact-card::after {
+    content: "";
+    position: absolute;
+    inset: -40% auto -40% -70%;
+    width: 34%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.42), transparent);
+    transform: translateX(-120%) rotate(8deg);
+    pointer-events: none;
+  }
+
+  .floating-card::after {
+    animation: shineSweep 8s ease-in-out infinite;
+    animation-delay: 1.4s;
+  }
+
+  .promise-card::after {
+    animation: shineSweep 10s ease-in-out infinite;
+    animation-delay: 2.8s;
+  }
+
+  .contact-card::after {
+    animation: shineSweep 11s ease-in-out infinite;
+    animation-delay: 3.6s;
+  }
+
+  .btn-dark {
+    animation: softPulse 5.5s ease-in-out infinite;
+  }
+
+  .btn,
+  .card,
+  .fit-card,
+  .step,
+  .review,
+  .story-card,
+  .method-item,
+  .time-btn,
+  .service-card,
+  .quick-goal {
+    will-change: transform;
+  }
+
+  .card,
+  .fit-card,
+  .step,
+  .review,
+  .story-card,
+  .method-item,
+  .service-card {
+    transition:
+      transform .28s ease,
+      box-shadow .28s ease,
+      border-color .28s ease,
+      background .28s ease;
+  }
+
+  .card:hover,
+  .fit-card:hover,
+  .step:hover,
+  .review:hover,
+  .story-card:hover,
+  .method-item:hover,
+  .service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 56px rgba(30, 42, 31, .11);
+    border-color: rgba(25, 55, 34, .16);
+  }
+
+  .nav-links a,
+  .mini-pill,
+  .service-kicker,
+  .promise-points span,
+  .about-item,
+  .trust-metric {
+    transition: transform .22s ease, background .22s ease, border-color .22s ease;
+  }
+
+  .mini-pill:hover,
+  .service-kicker:hover,
+  .promise-points span:hover,
+  .about-item:hover,
+  .trust-metric:hover {
+    transform: translateY(-3px);
+  }
+
+  .motion-ready .reveal-item {
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(8px);
+  }
+
+  .motion-ready .reveal-item.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    transition:
+      opacity .75s ease,
+      transform .75s cubic-bezier(.2, .8, .2, 1),
+      filter .75s ease;
+  }
+
+  .motion-ready .hero .reveal-item {
+    transform: translateY(18px);
+  }
+
+  .motion-ready .hero .reveal-item.is-visible {
+    transition-duration: .9s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+
+    .motion-ready .reveal-item {
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+  }
+
 `;
 
 
@@ -1449,6 +1637,46 @@ function BookingModal({ onClose }) {
 
 export default function TrainerLanding() {
   const [bookingOpen, setBookingOpen] = useState(false);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const elements = Array.from(
+      document.querySelectorAll(
+        ".hero > div, .hero-card, .section, .card, .fit-card, .step, .review, .story-card, .method-item, .contact-card"
+      )
+    );
+
+    if (reduceMotion) {
+      elements.forEach((element) => element.classList.add("is-visible"));
+      return undefined;
+    }
+
+    document.documentElement.classList.add("motion-ready");
+
+    elements.forEach((element, index) => {
+      element.classList.add("reveal-item");
+      element.style.transitionDelay = `${Math.min((index % 6) * 55, 275)}ms`;
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.classList.remove("motion-ready");
+    };
+  }, []);
 
   return (
     <main className="landing">
