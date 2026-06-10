@@ -356,7 +356,7 @@ const css = `
     border: 0;
     background:
       linear-gradient(180deg, rgba(25, 55, 34, .04), rgba(25, 55, 34, .18)),
-      url("/treneris-hero.jpg") center / cover no-repeat;
+      url("/treneris-hero.png") center / cover no-repeat;
     display: block;
   }
 
@@ -533,18 +533,15 @@ const css = `
   }
 
   .about-photo::after {
-    content: "Trenerio nuotraukos vieta";
+    content: "";
     position: absolute;
     inset: 24px;
-    border: 1px dashed rgba(25, 55, 34, .24);
+    border: 0;
     border-radius: 30px;
-    display: grid;
-    place-items: center;
-    color: rgba(25,55,34,.48);
-    font-weight: 900;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    font-size: 12px;
+    background:
+      linear-gradient(180deg, rgba(25, 55, 34, .04), rgba(25, 55, 34, .16)),
+      url("/treneris-hero1.jpg") center / cover no-repeat;
+    display: block;
   }
 
   .about-text {
