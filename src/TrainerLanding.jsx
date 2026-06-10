@@ -1530,31 +1530,11 @@ export default function TrainerLanding() {
         </div>
       </section>
 
-      <section className="container section promise-section">
-        <div className="promise-card">
-          <div>
-            <span className="eyebrow">Mano pažadas klientui</span>
-            <h2>Treniruotės prasideda nuo aiškaus įvertinimo.</h2>
-          </div>
-          <div>
-            <p>
-              Treniruočių procesas prasideda ne nuo atsitiktinių pratimų, o nuo aiškaus tikslo, patirties ir galimų apribojimų įvertinimo.
-              Tikslas — parinkti saugų krūvį, palaikyti nuoseklumą ir padėti klientui matyti realų progresą.
-            </p>
-            <div className="promise-points">
-              <span>Saugus krūvis</span>
-              <span>Aiškus planas</span>
-              <span>Progreso kontrolė</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section id="paslaugos" className="container section">
         <div className="section-head">
           <h2>Paslaugos pagal jūsų tikslą ir patirtį.</h2>
           <p className="section-lead">
-            Pradėkite nuo įvertinimo, tęskite su individualiomis treniruotėmis arba gaukite aiškų savarankiško darbo planą.
+            Pasirinkite formatą pagal tai, kaip norite dirbti: gyvai, savarankiškai arba su nuotoline priežiūra.
           </p>
         </div>
 
@@ -1585,19 +1565,20 @@ export default function TrainerLanding() {
 
       <section id="metodika" className="container section">
         <div className="section-head">
-          <h2>Metodika, kuri padeda treniruotis be chaoso.</h2>
+          <h2>Mano metodika: aiškus įvertinimas, saugus krūvis ir realus progresas.</h2>
           <p className="section-lead">
-            Kiekvienas etapas turi aiškią logiką: įvertinimas, planas, krūvio valdymas ir korekcijos pagal realų progresą.
+            Treniruotės neprasideda nuo atsitiktinių pratimų. Pirmiausia įvertiname tikslą, patirtį ir galimus apribojimus,
+            tada parenkame planą, kurio galima laikytis realiame gyvenime.
           </p>
         </div>
 
         <div className="method-panel">
           <div className="method-intro">
-            <span className="eyebrow">Metodika</span>
-            <h3>Programa kuriama pagal žmogų, ne pagal šabloną.</h3>
+            <span className="eyebrow">Pažadas klientui</span>
+            <h3>Mažiau chaoso, daugiau struktūros.</h3>
             <p>
-              Pirmoje konsultacijoje įvertinamas tikslas, patirtis, galimi apribojimai ir realus savaitės ritmas.
-              Tik po to parenkami pratimai, krūvis ir progresavimo kryptis.
+              Tikslas — parinkti saugų krūvį, palaikyti nuoseklumą ir padėti klientui matyti realų progresą.
+              Programos koreguojamos pagal savijautą, techniką ir realų savaitės ritmą.
             </p>
           </div>
 
@@ -1606,28 +1587,21 @@ export default function TrainerLanding() {
               <div className="method-no">01</div>
               <div>
                 <h3>Įvertinimas</h3>
-                <p>Aptariamas tikslas, aktyvumo lygis, patirtis, grafikas, galimi skausmai ir apribojimai.</p>
+                <p>Aptariamas tikslas, patirtis, aktyvumo lygis, galimi skausmai, apribojimai ir savaitės ritmas.</p>
               </div>
             </article>
             <article className="method-item">
               <div className="method-no">02</div>
               <div>
-                <h3>Planas</h3>
-                <p>Parenkamas formatas, pratimai, savaitės ritmas ir progresavimo kryptis pagal realias galimybes.</p>
+                <h3>Individualus planas</h3>
+                <p>Parenkamas treniruočių formatas, pratimai, krūvis, poilsis ir progresavimo kryptis.</p>
               </div>
             </article>
             <article className="method-item">
               <div className="method-no">03</div>
               <div>
-                <h3>Krūvio valdymas</h3>
-                <p>Nustatomas krūvio didinimas, poilsis, tempas, alternatyvos ir korekcijų taisyklės.</p>
-              </div>
-            </article>
-            <article className="method-item">
-              <div className="method-no">04</div>
-              <div>
-                <h3>Progreso stebėjimas</h3>
-                <p>Programa peržiūrima pagal techniką, rezultatus, nuovargį ir realų savaitės ritmą.</p>
+                <h3>Korekcijos</h3>
+                <p>Planą keičiame pagal techniką, savijautą, nuovargį ir tai, kas realiai veikia klientui.</p>
               </div>
             </article>
           </div>
