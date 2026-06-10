@@ -349,21 +349,15 @@ const css = `
   }
 
   .hero-card::before {
-    content: "Nuotraukos vieta";
+    content: "";
     position: absolute;
     inset: 28px 28px 142px;
     border-radius: 32px;
-    border: 1px dashed rgba(25, 55, 34, .24);
+    border: 0;
     background:
-      radial-gradient(circle at 50% 18%, rgba(255,255,255,.82), transparent 24%),
-      linear-gradient(145deg, rgba(25,55,34,.12), rgba(255,255,255,.42));
-    display: grid;
-    place-items: center;
-    color: rgba(25,55,34,.48);
-    font-weight: 900;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    font-size: 12px;
+      linear-gradient(180deg, rgba(25, 55, 34, .04), rgba(25, 55, 34, .18)),
+      url("/treneris-hero.png") center / cover no-repeat;
+    display: block;
   }
 
   .floating-card {
