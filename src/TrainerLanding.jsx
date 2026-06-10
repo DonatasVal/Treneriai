@@ -356,7 +356,7 @@ const css = `
     border: 0;
     background:
       linear-gradient(180deg, rgba(25, 55, 34, .04), rgba(25, 55, 34, .18)),
-      url("/treneris-hero.png") center / cover no-repeat;
+      url("/treneris-hero.jpg") center / cover no-repeat;
     display: block;
   }
 
