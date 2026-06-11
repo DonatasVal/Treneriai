@@ -20,7 +20,7 @@ const services = [
     price: "nuo 120 €",
     meta: "mėn. · Darbas 1:1",
     description: "Reguliarus darbas su technikos kontrole, krūvio valdymu ir progresu pagal jūsų fizinę būklę.",
-    bullets: ["Gyvos treniruotės 1:1", "Technikos ir krūvio kontrolė", "Korekcijos pagal savijautą"],
+    bullets: ["Gyvos treniruotės 1:1", "Technikos ir krūvio kontrolė", "+ sporto programa dovanų", "Korekcijos pagal savijautą"],
     result: "nuoseklus progresas, aiškus savaitės ritmas ir mažiau chaoso.",
     durationMin: 0,
     requiresSchedule: false,
@@ -356,7 +356,7 @@ const css = `
     border: 0;
     background:
       linear-gradient(180deg, rgba(25, 55, 34, .04), rgba(25, 55, 34, .18)),
-      url("/treneris-hero.jpg") center / cover no-repeat;
+      url("/treneris-hero.png") center / cover no-repeat;
     display: block;
   }
 
@@ -533,15 +533,18 @@ const css = `
   }
 
   .about-photo::after {
-    content: "";
+    content: "Trenerio nuotraukos vieta";
     position: absolute;
     inset: 24px;
-    border: 0;
+    border: 1px dashed rgba(25, 55, 34, .24);
     border-radius: 30px;
-    background:
-      linear-gradient(180deg, rgba(25, 55, 34, .04), rgba(25, 55, 34, .16)),
-      url("/treneris-hero1.jpg") center / cover no-repeat;
-    display: block;
+    display: grid;
+    place-items: center;
+    color: rgba(25,55,34,.48);
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: 12px;
   }
 
   .about-text {
